@@ -8,7 +8,7 @@ import events
 import options
 import observables/observables
 import utils
-import app/workspace
+#import app/workspace
 
 type
   Context* = ref object
@@ -90,12 +90,13 @@ proc dispatchUpdate*(dt: float): void =
 proc init*(size: Vec2[float], scale: Vec2[float]): Context {.exportc.} =
   echo "Testing init"
   windowSize = behaviorSubject(size)
-  let ws = workspace()
+  # let ws = workspace()
   let rootElement =
-    panel():
-      ws
-      panel(horizontalAlignment = HorizontalAlignment.Left, verticalAlignment = VerticalAlignment.Top):
-        DebugTree(tree = ws)
+    panel:
+      rectangle(color = "yellow")
+      # ws
+      # panel(horizontalAlignment = HorizontalAlignment.Left, verticalAlignment = VerticalAlignment.Top):
+      #   DebugTree(tree = ws)
 
   rootElement.addTag("root")
   rootElement.setParentOnChildren()
