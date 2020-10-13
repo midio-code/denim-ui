@@ -1,0 +1,37 @@
+import number
+
+type
+  Thickness*[T: Number] = tuple[l:T,t:T,r:T,b:T]
+
+proc thickness*(): Thickness[float] =
+  (0.0,0.0,0.0,0.0)
+
+proc thickness*[T:Number](a:T, b:T, c:T, d:T): Thickness[T] =
+  (a,b,c,d)
+
+proc thickness*[T:Number](a:T): Thickness[T] =
+  (a,a,a,a)
+
+proc thickness*[T:Number](a:T, b:T): Thickness[T] =
+  (a,b,a,b)
+
+proc left*[T:Number](self: Thickness[T]): T =
+  self[0]
+
+proc top*[T:Number](self: Thickness[T]): T =
+  self[1]
+
+proc right*[T:Number](self: Thickness[T]): T =
+  self[2]
+
+proc bottom*[T:Number](self: Thickness[T]): T =
+  self[3]
+
+proc add*[T:Number](self: Thickness[T], other: Thickness[T]): Thickness[T] =
+  thickness(
+    self.left + other.left,
+    self.top + other.top,
+    self.right + other.right,
+    self.bottom + other.bottom
+  )
+
