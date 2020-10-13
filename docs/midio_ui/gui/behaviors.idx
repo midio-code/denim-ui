@@ -1,0 +1,4 @@
+Behavior	midio_ui/gui/behaviors.html#Behavior	behaviors: Behavior	
+dispatchUpdate	midio_ui/gui/behaviors.html#dispatchUpdate,Element,float	behaviors: dispatchUpdate(self: Element; dt: float): bool	
+add	midio_ui/gui/behaviors.html#add,Element,Behavior	behaviors: add(element: Element; behavior: Behavior): void	
+behaviors	midio_ui/gui/behaviors.html#behaviors,Element	behaviors: behaviors(element: Element): seq[Behavior]	

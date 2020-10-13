@@ -1,0 +1,9 @@
+Context	midio_ui/main.html#Context	main: Context	
+render	midio_ui/main.html#render,Context,float	main: render(ctx: Context; dt: float): seq[Primitive]	
+dispatchWindowSizeChanged	midio_ui/main.html#dispatchWindowSizeChanged,Vec2[float]	main: dispatchWindowSizeChanged(newSize: Vec2[float]): void	
+dispatchPointerMove	midio_ui/main.html#dispatchPointerMove,float,float	main: dispatchPointerMove(x: float; y: float): void	
+dispatchPointerPress	midio_ui/main.html#dispatchPointerPress,float,float	main: dispatchPointerPress(x: float; y: float): void	
+dispatchPointerRelease	midio_ui/main.html#dispatchPointerRelease,float,float	main: dispatchPointerRelease(x: float; y: float): void	
+dispatchKeyDown	midio_ui/main.html#dispatchKeyDown,int,string	main: dispatchKeyDown(keyCode: int; key: string): void	
+dispatchUpdate	midio_ui/main.html#dispatchUpdate,float	main: dispatchUpdate(dt: float): void	
+init	midio_ui/main.html#init,Vec2[float],Vec2[float],,	main: init(size: Vec2[float]; scale: Vec2[float];\n     measureTextFunction: (string, float, string, string) -&gt; Vec2[float];\n     render: () -&gt; Element): Context	

@@ -1,0 +1,28 @@
+Rect	midio_ui/rect.html#Rect	rect: Rect	
+rect	midio_ui/rect.html#rect,Vec2[T: Number],Vec2[T: Number]	rect: rect[T: Number](pos: Vec2[T]; size: Vec2[T]): Rect[T]	
+rect	midio_ui/rect.html#rect,T,T,T,T	rect: rect[T: Number](l: T; t: T; r: T; b: T): Rect[T]	
+rect	midio_ui/rect.html#rect,T	rect: rect[T: Number](val: T): Rect[T]	
+rectFromPoints	midio_ui/rect.html#rectFromPoints,Vec2[T: Number],Vec2[T: Number]	rect: rectFromPoints[T: Number](p1: Vec2[T]; p2: Vec2[T]): Rect[T]	
+translate	midio_ui/rect.html#translate,Rect[T: Number],Vec2[T: Number]	rect: translate[T: Number](self: Rect[T]; trans: Vec2[T]): Rect[T]	
+x	midio_ui/rect.html#x,Rect[T: Number]	rect: x[T: Number](self: Rect[T]): Number	
+y	midio_ui/rect.html#y,Rect[T: Number]	rect: y[T: Number](self: Rect[T]): Number	
+width	midio_ui/rect.html#width,Rect[T: Number]	rect: width[T: Number](self: Rect[T]): T	
+height	midio_ui/rect.html#height,Rect[T: Number]	rect: height[T: Number](self: Rect[T]): T	
+left	midio_ui/rect.html#left,Rect[T: Number]	rect: left[T: Number](self: Rect[T]): T	
+top	midio_ui/rect.html#top,Rect[T: Number]	rect: top[T: Number](self: Rect[T]): T	
+right	midio_ui/rect.html#right,Rect[T: Number]	rect: right[T: Number](self: Rect[T]): T	
+bottom	midio_ui/rect.html#bottom,Rect[T: Number]	rect: bottom[T: Number](self: Rect[T]): T	
+center	midio_ui/rect.html#center,Rect[float]	rect: center(self: Rect[float]): Vec2[float]	
+`[]`	midio_ui/rect.html#[],Rect[T: Number],range[]	rect: `[]`[T: Number](self: Rect[T]; i: range[0 .. 3]): T	
+subdivideVertical	midio_ui/rect.html#subdivideVertical,Rect[T: Number],Number	rect: subdivideVertical[T: Number](self: Rect[T]; atY: Number): SubdivisionV	
+subdivideHorizontal	midio_ui/rect.html#subdivideHorizontal,Rect[T: Number],Number	rect: subdivideHorizontal[T: Number](self: Rect[T]; atX: Number): SubdivisionH	
+inflate	midio_ui/rect.html#inflate,Rect[T: Number],Thickness	rect: inflate[T: Number](self: Rect[T]; thickness: Thickness): Rect	
+deflate	midio_ui/rect.html#deflate,Rect[T: Number],Thickness	rect: deflate[T: Number](self: Rect[T]; thickness: Thickness): Rect	
+withX	midio_ui/rect.html#withX,Rect[T: Number],T	rect: withX[T: Number](self: Rect[T]; x: T): Rect[T]	
+withY	midio_ui/rect.html#withY,Rect[T: Number],T	rect: withY[T: Number](self: Rect[T]; y: T): Rect[T]	
+withPos	midio_ui/rect.html#withPos,Rect[T: Number],Vec2[T: Number]	rect: withPos[T: Number](self: Rect[T]; pos: Vec2[T]): Rect[T]	
+withSize	midio_ui/rect.html#withSize,Rect[T: Number],Vec2[T: Number]	rect: withSize[T: Number](self: Rect[T]; size: Vec2[T]): Rect[T]	
+withWidth	midio_ui/rect.html#withWidth,Rect[T: Number],Number	rect: withWidth[T: Number](self: Rect[T]; w: Number): Rect[T]	
+withHeight	midio_ui/rect.html#withHeight,Rect[T: Number],Number	rect: withHeight[T: Number](self: Rect[T]; h: Number): Rect[T]	
+equals	midio_ui/rect.html#equals,Rect[T: Number],Rect[T: Number]	rect: equals[T: Number](self: Rect[T]; other: Rect[T]): bool	
+intersects	midio_ui/rect.html#intersects,Rect[T: Number],Rect[T: Number]	rect: intersects[T: Number](a: Rect[T]; b: Rect[T]): bool	

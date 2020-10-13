@@ -1,0 +1,14 @@
+DockDirection	midio_ui/gui/dock.html#DockDirection	dock: DockDirection	
+Docking	midio_ui/gui/dock.html#Docking	dock: Docking	
+DockChildren	midio_ui/gui/dock.html#DockChildren	dock: DockChildren	
+setDocking	midio_ui/gui/dock.html#setDocking,Element,DockDirection	dock: setDocking(elem: Element; dir: DockDirection): void	
+getDocking	midio_ui/gui/dock.html#getDocking,Element	dock: getDocking(elem: Element): Option[DockDirection]	
+createDock	midio_ui/gui/dock.html#createDock,ElemProps,seq[Element]	dock: createDock(props: ElemProps; children: seq[Element]): Element	
+createDock	midio_ui/gui/dock.html#createDock,seq[Docking],ElemProps	dock: createDock(dockings: seq[Docking]; elemProps: ElemProps = ElemProps()): Element	
+createDock	midio_ui/gui/dock.html#createDock,varargs[Docking]	dock: createDock(children: varargs[Docking] = @[]): Element	
+createDock	midio_ui/gui/dock.html#createDock,Thickness[float],varargs[Docking]	dock: createDock(margin: Thickness[float]; children: varargs[Docking] = @[]): Element	
+createDock	midio_ui/gui/dock.html#createDock,ElemProps,varargs[Docking]	dock: createDock(elemProps: ElemProps; children: varargs[Docking] = @[]): Element	
+left	midio_ui/gui/dock.html#left,Element	dock: left(element: Element): Docking	
+top	midio_ui/gui/dock.html#top,Element	dock: top(element: Element): Docking	
+right	midio_ui/gui/dock.html#right,Element	dock: right(element: Element): Docking	
+bottom	midio_ui/gui/dock.html#bottom,Element	dock: bottom(element: Element): Docking	

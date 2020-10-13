@@ -1,0 +1,10 @@
+Forward	midio_ui/gui/animation/animation.html#Forward	PlayDirection.Forward	
+Backward	midio_ui/gui/animation/animation.html#Backward	PlayDirection.Backward	
+PlayDirection	midio_ui/gui/animation/animation.html#PlayDirection	animation: PlayDirection	
+Animator	midio_ui/gui/animation/animation.html#Animator	animation: Animator	
+createAnimator	midio_ui/gui/animation/animation.html#createAnimator,float	animation: createAnimator(duration: float): Animator[float]	
+createAnimator	midio_ui/gui/animation/animation.html#createAnimator.t,float,T,T	animation: createAnimator[T](duration: float; `from`: T; to: T): Animator[T]	
+start	midio_ui/gui/animation/animation.html#start,Animator[T],typeof(nil)	animation: start[T](self: Animator[T]; callback: (() -&gt; void) = nil): void	
+playBack	midio_ui/gui/animation/animation.html#playBack,Animator[T],typeof(nil)	animation: playBack[T](self: Animator[T]; callback: (() -&gt; void) = nil): void	
+playToEndThenBack	midio_ui/gui/animation/animation.html#playToEndThenBack,Animator[T],typeof(nil)	animation: playToEndThenBack[T](self: Animator[T]; callback: (() -&gt; void) = nil): void	
+map	midio_ui/gui/animation/animation.html#map,Animator[T],	animation: map[T, R](self: Animator[T]; mapper: (T -&gt; R)): Animator[R]	

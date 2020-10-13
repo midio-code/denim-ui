@@ -1,0 +1,5 @@
+containerLayout	midio_ui/gui/container.html#containerLayout	container: containerLayout(): Layout	
+container	midio_ui/gui/container.html#container,ElemProps,seq[Element]	container: container(props: ElemProps = ElemProps(); children: seq[Element] = @[]): Element	
+container	midio_ui/gui/container.html#container,Thickness[float],seq[Element]	container: container(margin: Thickness[float]; children: seq[Element] = @[]): Element	
+container	midio_ui/gui/container.html#container,Thickness[float],varargs[Element]	container: container(margin: Thickness[float]; children: varargs[Element] = @[]): Element	
+container	midio_ui/gui/container.html#container,varargs[Element]	container: container(children: varargs[Element] = @[]): Element	

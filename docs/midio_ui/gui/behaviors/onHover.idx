@@ -1,0 +1,2 @@
+onHover	midio_ui/gui/behaviors/onHover.html#onHover,,	onHover: onHover(entered: (Element) -&gt; void; exited: (Element) -&gt; void): Behavior	
+onHover	midio_ui/gui/behaviors/onHover.html#onHover	onHover: onHover(entered: (Element) -&gt; void): Behavior	

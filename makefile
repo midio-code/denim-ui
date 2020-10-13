@@ -10,5 +10,10 @@ test: test_dsl
 	nim c --path="../src/" -r ./tests/t_animations.nim
 	nim c --path="../src/" -r ./tests/t_element_observables.nim
 	nim c --path="../src/" -r ./tests/t_element_events.nim
-
 .PHONY: test_dsl test
+
+docs:
+	mkdir -p ./docs
+	nim doc --project --index\:on --outdir:./docs/ --nimcache:./docs/ ./src/midio_ui.nim
+	nim buildIndex -o:./docs/index.html docs
+.PHONY: docs

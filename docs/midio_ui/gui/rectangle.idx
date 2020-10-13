@@ -1,0 +1,5 @@
+RectProps	midio_ui/gui/rectangle.html#RectProps	rectangle: RectProps	
+createRectangle	midio_ui/gui/rectangle.html#createRectangle,RectProps,ElemProps,seq[Element]	rectangle: createRectangle(props: RectProps = RectProps(); elemProps: ElemProps = ElemProps();\n                children: seq[Element] = @[]): Element	
+fill	midio_ui/gui/rectangle.html#fill,Color,ElemProps	rectangle: fill(color: Color; elemProps: ElemProps = ElemProps()): Element	
+fill	midio_ui/gui/rectangle.html#fill,Color,CornerRadius	rectangle: fill(color: Color; radius: CornerRadius): Element	
+border	midio_ui/gui/rectangle.html#border,Color,Option[float],Option[CornerRadius]	rectangle: border(strokeColor: Color; strokeWidth: Option[float] = none();\n       radius: Option[CornerRadius] = none()): Element	

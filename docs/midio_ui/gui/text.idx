@@ -1,0 +1,4 @@
+measureText	midio_ui/gui/text.html#measureText	text: measureText	
+renderText	midio_ui/gui/text.html#renderText,Element,TextProps	text: renderText(self: Element; props: TextProps): seq[Primitive]	
+createText	midio_ui/gui/text.html#createText,TextProps,ElemProps	text: createText(props: TextProps = TextProps(); elemProps: ElemProps = ElemProps()): Element	
+createText	midio_ui/gui/text.html#createText,string,float,Thickness[float]	text: createText(text: string; fontSize: float; margin: Thickness[float] = thickness()): Element	

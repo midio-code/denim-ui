@@ -1,0 +1,1 @@
+onClicked	midio_ui/gui/behaviors/onClicked.html#onClicked	onClicked: onClicked(handler: (elem: Element) -&gt; void): Behavior	

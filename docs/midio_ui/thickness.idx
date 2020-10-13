@@ -1,0 +1,10 @@
+Thickness	midio_ui/thickness.html#Thickness	thickness: Thickness	
+thickness	midio_ui/thickness.html#thickness_2	thickness: thickness(): Thickness[float]	
+thickness	midio_ui/thickness.html#thickness,T,T,T,T	thickness: thickness[T: Number](a: T; b: T; c: T; d: T): Thickness[T]	
+thickness	midio_ui/thickness.html#thickness,T	thickness: thickness[T: Number](a: T): Thickness[T]	
+thickness	midio_ui/thickness.html#thickness,T,T	thickness: thickness[T: Number](a: T; b: T): Thickness[T]	
+left	midio_ui/thickness.html#left,Thickness[T: Number]	thickness: left[T: Number](self: Thickness[T]): T	
+top	midio_ui/thickness.html#top,Thickness[T: Number]	thickness: top[T: Number](self: Thickness[T]): T	
+right	midio_ui/thickness.html#right,Thickness[T: Number]	thickness: right[T: Number](self: Thickness[T]): T	
+bottom	midio_ui/thickness.html#bottom,Thickness[T: Number]	thickness: bottom[T: Number](self: Thickness[T]): T	
+add	midio_ui/thickness.html#add,Thickness[T: Number],Thickness[T: Number]	thickness: add[T: Number](self: Thickness[T]; other: Thickness[T]): Thickness[T]	

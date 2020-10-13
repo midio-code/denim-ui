@@ -1,0 +1,1 @@
+observeWorldPosition	midio_ui/gui/layout_observables.html#observeWorldPosition,Element	layout_observables: observeWorldPosition(self: Element): Observable[Vec2[float]]	

@@ -1,0 +1,2 @@
+debugDrawRect	midio_ui/gui/debug_draw.html#debugDrawRect,Rect[float]	debug_draw: debugDrawRect(rect: Rect[float]): void	
+flushDebugDrawings	midio_ui/gui/debug_draw.html#flushDebugDrawings	debug_draw: flushDebugDrawings(): seq[Primitive]	

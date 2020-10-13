@@ -1,0 +1,5 @@
+Vertical	midio_ui/gui/stack.html#Vertical	StackDirection.Vertical	
+Horizontal	midio_ui/gui/stack.html#Horizontal	StackDirection.Horizontal	
+StackDirection	midio_ui/gui/stack.html#StackDirection	stack: StackDirection	
+StackProps	midio_ui/gui/stack.html#StackProps	stack: StackProps	
+createStack	midio_ui/gui/stack.html#createStack,StackProps,ElemProps,seq[Element]	stack: createStack(stackProps: StackProps; props: ElemProps = ElemProps();\n            children: seq[Element] = @[]): Element	

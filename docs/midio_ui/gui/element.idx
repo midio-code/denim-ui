@@ -1,0 +1,40 @@
+initLayoutManager	midio_ui/gui/element.html#initLayoutManager	element: initLayoutManager(): LayoutManager	
+measure	midio_ui/gui/element.html#measure,LayoutManager,Element,Vec2[float]	element: measure(self: LayoutManager; elem: Element; availableSize: Vec2[float]): void	
+arrange	midio_ui/gui/element.html#arrange,LayoutManager,Element,Bounds	element: arrange(self: LayoutManager; elem: Element; rect: Bounds): void	
+onlayoutPerformed	midio_ui/gui/element.html#onlayoutPerformed	element: onlayoutPerformed(handler`gensym14260643: (Bounds) -&gt; void): void	
+emitlayoutPerformed	midio_ui/gui/element.html#emitlayoutPerformed,Bounds	element: emitlayoutPerformed(args`gensym14260644: Bounds): void	
+observelayoutPerformed	midio_ui/gui/element.html#observelayoutPerformed	element: observelayoutPerformed(): Observable[Bounds]	
+performOutstandingLayoutsAndMeasures	midio_ui/gui/element.html#performOutstandingLayoutsAndMeasures,Bounds	element: performOutstandingLayoutsAndMeasures(rect: Bounds): void	
+invalidateLayout	midio_ui/gui/element.html#invalidateLayout,Element	element: invalidateLayout(self: Element): void	
+size	midio_ui/gui/element.html#size,ElemProps	element: size(props: ElemProps): Option[Vec2[float]]	
+size=	midio_ui/gui/element.html#size=,ElemProps,Vec2[float]	element: size=(props: ElemProps; value: Vec2[float]): void	
+pos	midio_ui/gui/element.html#pos,ElemProps	element: pos(props: ElemProps): Option[Vec2[float]]	
+pos=	midio_ui/gui/element.html#pos=,ElemProps,Vec2[float]	element: pos=(props: ElemProps; value: Vec2[float]): void	
+isRoot	midio_ui/gui/element.html#isRoot,Element	element: isRoot(self: Element): bool	
+getRoot	midio_ui/gui/element.html#getRoot,Element	element: getRoot(self: Element): Element	
+isRooted	midio_ui/gui/element.html#isRooted,Element	element: isRooted(self: Element): bool	
+dispatchOnRooted	midio_ui/gui/element.html#dispatchOnRooted,Element	element: dispatchOnRooted(self: Element): void	
+dispatchOnUnrooted	midio_ui/gui/element.html#dispatchOnUnrooted,Element	element: dispatchOnUnrooted(self: Element): void	
+addChild	midio_ui/gui/element.html#addChild,Element,Element	element: addChild(self: Element; child: Element): void	
+removeChild	midio_ui/gui/element.html#removeChild,Element,Element	element: removeChild(self: Element; child: Element): void	
+setChildren	midio_ui/gui/element.html#setChildren,Element,seq[Element]	element: setChildren(self: Element; value: seq[Element]): void	
+newElement	midio_ui/gui/element.html#newElement,ElemProps,seq[Element],Option[Layout],Option[Drawable],Option[proc(Element)],Option[proc(Element)]	element: newElement(props: ElemProps = ElemProps(); children: seq[Element] = @[];\n           layout: Option[Layout] = none(); drawable: Option[Drawable] = none();\n           onRooted: Option[proc (i0: Element): void] = none();\n           onUnrooted: Option[proc (i0: Element): void] = none()): Element	
+createPanel	midio_ui/gui/element.html#createPanel,varargs[Element]	element: createPanel(children: varargs[Element]): Element	
+createPanel	midio_ui/gui/element.html#createPanel,ElemProps,varargs[Element]	element: createPanel(props: ElemProps; children: varargs[Element]): Element	
+createPanel	midio_ui/gui/element.html#createPanel,ElemProps,seq[Element]	element: createPanel(props: ElemProps; children: seq[Element]): Element	
+createPanel	midio_ui/gui/element.html#createPanel,Thickness[float],varargs[Element]	element: createPanel(margin: Thickness[float]; children: varargs[Element]): Element	
+applyLayoutConstraints	midio_ui/gui/element.html#applyLayoutConstraints,Element,Vec2[float]	element: applyLayoutConstraints(element: Element; constraints: Vec2[float]): Vec2[float]	
+log	midio_ui/gui/element.html#log,Element,string	element: log(self: Element; msg: string): void	
+printTree	midio_ui/gui/element.html#printTree,Element,string	element: printTree(self: Element; prefix: string = &quot;&quot;): void	
+`$`	midio_ui/gui/element.html#$,ElemProps	element: `$`(p: ElemProps): string	
+`$`	midio_ui/gui/element.html#$,Element	element: `$`(p: Element): string	
+margin	midio_ui/gui/element.html#margin,Element	element: margin(p: Element): Thickness[float]	
+arrangeOverride	midio_ui/gui/element.html#arrangeOverride,Element,Vec2[float]	element: arrangeOverride(self: Element; finalSize: Vec2[float]): Vec2[float]	
+arrange	midio_ui/gui/element.html#arrange,Element,Rect	element: arrange(self: Element; rect: Rect): void	
+measure	midio_ui/gui/element.html#measure,Element,Vec2[float]	element: measure(self: Element; availableSize: Vec2[float]): void	
+measureOverride	midio_ui/gui/element.html#measureOverride,Element,Vec2[float]	element: measureOverride(self: Element; availableSize: Vec2[float]): Vec2[float]	
+actualWorldPosition	midio_ui/gui/element.html#actualWorldPosition,Element	element: actualWorldPosition(self: Element): Vec2[float]	
+boundsInWorldSpace	midio_ui/gui/element.html#boundsInWorldSpace,Element	element: boundsInWorldSpace(self: Element): Option[Bounds]	
+isPointInside	midio_ui/gui/element.html#isPointInside,Element,Vec2[float]	element: isPointInside(self: Element; point: Vec2[float]): bool	
+relativeTo	midio_ui/gui/element.html#relativeTo,Vec2[float],Element	element: relativeTo(self: Vec2[float]; elem: Element): Vec2[float]	
+relativeTo	midio_ui/gui/element.html#relativeTo,Rect[float],Element	element: relativeTo(self: Rect[float]; elem: Element): Rect[float]	
