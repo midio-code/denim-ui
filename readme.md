@@ -1,10 +1,10 @@
 # Midio UI framework
 
+A custom cross platform UI framework focused on fast and easy prototyping by the use of a custom DSL.
+
 # Reference docs
 
 https://nortero-code.github.io/midio-ui/
-
-A custom cross platform UI framework focused on fast and easy prototyping by the use of a custom DSL.
 
 # DSL
 
