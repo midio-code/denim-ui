@@ -68,6 +68,8 @@ type
     startAngle*: float
     endAngle*: float
 
+  CornerRadius* = tuple[l: float, t: float, r: float, b: float]
+
   RectangleInfo* = object
     bounds*: Rect[float]
 

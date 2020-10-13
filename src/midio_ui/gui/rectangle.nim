@@ -7,7 +7,6 @@ import ../vec
 import ../rect
 
 type
-  CornerRadius* = tuple[l: float, t: float, r: float, b: float]
   RectProps* = ref object
     color*: Option[Color]
     radius*: Option[CornerRadius]

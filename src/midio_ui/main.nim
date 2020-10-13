@@ -8,6 +8,7 @@ import events
 import options
 import observables/observables
 import utils
+import gui/text
 #import app/workspace
 
 type
@@ -87,16 +88,17 @@ proc dispatchKeyDown*(keyCode: int, key: string): void {.exportc.} =
 proc dispatchUpdate*(dt: float): void =
   update_manager.dispatchUpdate(dt)
 
-proc init*(size: Vec2[float], scale: Vec2[float]): Context {.exportc.} =
+proc init*(
+  size: Vec2[float],
+  scale: Vec2[float],
+  measureTextFunction: (string, float, string, string) -> Vec2[float],
+  render: () -> Element
+): Context {.exportc.} =
   echo "Testing init"
+  text.measureText = measureTextFunction
   windowSize = behaviorSubject(size)
-  # let ws = workspace()
   let rootElement =
-    panel:
-      rectangle(color = "yellow")
-      # ws
-      # panel(horizontalAlignment = HorizontalAlignment.Left, verticalAlignment = VerticalAlignment.Top):
-      #   DebugTree(tree = ws)
+    render()
 
   rootElement.addTag("root")
   rootElement.setParentOnChildren()

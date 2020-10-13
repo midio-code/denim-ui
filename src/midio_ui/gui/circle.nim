@@ -7,7 +7,6 @@ import drawing_primitives
 import ../vec
 
 type
-  CornerRadius* = tuple[l: float, t: float, r: float, b: float]
   CircleProps* = ref object
     color*: Option[Color]
     radius*: float
