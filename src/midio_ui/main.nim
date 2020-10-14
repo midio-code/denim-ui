@@ -35,7 +35,7 @@ var lastPointerPos = vec2(0.0, 0.0)
 var pointerPressedLastFrame = false
 var pointerPressedThisFrame = false
 
-var windowSize: Subject[Vec2[float]]
+var windowSize: Vec2[float]
 
 proc scaleMousePos(ctx: Context, pos: Vec2[float]): Vec2[float] =
   vec2(pos.x / ctx.scale.x, pos.y / ctx.scale.y)
@@ -53,16 +53,14 @@ proc render*(ctx: Context, dt: float): seq[Primitive] {.exportc.} =
     ctx.rootElement.dispatchPointerUp(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
     pointerPressedLastFrame = false
 
-  #echo "Performing layout with: ", windowSize.value
-  let availableRect = rect(zero(), windowSize.value.divide(ctx.scale))
-  #echo "Available rect: ", availableRect
+  let availableRect = rect(zero(), windowSize.divide(ctx.scale))
   performOutstandingLayoutsAndMeasures(availableRect)
 
   ctx.dispatchUpdate(dt)
   ctx.rootElement.render()
 
 proc dispatchWindowSizeChanged*(newSize: Vec2[float]): void {.exportc.} =
-  windowSize.next(newSize)
+  windowSize = newSize
 
 proc dispatchPointerMove*(x: float, y: float): void {.exportc.} =
   if (lastPointerPos.x != x or lastPointerPos.y != y) and pointerPosChangedThisFrame == false:
@@ -94,9 +92,8 @@ proc init*(
   measureTextFunction: (string, float, string, string) -> Vec2[float],
   render: () -> Element
 ): Context {.exportc.} =
-  echo "Testing init"
   text.measureText = measureTextFunction
-  windowSize = behaviorSubject(size)
+  windowSize = size
   let rootElement =
     render()
 
