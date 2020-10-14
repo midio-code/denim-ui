@@ -27,6 +27,12 @@ type
     onChange*: Option[TextChanged]
 
 type
+
+  Transform* {.requiresInit.} = object
+    scale*: Vec2[float]
+    translation*: Vec2[float]
+    rotation*: float
+
   PathSegmentKind* {.pure.} = enum
     MoveTo, LineTo, QuadraticCurveTo, Close
   PathSegment* = ref object
@@ -76,7 +82,10 @@ type
   Primitive* = ref object
     colorInfo*: Option[ColorInfo]
     strokeInfo*: Option[StrokeInfo]
-    clipBounds*: Option[Rect[float]]
+    clipBounds*: Option[Bounds]
+    worldPos*: Option[Vec2[float]]
+    size*: Option[Vec2[float]]
+    transform*: Option[Transform]
     case kind*: PrimitiveKind
     of Text:
       textInfo*: TextInfo
@@ -88,7 +97,6 @@ type
       ellipseInfo*: EllipseInfo
     of Rectangle:
       rectangleInfo*: RectangleInfo
-
 
 type
   HorizontalAlignment* {.pure.} = enum
@@ -116,6 +124,17 @@ type
     verticalAlignment*: Option[VerticalAlignment]
     visibility*: Option[Visibility]
     clipToBounds*: Option[bool]
+    # TODO: Implement all transforms for all rendering backends
+    transform*: Option[Transform]
+
+proc translation*(trans: Vec2[float]): Transform =
+  Transform(scale: vec2(1.0), rotation: 0.0, translation: trans)
+
+proc scale*(scale: Vec2[float]): Transform =
+  Transform(scale: scale, rotation: 0.0, translation: vec2(0.0))
+
+proc rotation*(rot: float): Transform =
+  Transform(scale: vec2(1.0), rotation: rot, translation: vec2(0.0))
 
 type
   Layout* = ref object
@@ -159,3 +178,10 @@ proc boundsOfClosestElementWithClipToBounds*(self: Element): Option[Bounds] =
     result = self.bounds
   elif self.parent.isSome:
     result = self.parent.get().boundsOfClosestElementWithClipToBounds()
+
+# TODO: Find a better place for this
+proc actualWorldPosition*(self: Element): Vec2[float] =
+    let actualPos = vec2(self.bounds.map(b => b.x).get(0), self.bounds.map(b => b.y).get(0))
+    if self.parent.isSome():
+      return self.parent.get().actualWorldPosition().add(actualPos)
+    return actualPos

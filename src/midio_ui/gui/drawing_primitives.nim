@@ -6,7 +6,7 @@ import ../rect
 import ../utils
 
 proc createTextPrimitive*(
-  elem: Element,
+  self: Element,
   text: string,
   pos: Point = vec2(0.0,0.0),
   color: string = "white",
@@ -17,7 +17,10 @@ proc createTextPrimitive*(
 ): Primitive =
   let textInfo = TextInfo(text: text, fontSize: fontSize, textBaseline: textBaseline, font: font, pos: pos, alignment: alignment)
   Primitive(
-    clipBounds: elem.boundsOfClosestElementWithClipToBounds(),
+    transform: self.props.transform,
+    worldPos: self.actualWorldPosition(),
+    size: self.bounds.get().size,
+    clipBounds: self.boundsOfClosestElementWithClipToBounds(),
     kind: Text,
     textInfo: textInfo,
     colorInfo: ColorInfo(fill: color)
@@ -34,6 +37,9 @@ proc close*(): PathSegment =
 
 proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], segments: seq[PathSegment]): Primitive =
   Primitive(
+    transform: self.props.transform,
+    worldPos: self.actualWorldPosition,
+    size: self.bounds.get().size,
     clipBounds: self.boundsOfClosestElementWithClipToBounds(),
     kind: Path,
     segments: @segments,
@@ -43,6 +49,9 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
 
 proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], segments: varargs[PathSegment]): Primitive =
   Primitive(
+    transform: self.props.transform,
+    worldPos: self.actualWorldPosition,
+    size: self.bounds.get().size,
     clipBounds: self.boundsOfClosestElementWithClipToBounds(),
     kind: Path,
     segments: @segments,
@@ -52,6 +61,9 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
 
 proc circle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], center: Point, radius: float): Primitive =
   Primitive(
+    transform: self.props.transform,
+    worldPos: self.actualWorldPosition,
+    size: self.bounds.get().size,
     clipBounds: self.boundsOfClosestElementWithClipToBounds(),
     kind: Circle,
     colorInfo: colorInfo,
@@ -61,6 +73,9 @@ proc circle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[Str
 
 proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], center: Point, radius: Vec2[float]): Primitive =
   Primitive(
+    transform: self.props.transform,
+    worldPos: self.actualWorldPosition,
+    size: self.bounds.get().size,
     clipBounds: self.boundsOfClosestElementWithClipToBounds(),
     kind: Ellipse,
     colorInfo: colorInfo,
@@ -70,6 +85,9 @@ proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[St
 
 proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo]): Primitive =
   Primitive(
+    transform: self.props.transform,
+    worldPos: self.actualWorldPosition,
+    size: self.bounds.get().size,
     clipBounds: self.boundsOfClosestElementWithClipToBounds(),
     kind: Rectangle,
     colorInfo: colorInfo,

@@ -1,5 +1,6 @@
 import sequtils, sugar, options, strformat
 import ../prelude
+import ../drawing_primitives
 import ../debug_draw
 import ../update_manager
 
@@ -52,9 +53,23 @@ component DebugTreeImpl(tree: Element):
     (c: Element) => (c, &"{c.descriptor} - {c.id}")
   ).map(
     proc(x: tuple[c: Element, t: string]): Element =
-      stack(margin = thickness(10.0, 0.0), horizontalAlignment = HorizontalAlignment.Left):
-        DebugElem(label = x.t, elem = x.c)
-        DebugTreeImpl(tree = x.c)
+      let visibility = behaviorSubject(Visibility.Visible)
+      let arrowRotation = visibility.map((v: Visibility) => choose(v == Visibility.Visible, rotation(3.14 / 2.0), rotation(0.0)))
+      dock:
+        docking(DockDirection.Left):
+          panel(verticalAlignment = VerticalAlignment.Top):
+            path(
+              data = @[moveTo(0.0, 10.0), lineTo(10.0, 5.0), lineTo(0.0, 0.0), lineTo(0.0, 10.0)], width = 10.0, height = 10.0, fill = "red", strokeWidth = 1.0, stroke = "black",
+              transform <- arrowRotation
+            )
+            onClicked(
+              proc(e: Element): void =
+                visibility.next((x: Visibility) => choose(x == Visibility.Visible, Visibility.Collapsed, Visibility.Visible))
+            )
+        stack(margin = thickness(10.0, 0.0), horizontalAlignment = HorizontalAlignment.Left):
+          DebugElem(label = x.t, elem = x.c)
+          panel(visibility <- visibility):
+            DebugTreeImpl(tree = x.c)
   )
   stack:
     ...elems

@@ -10,6 +10,9 @@ type
 proc vec2*[T:Number](x: T, y: T): Vec2[T] =
   Vec2[T](x: x, y: y)
 
+proc vec2*[T:Number](xy: T): Vec2[T] =
+  Vec2[T](x: xy, y: xy)
+
 proc lerp*[T: Number](a: T, b: T, t: float): T =
   a * (1 - t) + b * t
 

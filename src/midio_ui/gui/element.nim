@@ -433,12 +433,6 @@ proc measureOverride*(self: Element, availableSize: Vec2[float]): Vec2[float] =
 
     return vec2(width, height)
 
-proc actualWorldPosition*(self: Element): Vec2[float] =
-    let actualPos = vec2(self.bounds.map(b => b.x).get(0), self.bounds.map(b => b.y).get(0))
-    if self.parent.isSome():
-      return self.parent.get().actualWorldPosition().add(actualPos)
-    return actualPos
-
 proc boundsInWorldSpace*(self: Element): Option[Bounds] =
   self.bounds.map(x => x.withPos(self.actualWorldPosition))
 
