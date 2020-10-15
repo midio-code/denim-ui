@@ -44,7 +44,7 @@ proc measure*(self: LayoutManager, elem: Element, availableSize: Vec2[float]): v
 
 proc arrange*(self: LayoutManager, elem: Element, rect: Bounds): void =
   if not elem.isRooted():
-    echo "WARN: Tried to arrange an unrooted element"
+    echo "WARN: Tried to arrange an unrooted element: ", elem.id
     return
 
   let parent = elem.parent
@@ -344,7 +344,7 @@ proc arrangeCore(self: Element, finalRect: Bounds): void =
 
 proc arrange*(self: Element, rect: Rect): void =
   if not self.isRooted():
-    echo "WARN: Tried to arrange an unrooted element"
+    echo "WARN: Tried to arrange an unrooted element: ", self.id
     return
 
   if not self.isMeasureValid:

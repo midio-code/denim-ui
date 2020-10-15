@@ -1,4 +1,4 @@
-import sequtils, sugar, options, strformat, math
+import sequtils, sugar, options, strformat, math, strutils
 import ../prelude
 import ../drawing_primitives
 import ../debug_draw
@@ -37,7 +37,7 @@ component DebugElem(label: string, elem: Element):
   let hovering = behaviorSubject(false)
   panel:
     text(text = label, color <- hovering.map((h: bool) => choose(h, "black", "white")))
-    onHover(
+    onClicked(
       (e: Element) => debugDrawRect(elem.bounds.get().withPos(elem.actualWorldPosition)),
     )
     onHover(
@@ -48,22 +48,24 @@ component DebugElem(label: string, elem: Element):
       (e: Element) => echo("ClipToBounds: ", e.boundsOfClosestElementWithClipToBounds())
     )
 
-component DebugTreeImpl(tree: Element):
+component DebugTreeImpl(tree: Element, filterText: Observable[string]):
   let elems = tree.children.map(
     (c: Element) => (c, &"{c.descriptor} - {c.id}")
   ).map(
     proc(x: tuple[c: Element, t: string]): Element =
-      let visibility = behaviorSubject(Visibility.Visible)
-      let arrowRotation =
-        visibility
-        .map(
-          proc(v: Visibility): float =
-            choose(v == Visible, PI / 2.0, 0.0)
-        ).animate(
+      let toggledByUser = behaviorSubject(true) # default to open
+      let visibility = toggledByUser.choose(Visibility.Visible, Visibility.Collapsed)
+      let arrowRotation = toggledByUser
+        .choose(PI / 2.0, 0.0)
+        .animate(
           proc(a: float, b: float, t: float): Transform =
             rotation(lerp(a,b,t)),
           200.0
         )
+      let highlightStrokeWidth = filterText.map(
+        proc(text: string): float =
+          choose(x.t.contains(text), 1.0, 0.0)
+      ).animate(lerp, 200.0)
       dock:
         docking(DockDirection.Left):
           panel(verticalAlignment = VerticalAlignment.Top, visibility = choose(x.c.children.len() > 0, Visible, Hidden)):
@@ -73,18 +75,19 @@ component DebugTreeImpl(tree: Element):
             )
             onClicked(
               proc(e: Element): void =
-                visibility.next((x: Visibility) => choose(x == Visibility.Visible, Visibility.Collapsed, Visibility.Visible))
+                toggledByUser.next(not toggledByUser.value)
             )
         stack(margin = thickness(10.0, 0.0), horizontalAlignment = HorizontalAlignment.Left):
-          DebugElem(label = x.t, elem = x.c)
+          panel:
+            rectangle(stroke = "red", strokeWidth <- highlightStrokeWidth)
+            DebugElem(label = x.t, elem = x.c)
           panel(visibility <- visibility):
-            DebugTreeImpl(tree = x.c)
+            DebugTreeImpl(tree = x.c, filterText = filterText)
   )
   stack:
     ...elems
 
 component DebugTree(tree: Element):
-  var content = behaviorSubject[Element](DebugTreeImpl(tree = tree))
   # var accum = 0.0
   # addUpdateListenerIfNotPresent(
   #   proc(dt: float): void =
@@ -93,6 +96,20 @@ component DebugTree(tree: Element):
   #       accum = 0.0
   #       content.next(DebugTreeImpl(tree = tree))
   # )
+
+  let searchBoxText = behaviorSubject("123123")
+  proc textChangedHandler(newText: string): void {.closure.} =
+    searchBoxText.next(newText)
+
+  var content = behaviorSubject[Element](DebugTreeImpl(tree = tree, filterText = searchBoxText))
+
   CollapsablePanel:
-    panel(margin = thickness(5.0)):
-      ...content
+    dock(margin = thickness(5.0)):
+      docking(DockDirection.Top):
+        textInput(
+          text <- searchBoxText,
+          onChange = some(textChangedHandler),
+          color = "white"
+        )
+      panel:
+        ...content

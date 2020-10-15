@@ -44,6 +44,8 @@ proc renderHtmlTextInput(self: dom.Element, owner: element.Element, props: TextI
   let worldPos = owner.actualWorldPosition().mul(positionScale)
   self.style.transform = &"translate({worldPos.x}px,{worldPos.y}px) scale({scale.x}, {scale.y})"
   self.updateTextProps(props)
+  if props.text != self.innerHtml:
+    self.innerHtml = props.text
 
 proc rootHtmlTextInput(self: dom.Element, owner: element.Element): void =
   nativeContainer.appendChild(self)

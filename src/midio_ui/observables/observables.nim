@@ -202,19 +202,21 @@ proc combineLatest*[A,B,R](a: Observable[A], b: Observable[B], mapper: (A,B) -> 
   ## Combines two observables, pushing both their values through a mapper function that maps to a new Observable type. The new observable triggers when **either** A or B changes.
   result = Observable[R](
     onSubscribe: proc(subscriber: Subscriber[R]): Subscription =
-      var lastA: A
-      var lastB: B
+      assert(not isNil(a))
+      assert(not isNil(b))
+      var lastA: Option[A]
+      var lastB: Option[B]
       let sub1 = a.subscribe(
         proc(newA: A): void =
-          lastA = newA
-          if not isNil lastB:
-            subscriber.onNext(mapper(newA, lastB))
+          lastA = some(newA)
+          if lastB.isSome():
+            subscriber.onNext(mapper(newA, lastB.get()))
       )
       let sub2 = b.subscribe(
         proc(newB: B): void =
-          lastB = newB
-          if not isNil lastA:
-            subscriber.onNext(mapper(lastA, newB))
+          lastB = some(newB)
+          if lastA.isSome():
+            subscriber.onNext(mapper(lastA.get(), newB))
       )
       Subscription(
         dispose: proc(): void =
