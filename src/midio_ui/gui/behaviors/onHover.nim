@@ -30,3 +30,12 @@ proc onHover*(entered: (Element) -> void): Behavior =
         )
     )
   )
+
+
+template toggleOnHover*(toggler: untyped): untyped =
+  onHover(
+    proc(e: Element): void =
+      toggler,
+    proc(e: Element): void =
+      toggler
+  )

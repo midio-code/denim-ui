@@ -1,4 +1,5 @@
 import types
+import strformat
 import options
 import sugar
 import element
@@ -25,7 +26,7 @@ proc renderRectangle(self: Element, props: RectProps): seq[Primitive] =
   @[
     self.createPath(
       some(ColorInfo(fill: props.color, stroke: props.stroke)),
-      some(StrokeInfo(width: props.strokeWidth.get(1))),
+      some(StrokeInfo(width: props.strokeWidth.get(0.0))),
       moveTo(x + radius[0], y),
       lineTo(x + width - radius[1], y),
       curveTo(x + width, y, x + width, y + radius[1]),

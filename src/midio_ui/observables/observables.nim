@@ -282,3 +282,10 @@ proc switch*[A](observables: Observable[Observable[A]]): Observable[A] =
           outerSub.dispose()
       )
   )
+
+proc log*[A](observable: Observable[A], prefix: string = "Observable changed: "): Observable[A] =
+  observable.map(
+    proc(x: A): A =
+      echo prefix, x
+      x
+  )
