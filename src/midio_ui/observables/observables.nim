@@ -8,14 +8,14 @@ export observable_collection
 type
   Error = string
   Subscriber*[T] =  ref object
-    onNext: (T) -> void
-    onCompleted: Option[() -> void]
-    onError: Option[(Error) -> void] ## \
+    onNext*: (T) -> void
+    onCompleted*: Option[() -> void]
+    onError*: Option[(Error) -> void] ## \
     ## A subscriber is just a procedure that takes in the new value of the observable
   Subscription* = ref object
-    dispose: () -> void
+    dispose*: () -> void
   Observable*[T] = ref object
-    onSubscribe: (Subscriber[T]) -> Subscription ## \
+    onSubscribe*: (Subscriber[T]) -> Subscription ## \
     ## An observable is a procedure which when called with a subscriber as its argument
     ## creates a subscription, which causes the subscriber proc to get called whenever
     ## the value of the observable changes.
@@ -223,7 +223,7 @@ proc combineLatest*[A,B,R](a: Observable[A], b: Observable[B], mapper: (A,B) -> 
 
 proc merge*[A](a: Observable[A], b: Observable[A]): Observable[A] =
   ## Combines two observables, pushing both their values through a mapper function that maps to a new Observable type. The new observable triggers when **either** A or B changes.
-  result = Observable[A](
+  Observable[A](
     onSubscribe: proc(subscriber: Subscriber[A]): Subscription =
       let sub1 = a.subscribe(
         proc(newA: A): void =

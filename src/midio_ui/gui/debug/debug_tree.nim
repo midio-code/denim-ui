@@ -1,4 +1,4 @@
-import sequtils, sugar, options, strformat
+import sequtils, sugar, options, strformat, math
 import ../prelude
 import ../drawing_primitives
 import ../debug_draw
@@ -54,10 +54,19 @@ component DebugTreeImpl(tree: Element):
   ).map(
     proc(x: tuple[c: Element, t: string]): Element =
       let visibility = behaviorSubject(Visibility.Visible)
-      let arrowRotation = visibility.map((v: Visibility) => choose(v == Visibility.Visible, rotation(3.14 / 2.0), rotation(0.0)))
+      let arrowRotation =
+        visibility
+        .map(
+          proc(v: Visibility): float =
+            choose(v == Visible, PI / 2.0, 0.0)
+        ).animate(
+          proc(a: float, b: float, t: float): Transform =
+            rotation(lerp(a,b,t)),
+          200.0
+        )
       dock:
         docking(DockDirection.Left):
-          panel(verticalAlignment = VerticalAlignment.Top):
+          panel(verticalAlignment = VerticalAlignment.Top, visibility = choose(x.c.children.len() > 0, Visible, Hidden)):
             path(
               data = @[moveTo(0.0, 10.0), lineTo(10.0, 5.0), lineTo(0.0, 0.0), lineTo(0.0, 10.0)], width = 10.0, height = 10.0, fill = "red", strokeWidth = 1.0, stroke = "black",
               transform <- arrowRotation

@@ -106,7 +106,7 @@ type
     Stretch, Center, Top, Bottom
 
   Visibility* {.pure.} = enum
-    Visible, Collapsed
+    Visible, Collapsed, Hidden
 
   ElemProps* = ref object
     width*: Option[float]

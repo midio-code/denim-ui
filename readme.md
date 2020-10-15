@@ -30,7 +30,7 @@ The basic type is the Element type, which is what the entire GUI is created from
     Stretch, Center, Top, Bottom
 
   Visibility* {.pure.} = enum
-    Visible, Collapsed
+    Visible, Collapsed, Hidden
 ```
 ```nim
   width*: Option[float]
