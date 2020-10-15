@@ -3,7 +3,7 @@ import thickness
 import math
 
 type
-  Vec2*[T: Number] = object
+  Vec2*[T: Number] = ref object
     x*: T
     y*: T
 

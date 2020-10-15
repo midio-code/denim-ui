@@ -1,12 +1,15 @@
+import strformat
 import number
 import thickness
 import vec
 
 type
-  Rect*[T:Number] = object
+  Rect*[T:Number] = ref object
     pos*: Vec2[T]
     size*: Vec2[T]
 
+proc `$`*[T](self: Rect[T]): string =
+  &"Rect: pos: {self.pos} - size: {self.size}"
 
 proc rect*[T:Number](pos: Vec2[T], size: Vec2[T]): Rect[T] =
   Rect[T](pos: pos, size: size)
