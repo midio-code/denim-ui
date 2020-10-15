@@ -207,12 +207,14 @@ proc combineLatest*[A,B,R](a: Observable[A], b: Observable[B], mapper: (A,B) -> 
       let sub1 = a.subscribe(
         proc(newA: A): void =
           lastA = newA
-          subscriber.onNext(mapper(newA, lastB))
+          if not isNil lastB:
+            subscriber.onNext(mapper(newA, lastB))
       )
       let sub2 = b.subscribe(
         proc(newB: B): void =
           lastB = newB
-          subscriber.onNext(mapper(lastA, newB))
+          if not isNil lastA:
+            subscriber.onNext(mapper(lastA, newB))
       )
       Subscription(
         dispose: proc(): void =
