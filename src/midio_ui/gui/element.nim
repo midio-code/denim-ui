@@ -81,15 +81,15 @@ proc performOutstandingLayoutsAndMeasures*(rect: Bounds): void =
   instance.performOutstandingArrange(rect)
   emitLayoutPerformed(rect)
 
-proc invalidateMeasure(self: Element): void =
-  self.isMeasureValid = false
-  self.isArrangeValid = false
-  instance.toMeasure.incl(self)
-  instance.toArrange.incl(self)
-
 proc invalidateArrange(self: Element): void =
   self.isArrangeValid = false
   instance.toArrange.incl(self)
+
+proc invalidateMeasure(self: Element): void =
+  self.isMeasureValid = false
+  instance.toMeasure.incl(self)
+  self.invalidateArrange()
+
 
 # TODO: We are currently performing layout on the entire tree when any element invalidates.
 # this hould be optimized in the future, so that we only perform layout on the elements for which it
@@ -104,6 +104,7 @@ proc invalidateLayout*(self: Element): void =
   #root.invalidate()
 
   self.invalidateMeasure()
+
 
 
 # ======== ELEMENT IMPLEMENTATION ======================

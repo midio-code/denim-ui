@@ -1,4 +1,5 @@
 import sugar
+import tables
 import hashes
 import options
 import ../guid
@@ -172,16 +173,56 @@ type
 proc hash*(element: Element): Hash =
   element.id.hash()
 
+var clipBounds = initTable[Element, Bounds]()
 # TODO: Move somewhere else
 proc boundsOfClosestElementWithClipToBounds*(self: Element): Option[Bounds] =
-  if self.props.clipToBounds.isSome() and self.props.clipToBounds.get():
-    result = self.bounds
-  elif self.parent.isSome:
-    result = self.parent.get().boundsOfClosestElementWithClipToBounds()
+  if clipBounds.hasKey(self):
+    return some(clipBounds[self])
+  else:
+    return none[Bounds]()
+  # if self.props.clipToBounds.isSome() and self.props.clipToBounds.get():
+  #   result = self.bounds
+  # elif self.parent.isSome:
+  #   result = self.parent.get().boundsOfClosestElementWithClipToBounds()
+  # if result.isSome():
+  #   clipBounds[self] = result.get()
 
+proc invalidateClipBoundsCache*(): void =
+  clipBounds.clear()
+
+proc calculateClipBounds*(root: Element): void =
+  invalidateClipBoundsCache()
+  proc setClipBounds(e: Element, closest: Option[Bounds]): void =
+    var actualClosest: Option[Bounds] = closest
+    if e.props.clipToBounds.isSome() and e.props.clipToBounds.get(false):
+      actualClosest = e.bounds
+      clipBounds[e] = actualClosest.get()
+    elif actualClosest.isSome():
+      clipBounds[e] = actualClosest.get()
+    for child in e.children:
+      setClipBounds(child, actualClosest)
+  setClipBounds(root, none[Bounds]())
+
+
+
+
+# TODO: This is probably not a robust way to cache this, and is just a
+# proof of concept for caching values that depends on layout calculations
+var worldPositions = initTable[Element, Vec2[float]]()
 # TODO: Find a better place for this
 proc actualWorldPosition*(self: Element): Vec2[float] =
-    let actualPos = vec2(self.bounds.map(b => b.x).get(0), self.bounds.map(b => b.y).get(0))
-    if self.parent.isSome():
-      return self.parent.get().actualWorldPosition().add(actualPos)
-    return actualPos
+  if worldPositions.hasKey(self):
+    return worldPositions[self]
+
+proc invalidateWorldPositionsCache*(): void =
+  worldPositions.clear()
+
+proc calculateWorldPositions*(elem: Element): void =
+  invalidateWorldPositionsCache()
+
+  proc setWorldPos(e: Element, parentPos: Vec2[float]): void =
+    let thisWorldPos = vec2(e.bounds.map(b => b.x).get(0), e.bounds.map(b => b.y).get(0)).add(parentPos)
+    worldPositions[e] = thisWorldPos
+    for child in e.children:
+      child.setWorldPos(thisWorldPos)
+  setWorldPos(elem, vec2(0.0))

@@ -55,6 +55,8 @@ proc render*(ctx: Context, dt: float): seq[Primitive] {.exportc.} =
 
   let availableRect = rect(zero(), windowSize.divide(ctx.scale))
   performOutstandingLayoutsAndMeasures(availableRect)
+  calculateWorldPositions(ctx.rootElement)
+  calculateClipBounds(ctx.rootElement)
 
   ctx.dispatchUpdate(dt)
   ctx.rootElement.render()
