@@ -62,7 +62,7 @@ type
     alignment*: string
 
   PrimitiveKind* {.pure.} = enum
-    Text, Path, Circle, Ellipse, Rectangle
+    Container, Text, Path, Circle, Ellipse, Rectangle
 
   CircleInfo* = object
     center*: Point
@@ -83,11 +83,13 @@ type
   Primitive* = ref object
     colorInfo*: Option[ColorInfo]
     strokeInfo*: Option[StrokeInfo]
-    clipBounds*: Option[Bounds]
-    worldPos*: Option[Vec2[float]]
-    size*: Option[Vec2[float]]
+    clipToBounds*: bool
+    bounds*: Bounds
     transform*: Option[Transform]
+    children*: seq[Primitive]
     case kind*: PrimitiveKind
+    of Container: # Just a container for other primitives
+      discard
     of Text:
       textInfo*: TextInfo
     of Path:
@@ -145,7 +147,7 @@ type
 
   Drawable* = ref object
     name*: string # TODO: Hide this in release builds?
-    render*: (Element) -> seq[Primitive]
+    render*: (Element) -> Primitive
 
   # TODO: Make children (and possible other properties private)
   # This would require moving the type declaration to the place where

@@ -12,16 +12,14 @@ type
     stroke*: Option[Color]
     strokeWidth*: Option[float]
 
-proc renderCircle(self: Element, props: CircleProps): seq[Primitive] =
+proc renderCircle(self: Element, props: CircleProps): Primitive =
   let worldPos = self.actualWorldPosition()
-  @[
-    self.circle(
-      some(ColorInfo(fill: props.color, stroke: props.stroke)),
-      some(StrokeInfo(width: props.strokeWidth.get(1))),
-      worldPos,
-      props.radius
-    )
-  ]
+  self.circle(
+    some(ColorInfo(fill: props.color, stroke: props.stroke)),
+    some(StrokeInfo(width: props.strokeWidth.get(1))),
+    worldPos,
+    props.radius
+  )
 
 proc measureCircle*(self: Element, availableSize: Vec2[float], props: CircleProps): Vec2[float] =
   let diameter = props.radius * 2.0

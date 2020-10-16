@@ -35,7 +35,7 @@ proc measureHtmlTextInput(self: dom.Element, availableSize: Vec2[float]): Vec2[f
   size.divide(2.0)
 
 # TODO: We are kind of misusing render here. Create a way to react to layouts instead of using render.
-proc renderHtmlTextInput(self: dom.Element, owner: element.Element, props: TextInputProps): seq[Primitive] =
+proc renderHtmlTextInput(self: dom.Element, owner: element.Element, props: TextInputProps): Primitive =
   let scale = vec2(1.0, 1.0)
   let positionScale = vec2(2.0, 2.0) # TODO: Get correct scaling
   let worldPos = owner.actualWorldPosition().mul(positionScale)

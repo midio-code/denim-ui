@@ -18,4 +18,4 @@ proc debugDrawRect*(rect: Rect[float]): void =
   debugDraw(rectangle(bounds = rect, strokeInfo = some(StrokeInfo(width: 2.0)), colorInfo = some(ColorInfo(stroke: some("magenta")))))
 
 proc flushDebugDrawings*(): seq[Primitive] =
-  result = toSeq(debugDrawings.values())
+  toSeq(debugDrawings.values())

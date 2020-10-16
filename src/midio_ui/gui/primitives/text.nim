@@ -9,9 +9,9 @@ import ../../utils
 # TODO: Remove need for this global
 var measureText*: (text: string, fontSize: float, font: string, baseline: string) -> Vec2[float]
 
-proc renderText*(self: Element, props: TextProps): seq[Primitive] =
+proc renderText*(self: Element, props: TextProps): Primitive =
   let worldPos = self.actualWorldPosition()
-  @[self.createTextPrimitive(props.text, worldPos, props.color.get("white"), props.fontSize.get(12.0), props.font.get("system-ui"))]
+  self.createTextPrimitive(props.text, worldPos, props.color.get("white"), props.fontSize.get(12.0), props.font.get("system-ui"))
 
 proc internalMeasure(element: Element, text: string, fontSize: float, font: string, baseline: string): Vec2[float] =
   measureText(text, fontSize, font, baseline)
