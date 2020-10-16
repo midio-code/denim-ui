@@ -1,11 +1,9 @@
-import types
-import strformat
-import options
-import sugar
-import element
-import drawing_primitives
-import ../vec
-import ../rect
+import strformat, options, sugar
+import ../types
+import ../element
+import ../drawing_primitives
+import ../../vec
+import ../../rect
 
 type
   RectProps* = ref object

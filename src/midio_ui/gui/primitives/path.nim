@@ -1,10 +1,8 @@
-import types
-import sequtils
-import options
-import sugar
-import element
-import drawing_primitives
-import ../vec
+import sequtils, options, sugar
+import ../types
+import ../element
+import ../drawing_primitives
+import ../../vec
 
 type
   PathProps* = ref object

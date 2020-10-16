@@ -1,9 +1,9 @@
 import options
-import element
-import ../vec
-import ../rect
-import ../thickness
-import ../utils
+import ../element
+import ../../vec
+import ../../rect
+import ../../thickness
+import ../../utils
 
 proc measureContainer(self: Element, availableSize: Vec2[float]): Vec2[float] =
   var accumSize = zero()

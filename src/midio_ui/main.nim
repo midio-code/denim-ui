@@ -1,15 +1,8 @@
-import sugar
-import vec
-import rect
+import sugar, options
 import gui/prelude
+import gui/primitives/text
 import gui/update_manager
 import gui/debug/debug_tree
-import events
-import options
-import observables/observables
-import utils
-import gui/text
-#import app/workspace
 
 type
   Context* = ref object

@@ -1,11 +1,10 @@
-import sugar
-import options
-import element
-import types
-import drawing_primitives
-import ../thickness
-import ../vec
-import ../utils
+import sugar, options
+import ../element
+import ../types
+import ../drawing_primitives
+import ../../thickness
+import ../../vec
+import ../../utils
 
 # TODO: Remove need for this global
 var measureText*: (text: string, fontSize: float, font: string, baseline: string) -> Vec2[float]

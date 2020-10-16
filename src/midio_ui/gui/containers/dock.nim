@@ -2,11 +2,11 @@ import sugar
 import tables
 import options
 import sequtils
-import element
-import ../guid
-import ../vec
-import ../thickness
-import ../rect
+import ../element
+import ../../guid
+import ../../vec
+import ../../thickness
+import ../../rect
 
 type
   DockDirection* {.pure.} = enum

@@ -1,10 +1,9 @@
-import options
-import sugar
+import options, sugar
 import element
+import types
+import primitives/text
 import ../utils
 import ../vec
-import types
-import text
 
 when defined(js):
   import html_elements

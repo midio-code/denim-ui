@@ -1,10 +1,9 @@
-import types
-import ../utils
-import options
-import sugar
-import element
-import drawing_primitives
-import ../vec
+import options, sugar
+import ../types
+import ../element
+import ../drawing_primitives
+import ../../vec
+import ../../utils
 
 type
   CircleProps* = ref object

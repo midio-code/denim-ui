@@ -1,16 +1,16 @@
 import macros, sugar, sets, sequtils, tables, options, strformat
-import types, data_binding, rectangle, element, behaviors
-import stack, dock, text
-import native_element
-import ../utils
-import ../guid
+import ../types, ../data_binding, ../element, ../behaviors
+import ../containers/stack, ../containers/dock
+import ../primitives/text, ../primitives/rectangle
+import ../native_element
+import ../../utils
+import ../../guid
 
 import macroutils except name, body
-import ../observables/observables
+import ../../observables/observables
 
 export macros
 export types
-export rectangle
 
 type
   NoProps* = ref object ## \
