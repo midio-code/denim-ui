@@ -11,7 +11,9 @@ proc render*(self: Element): Option[Primitive] =
   else:
     result = some(
       Primitive(
+        transform: self.props.transform,
         bounds: self.bounds.get(),
+        clipToBounds: self.props.clipToBounds.get(false),
         kind: PrimitiveKind.Container
       )
     )
