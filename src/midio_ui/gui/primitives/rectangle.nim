@@ -12,7 +12,7 @@ type
     stroke*: Option[Color]
     strokeWidth*: Option[float]
 
-proc renderRectangle(self: Element, props: RectProps): Primitive =
+proc renderRectangle(self: Element, props: RectProps): Option[Primitive] =
   let
     worldPos = self.actualWorldPosition()
     x = worldPos.x
@@ -21,19 +21,21 @@ proc renderRectangle(self: Element, props: RectProps): Primitive =
   let height = self.bounds.get().height()
   let radius = props.radius.get((0.0, 0.0, 0.0, 0.0))
 
-  self.createPath(
-    some(ColorInfo(fill: props.color, stroke: props.stroke)),
-    some(StrokeInfo(width: props.strokeWidth.get(0.0))),
-    moveTo(x + radius[0], y),
-    lineTo(x + width - radius[1], y),
-    curveTo(x + width, y, x + width, y + radius[1]),
-    lineTo(x + width, y + height - radius[2]),
-    curveTo(x + width, y + height, x + width - radius[2], y + height),
-    lineTo(x + radius[3], y + height),
-    curveTo(x, y + height, x, y + height - radius[3]),
-    lineTo(x, y + radius[0]),
-    curveTo(x, y, x + radius[0], y),
-    close()
+  some(
+    self.createPath(
+      some(ColorInfo(fill: props.color, stroke: props.stroke)),
+      some(StrokeInfo(width: props.strokeWidth.get(0.0))),
+      moveTo(x + radius[0], y),
+      lineTo(x + width - radius[1], y),
+      curveTo(x + width, y, x + width, y + radius[1]),
+      lineTo(x + width, y + height - radius[2]),
+      curveTo(x + width, y + height, x + width - radius[2], y + height),
+      lineTo(x + radius[3], y + height),
+      curveTo(x, y + height, x, y + height - radius[3]),
+      lineTo(x, y + radius[0]),
+      curveTo(x, y, x + radius[0], y),
+      close()
+    )
   )
 
 proc createRectangle*(props: RectProps = RectProps(), elemProps: ElemProps = ElemProps(), children: seq[Element] = @[]): Element =

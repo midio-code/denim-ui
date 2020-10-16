@@ -22,7 +22,8 @@ proc createTextPrimitive*(
     clipToBounds: self.props.clipToBounds.get(false),
     kind: Text,
     textInfo: textInfo,
-    colorInfo: ColorInfo(fill: color)
+    colorInfo: ColorInfo(fill: color),
+    children: @[],
   )
 
 proc moveTo*(x: float, y: float): PathSegment =
@@ -43,6 +44,7 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
     segments: @segments,
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
+    children: @[],
   )
 
 proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], segments: varargs[PathSegment]): Primitive =
@@ -54,6 +56,7 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
     segments: @segments,
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
+    children: @[],
   )
 
 proc circle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], center: Point, radius: float): Primitive =
@@ -65,6 +68,7 @@ proc circle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[Str
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     circleInfo: CircleInfo(center: center, radius: radius),
+    children: @[],
   )
 
 proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], center: Point, radius: Vec2[float]): Primitive =
@@ -76,6 +80,7 @@ proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[St
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     ellipseInfo: EllipseInfo(center: center, radius: radius, endAngle: TAU),
+    children: @[],
   )
 
 proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo]): Primitive =
@@ -87,6 +92,7 @@ proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     rectangleInfo: RectangleInfo(bounds: self.bounds.get()),
+    children: @[],
   )
 
 proc rectangle*(bounds: Bounds, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo]): Primitive =
@@ -95,6 +101,7 @@ proc rectangle*(bounds: Bounds, colorInfo: Option[ColorInfo], strokeInfo: Option
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     rectangleInfo: RectangleInfo(bounds: bounds),
+    children: @[],
   )
 
 proc fillColor*(color: Color): ColorInfo =

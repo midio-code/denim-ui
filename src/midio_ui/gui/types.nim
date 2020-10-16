@@ -147,7 +147,7 @@ type
 
   Drawable* = ref object
     name*: string # TODO: Hide this in release builds?
-    render*: (Element) -> Primitive
+    render*: (Element) -> Option[Primitive]
 
   # TODO: Make children (and possible other properties private)
   # This would require moving the type declaration to the place where

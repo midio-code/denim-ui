@@ -132,7 +132,7 @@ proc `pos=`*(props: ElemProps, value: Vec2[float]): void =
   props.x = some(value.x)
   props.y = some(value.y)
 
-proc description(self: Element): string =
+proc description*(self: Element): string =
   let layoutName = self.layout.map(x => x.name).get("no layout")
   let drawableName = self.drawable.map(x => x.name).get("no drawable")
   &"({layoutName}):({drawableName})"

@@ -6,7 +6,7 @@ import gui/debug/debug_tree
 
 type
   Context* = ref object
-    render*: (Context, float) -> Primitive
+    render*: (Context, float) -> Option[Primitive]
     dispatchPointerMove*: (x: float, y: float) -> void
     dispatchPointerDown*: (x: float, y: float) -> void
     dispatchPointerUp*: (x: float, y: float) -> void
@@ -33,7 +33,7 @@ var windowSize: Vec2[float]
 proc scaleMousePos(ctx: Context, pos: Vec2[float]): Vec2[float] =
   vec2(pos.x / ctx.scale.x, pos.y / ctx.scale.y)
 
-proc render*(ctx: Context, dt: float): Primitive {.exportc.} =
+proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   if pointerPosChangedThisFrame:
     ctx.rootElement.dispatchPointerMove(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
     pointerPosChangedThisFrame = false
