@@ -13,24 +13,12 @@ export types
 export rectangle
 
 type
-  Align* = enum
-    Left, Right, Top, Bottom,
-    Center,
-    TopLeft, TopRight, BottomLeft, BottomRight
-
   NoProps* = ref object ## \
     ## Used for element types that don't have their own props type, as a filler type.
 
   ElementParts[T] = tuple[elemProps: ElemProps, componentProps: T, children: seq[Element]]
 
   MemberTable = OrderedTable[string, NimNode]
-
-proc `align=`*(props: ElemProps, value: Align): void =
-  case value:
-    of Align.Left:
-      props.horizontalAlignment = HorizontalAlignment.Left
-    else:
-      echo "FOOOOOOOOOOOO"
 
 proc extractMembersFromPropsType(propType: NimNode): OrderedTable[string, NimNode] =
   let pt = propType.getType()[1]
