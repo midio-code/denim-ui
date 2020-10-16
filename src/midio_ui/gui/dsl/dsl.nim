@@ -5,12 +5,14 @@ import ../primitives/text, ../primitives/rectangle
 import ../native_element
 import ../../utils
 import ../../guid
+import spread_operator_implementations
 
 import macroutils except name, body
 import ../../observables/observables
 
 export macros
 export types
+export spread_operator_implementations
 
 type
   NoProps* = ref object ## \
@@ -36,32 +38,6 @@ proc extractMembersFromElemProps(): OrderedTable[string, NimNode] =
   for m in ElemProps.getType()[1].getTypeImpl()[2]:
     result[m[0].strVal] = m[1]
 
-macro parseChildren(childrenTuple: typed): untyped =
-  let childrenArray = Bracket()
-  # Get the first item in the statement list, which we are expecting to be a tuple of elements
-  # and behaviors (or other types that are supposed to be placed in the child position)
-  for child in childrenTuple[0]:
-    let childType = child.getType()
-    if childType.sameType(Element.getType()):
-      childrenArray.add(child)
-    else:
-      error(&"A child type of <{childType.repr()}> is not supported")
-  let childrenSeq = Prefix(Ident("@"), childrenArray)
-  quote do:
-    `childrenSeq`
-
-proc isGeneric(input: NimNode): bool =
-  let tk = input.typeKind()
-  tk == ntyGenericInst or tk == ntySequence
-
-proc genericHead(input: NimNode): NimNode =
-  input.expectKind(nnkBracketExpr)
-  return input[0]
-
-proc genericParam(input: NimNode): NimNode =
-  input.expectKind(nnkBracketExpr)
-  return input[1]
-
 macro extractProps*(propType: typed, attributes: typed): untyped =
   let propsTypeMembers = extractMembersFromPropsType(propType)
   let elemPropsMembers = extractMembersFromElemProps()
@@ -81,17 +57,11 @@ macro extractProps*(propType: typed, attributes: typed): untyped =
         let fieldInitializer = ExprColonExpr(Ident(fieldName), node)
         if propsTypeMembers.hasKey(fieldName):
           let propsType = propsTypeMembers[fieldName].getTypeInst()
-          #if propsType.sameType(nodeType) or (propsType.isGeneric() and propsType.genericParam.sameType(nodeType)):
           componentProps.add(fieldInitializer)
-          # else:
-          #   error(&"Types did not match for field '{fieldName}'. Expected: {propsType.repr()}, but got {nodeType.repr()}")
 
         elif elemPropsMembers.hasKey(fieldName):
           let propsType = elemPropsMembers[fieldName].getTypeInst()
-          #if propsType.sameType(nodeType) or (propsType.isGeneric() and propsType.genericParam.sameType(nodeType)):
           elemProps.add(fieldInitializer)
-          # else:
-          #   error(&"Types did not match for field '{fieldName}'. Expected: {propsType.repr()}, but got {nodeType.repr()}")
         else:
           error(&"Field '{fieldName}' not found on type <{propName}>")
       of nnkEmpty: discard
@@ -130,21 +100,11 @@ macro extractBindings*(element: untyped, targetProp: untyped, propType: typed, a
       of nnkTupleConstr:
         let fieldName = attr[0].strVal
         let node = attr[1]
-        #let nodeType = node.getTypeInst()
-        #let fieldInitializer = ExprColonExpr(Ident(fieldName), node)
         if propsTypeMembers.hasKey(fieldName):
-          #let propsType = propsTypeMembers[fieldName].getTypeInst()
-          #if propsType.sameType(nodeType) or (propsType.isGeneric() and propsType.genericParam.sameType(nodeType)):
           bindings.add(createBinding(element, DotExpr(targetProp, Ident("componentProps")), Ident(fieldName), node))
-          # else:
-          #   error(&"Types did not match for field '{fieldName}'. Expected: {propsType.repr()}, but got {nodeType.repr()}")
 
         elif elemPropsMembers.hasKey(fieldName):
-          #let propsType = elemPropsMembers[fieldName].getTypeInst()
-          #if propsType.sameType(nodeType) or (propsType.isGeneric() and propsType.genericParam.sameType(nodeType)):
           bindings.add(createLayoutBinding(element, Ident(fieldName), node))
-          # else:
-          #   error(&"Types did not match for field '{fieldName}'. Expected: {propsType.repr()}, but got {nodeType.repr()}")
         else:
           error(&"Field '{fieldName}' not found on type <{propName}>")
       of nnkEmpty: discard
@@ -154,9 +114,6 @@ macro extractBindings*(element: untyped, targetProp: untyped, propType: typed, a
   result = bindings
 
 type
-  ElementData = object
-    attributes: NimNode
-    children: seq[NimNode]
   Binding = tuple
     target: NimNode
     source: NimNode
@@ -271,81 +228,6 @@ macro extractChildren*(childrenOrBehaviors: typed, childrenIdent: untyped, behav
     var
       `childrenIdent`: seq[Element] = @`children`
       `behaviorsIdent`: seq[Behavior] = @`behaviors`
-
-
-proc bindChildCollection*(self: Element, item: Subject[Element]): void =
-  var prevElem: Element
-  ## TODO: handle subscription
-  discard item.subscribe(
-    proc(e: Element): void =
-      if not isNil(prevElem):
-        self.removeChild(prevElem)
-      prevElem = e
-      self.addChild(e)
-  )
-
-proc bindChildCollection*(self: Element, item: Subject[Option[Element]]): void =
-  var prevElem: Element
-  ## TODO: handle subscription
-  discard item.subscribe(
-    proc(e: Option[Element]): void =
-      if not isNil(prevElem):
-        self.removeChild(prevElem)
-      if e.isSome():
-        prevElem = e.get()
-        self.addChild(e.get())
-  )
-
-proc bindChildCollection*(self: Element, items: seq[Element]): void =
-  for item in items:
-    self.addChild(item)
-
-proc bindChildCollection*(self: Element, subj: Subject[seq[Element]]): void =
-  ## TODO: Keep the correct ordering of the children even with multiple child lists spread
-
-  var elementsManagedByThisBinding = initHashSet[Guid]()
-  ## TODO: Dispose of collection subscription !!!!!!!!
-  discard subj.subscribe(
-    proc(newVal: seq[Element]): void =
-      var toRemoveFromManagementList: seq[Guid] = @[]
-      # Delete items which we manage, but which are
-      # not in this version of the clist.
-      for id in elementsManagedByThisBinding:
-        if not newVal.any((x) => x.id == id):
-          self.children.deleteWhere((x) => x.id == id)
-          toRemoveFromManagementList.add(id)
-      # Remove the items we are no longer managing
-      for id in toRemoveFromManagementList:
-        elementsManagedByThisBinding.excl(id)
-
-
-      # Add the new elements
-      for elem in newVal:
-        if not self.children.any((x) => x.id == elem.id):
-          elementsManagedByThisBinding.incl(elem.id)
-          self.addChild(elem)
-    )
-
-proc bindChildCollection*(self: Element, obs: Observable[seq[Element]]): void =
-  ## TODO: If we are to bind an Observable of seq[Element], we need a way for the binding
-  ## we make here to be able to only add the elements that are new, and remove those that are not there
-  ## any more.
-  ## The problem is that the child collection also has children that are not 'managed' by this observable
-  ## and so, we need to not interfer with them!
-  let subj = behaviorSubject(obs)
-  self.bindChildCollection(subj)
-
-
-proc bindChildCollection*(self: Element, subj: CollectionSubject[Element]): void =
-  for child in subj.values:
-    self.addChild(child)
-  subj.source(
-    proc(added: Element): void =
-      self.addChild(added),
-    proc(removed: Element): void =
-      self.removeChild(removed)
-  )
-
 
 # TODO: Find a non-dirty way to do this
 # This is just a helper template to make it faster to implement all
