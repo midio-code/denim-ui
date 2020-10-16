@@ -111,5 +111,9 @@ component DebugTree(tree: Element):
           onChange = some(textChangedHandler),
           color = "white"
         )
-      panel:
+      scrollView(
+        width = 200.0,
+        height = 400.0,
+        #clipToBounds = true
+      ):
         ...content

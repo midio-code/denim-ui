@@ -5,7 +5,7 @@ import ../thickness
 import ../observables/observables
 import ../observables/observable_utils
 import types, element, ../events
-import containers/dock, containers/stack, containers/container
+import containers/dock, containers/stack, containers/container, containers/scroll_view
 import primitives/text, primitives/circle, primitives/rectangle, primitives/path
 import rendering, behaviors, tag
 import data_binding, element_events, layout_observables
@@ -15,7 +15,8 @@ import ../utils
 import element_observables
 
 export options, vec, rect
-export types, element, events, dock, stack, rectangle, path, text, container, circle, rendering, behaviors, tag, data_binding, element_events
+export types, element, events, dock, stack, rectangle, path, text, container, scroll_view
+export circle, rendering, behaviors, tag, data_binding, element_events
 export onClicked, onHover, onDrag, onPointer
 export observables, observable_utils
 export animation

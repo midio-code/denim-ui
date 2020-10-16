@@ -319,6 +319,9 @@ macro path*(attributesAndChildren: varargs[untyped]): untyped =
 macro stack*(attributesAndChildren: varargs[untyped]): untyped =
   element_type(attributesAndChildren, StackProps, createStack)
 
+macro scrollView*(attributesAndChildren: varargs[untyped]): untyped =
+  element_type(attributesAndChildren, ScrollViewProps, createScrollView)
+
 proc newElement(compProps: NoProps, elemProps: ElemProps, children: seq[Element]): Element = 
   newElement(elemProps, children)
 
