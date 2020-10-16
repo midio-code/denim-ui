@@ -225,6 +225,7 @@ suite "DSL name binding":
           onPressed(theHandler)
     p.invalidateLayout()
     performOutstandingLayoutsAndMeasures(rect(0.0, 0.0, 100.0, 100.0))
+    calculateWorldPositions(p)
 
     p.dispatchPointerDown(p.pointerArgs(vec2(50.0, 50.0)))
 

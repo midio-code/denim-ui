@@ -350,7 +350,7 @@ proc arrange*(self: Element, rect: Rect): void =
   if not self.isMeasureValid:
     self.measure(rect.size)
 
-  if not(self.isArrangeValid) or not(self.previousArrange.map(x => x.equals(rect)).get(false)):
+  if not(self.isArrangeValid) or not(self.previousArrange.map(x => x == rect).get(false)):
     self.arrangeCore(rect)
     self.isArrangeValid = true
     self.previousArrange = some(rect)
@@ -399,7 +399,7 @@ proc measure*(self: Element, availableSize: Vec2[float]): void =
   if availableSize.x == NaN or availableSize.y == NaN:
     raise newException(Exception, "Cannot call Measure using a size with NaN values.")
 
-  if not self.isMeasureValid or self.previousMeasure.isNone() or not self.previousMeasure.get().equals(availableSize):
+  if not self.isMeasureValid or self.previousMeasure.isNone() or self.previousMeasure.get() != availableSize:
     var previousDesiredSize = self.desiredSize
     var desiredSize = zero()
 

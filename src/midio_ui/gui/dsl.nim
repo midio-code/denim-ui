@@ -1,19 +1,6 @@
-import sugar
-import sets
-import sequtils
-import tables
-import options
-import strformat
-import types
-import data_binding
-import rectangle
-import element
-import behaviors
-import stack
-import dock
-import text
-import macros
-import typetraits
+import macros, sugar, sets, sequtils, tables, options, strformat
+import types, data_binding, rectangle, element, behaviors
+import stack, dock, text
 import native_element
 import ../utils
 import ../guid
@@ -24,15 +11,6 @@ import ../observables/observables
 export macros
 export types
 export rectangle
-
-## This file contains macros and templates that make up a dsl for creating GUIs.
-##
-## Examples:
-## stack(width: 100, height: 100):
-##   draggable
-##   text("hello there")
-##   rectangle(margin: 10 10 10 20, color: "red"):
-##     text("Some more text")
 
 type
   Align* = enum

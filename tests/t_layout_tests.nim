@@ -12,6 +12,7 @@ template expectLayoutWithoutPerforming(self: Element, tests: varargs[Rect[float]
 template expectLayout(self: Element, tests: varargs[Rect[float]]): untyped =
   self.invalidateLayout()
   performOutstandingLayoutsAndMeasures(rect(0.0, 0.0, 500.0, 500.0))
+  self.calculateWorldPositions()
   var i = 0
   for test in tests:
     let bounds = self.children[i].bounds.get()

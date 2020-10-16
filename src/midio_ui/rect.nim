@@ -117,12 +117,8 @@ proc withWidth*[T:Number](self: Rect[T], w: Number): Rect[T] =
 proc withHeight*[T:Number](self: Rect[T], h: Number): Rect[T] =
   result = rect(self.pos, self.size.withY(h))
 
-
-proc equals*[T:Number](self: Rect[T], other: Rect[T]): bool =
-  result = other.size.equals(self.size) and other.pos.equals(self.pos)
-
 proc intersects*[T:Number](a: Rect[T], b: Rect[T]): bool =
   a.left <= b.right and a.right >= b.left and a.top <= b.bottom and a.bottom >= b.top
 
-proc `==`[T:Number](self: Rect[T], other: Rect[T]): bool =
-  other.size.equals(self.size) and other.pos.equals(self.pos)
+proc `==`*[T:Number](self: Rect[T], other: Rect[T]): bool =
+  other.size == self.size and other.pos == self.pos

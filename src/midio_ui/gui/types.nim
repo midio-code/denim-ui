@@ -217,6 +217,7 @@ proc actualWorldPosition*(self: Element): Vec2[float] =
 proc invalidateWorldPositionsCache*(): void =
   worldPositions.clear()
 
+# TODO: Remove the need for calling this function manually each update
 proc calculateWorldPositions*(elem: Element): void =
   invalidateWorldPositionsCache()
 

@@ -1,11 +1,15 @@
+import strformat
 import number
 import thickness
 import math
 
 type
-  Vec2*[T: Number] = ref object
+  Vec2*[T:Number] = ref object
     x*: T
     y*: T
+
+proc `$`*[T:Number](self: Vec2[T]): string =
+  &"vec({self.x}, {self.y})"
 
 proc vec2*[T:Number](x: T, y: T): Vec2[T] =
   Vec2[T](x: x, y: y)
@@ -114,10 +118,8 @@ proc deflate*[T:Number](self: Vec2[T], thickness: Thickness[T]): Vec2[T] =
     self.y - thickness.top() - thickness.bottom()
   )
 
-
-proc equals*[T:Number](self: Vec2[T], other: Vec2[T]): bool =
+proc `==`*[T:Number](self: Vec2[T], other: Vec2[T]): bool =
   self.x == other.x and self.y == other.y
-
 
 proc nonNegative*[T:Number](self: Vec2[T]): Vec2[T] =
   vec2(max(self.x, 0.0), max(self.y, 0.0))
