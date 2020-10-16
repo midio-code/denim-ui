@@ -14,15 +14,15 @@ type
 var behaviors_list = initTable[Element, seq[Behavior]]()
 
 proc dispatchUpdate*(self: Element, dt: float): bool =
+  var stopBubbling = false
   for child in self.children:
-    let stopBubbling = child.dispatchUpdate(dt)
-    if stopBubbling:
-      return stopBubbling
+    if child.dispatchUpdate(dt):
+      stopBubbling = true
   if self.isRooted() and behaviors_list.hasKey(self):
     for behavior in behaviors_list[self]:
       if behavior.update.isSome():
         behavior.update.get()(self, dt)
-  return false
+  return stopBubbling
 
 proc add*(element: Element, behavior: Behavior): void =
   behaviors_list.mgetOrPut(element, @[]).add(behavior)

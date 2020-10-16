@@ -6,7 +6,7 @@ import ../utils
 import ../vec
 
 when defined(js):
-  import html_elements
+  import primitives/html_elements
 
   proc createTextInput*(props: TextInputProps): Element =
     htmlTextInput(props)

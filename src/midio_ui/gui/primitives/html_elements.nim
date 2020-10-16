@@ -1,12 +1,9 @@
-import options
-import strformat
-import sugar
-import dom
-import element
-import drawing_primitives
-import types
-import ../vec
-import ../rect
+import options, strformat, sugar, dom
+import ../element
+import ../drawing_primitives
+import ../types
+import ../../vec
+import ../../rect
 
 # this.pointerPressed.add((sender, arg) => {
 #   if (!this.pointerManager.pointerCaptured) {
