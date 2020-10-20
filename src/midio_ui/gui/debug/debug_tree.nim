@@ -5,11 +5,14 @@ import ../debug_draw
 import ../update_manager
 
 component CollapsablePanel():
-  let isCollapsed = behaviorSubject(true)
+  let isCollapsed = behaviorSubject(false)
   let position = behaviorSubject(vec2(0.0, 0.0))
   dock(
     x <- position.extract(x),
     y <- position.extract(y),
+    width = 200,
+    height = 400,
+    clipToBounds = true
   ):
     docking(DockDirection.Top):
       panel:
@@ -37,9 +40,9 @@ component DebugElem(label: string, elem: Element):
   let hovering = behaviorSubject(false)
   panel:
     text(text = label, color <- hovering.map((h: bool) => choose(h, "black", "white")))
-    onClicked(
-      (e: Element) => debugDrawRect(elem.bounds.get().withPos(elem.actualWorldPosition)),
-    )
+    # onClicked(
+    #   (e: Element) => debugDrawRect(elem.bounds.get().withPos(elem.actualWorldPosition)),
+    # )
     onHover(
       (e: Element) => hovering.next(true),
       (e: Element) => hovering.next(false),
@@ -100,17 +103,34 @@ component DebugTree(tree: Element):
 
   var content = behaviorSubject[Element](DebugTreeImpl(tree = tree, filterText = searchBoxText))
 
+  let thumbPos = behaviorSubject(0.0)
+  let scrollPos = thumbPos.map(
+    proc(val: float): Vec2[float] =
+      vec2(0.0, val / 400.0)
+  )
+
   CollapsablePanel:
     dock(margin = thickness(5.0)):
-      docking(DockDirection.Top):
-        textInput(
-          text <- searchBoxText,
-          onChange = some(textChangedHandler),
-          color = "white"
-        )
-      scrollView(
-        width = 200.0,
-        height = 400.0,
-        clipToBounds = true
-      ):
-        ...content
+      #docking(DockDirection.Top):
+        # textInput(
+        #   text <- searchBoxText,
+        #   onChange = some(textChangedHandler),
+        #   color = "white"
+        # )
+      dock:
+        docking(DockDirection.Right):
+          panel(width = 20.0):
+            rectangle(color = "red")
+            rectangle(
+              color = "yellow",
+              height = 10.0,
+              verticalAlignment = VerticalAlignment.Top,
+              y <- thumbPos
+            ):
+              onDrag(
+                proc(diff: Vec2[float]): void =
+                  thumbPos.next(thumbPos.value + diff.y)
+
+              )
+        scrollView(scrollProgress <- scrollPos, clipToBounds = true):
+          ...content

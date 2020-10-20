@@ -1,17 +1,16 @@
-
 import options
-import ../element
+import strformat
+import ../dsl/dsl
+import ../element_observables
 import ../../vec
 import ../../rect
-import ../../thickness
-import ../../utils
+import dock
+import ../primitives/rectangle
+import ../behaviors/onDrag
 
 type
-  ScrollViewDirection* = enum
-    Vertical
-    Horizontal
   ScrollViewProps* = ref object
-    allowedScrollDirections*: ScrollViewDirection
+    scrollProgress*: Option[Vec2[float]]
 
 proc measureScrollView(self: Element, props: ScrollViewProps, availableSize: Vec2[float]): Vec2[float] =
   for child in self.children:
@@ -20,8 +19,10 @@ proc measureScrollView(self: Element, props: ScrollViewProps, availableSize: Vec
 
 
 proc arrangeScrollView(self: Element, props: ScrollViewProps, availableSize: Vec2[float]): Vec2[float] =
+  let progress = props.scrollProgress.get(vec2(0.0))
   for child in self.children:
-    child.arrange(rect(0.0, 0.0, availableSize.x, availableSize.y))
+    let childSizeOverBounds = max(vec2(0.0), child.desiredSize.get() - availableSize)
+    child.arrange(rect(-progress.x * childSizeOverBounds.x, -progress.y * childSizeOverBounds.y, availableSize.x, availableSize.y))
   self.desiredSize.get()
 
 proc createScrollView*(scrollViewProps: ScrollViewProps, props: ElemProps = ElemProps(), children: seq[Element] = @[]): Element =

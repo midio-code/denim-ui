@@ -24,7 +24,7 @@ proc dispatchUpdate*(self: Element, dt: float): bool =
         behavior.update.get()(self, dt)
   return stopBubbling
 
-proc add*(element: Element, behavior: Behavior): void =
+proc addBehavior*(element: Element, behavior: Behavior): void =
   behaviors_list.mgetOrPut(element, @[]).add(behavior)
   if behavior.added.isSome():
     behavior.added.get()(element)

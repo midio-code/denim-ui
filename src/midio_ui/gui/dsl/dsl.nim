@@ -13,6 +13,10 @@ import ../../observables/observables
 export macros
 export types
 export spread_operator_implementations
+export utils
+export behaviors
+export observables
+export element
 
 type
   NoProps* = ref object ## \
@@ -302,7 +306,7 @@ template element_type(attributesAndChildren: untyped, propsType: untyped, constr
       ForStmt(
         [Ident "behavior"],
         behaviorsSym,
-        Call(DotExpr(Ident "res", Ident "add"), Ident "behavior")
+        Call(DotExpr(Ident "res", Ident "addBehavior"), Ident "behavior")
 
       ),
       genCollectionBindings(Ident "res"),

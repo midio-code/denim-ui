@@ -83,11 +83,13 @@ proc performOutstandingLayoutsAndMeasures*(rect: Bounds): void =
 
 proc invalidateArrange(self: Element): void =
   self.isArrangeValid = false
-  instance.toArrange.incl(self)
+  if self.isRooted:
+    instance.toArrange.incl(self)
 
 proc invalidateMeasure(self: Element): void =
   self.isMeasureValid = false
-  instance.toMeasure.incl(self)
+  if self.isRooted:
+    instance.toMeasure.incl(self)
   self.invalidateArrange()
 
 
@@ -95,17 +97,7 @@ proc invalidateMeasure(self: Element): void =
 # this hould be optimized in the future, so that we only perform layout on the elements for which it
 # is strictly necessary
 proc invalidateLayout*(self: Element): void =
-  #let root = self.getRoot()
-  # proc invalidate(elem: Element): void =
-  #   elem.isMeasureValid = false
-  #   elem.isArrangeValid = false
-    # for child in elem.children:
-    #   invalidate(child)
-  #root.invalidate()
-
   self.invalidateMeasure()
-
-
 
 # ======== ELEMENT IMPLEMENTATION ======================
 # NOTE: Atm we have the LayoutManager implementation in the same file so that we avoid

@@ -225,6 +225,42 @@ proc combineLatest*[A,B,R](a: Observable[A], b: Observable[B], mapper: (A,B) -> 
       )
   )
 
+proc combineLatest*[A,B,C,R](a: Observable[A], b: Observable[B], c: Observable[C], mapper: (A,B,C) -> R): Observable[R] =
+  ## Combines three observables, pushing their values through a mapper function that maps to a new Observable type. The new observable triggers when **either** A, B or C changes.
+  result = Observable[R](
+    onSubscribe: proc(subscriber: Subscriber[R]): Subscription =
+      assert(not isNil(a))
+      assert(not isNil(b))
+      assert(not isNil(c))
+      var lastA: Option[A]
+      var lastB: Option[B]
+      var lastC: Option[C]
+      let sub1 = a.subscribe(
+        proc(newA: A): void =
+          lastA = some(newA)
+          if lastB.isSome() and lastC.isSome():
+            subscriber.onNext(mapper(newA, lastB.get(), lastC.get()))
+      )
+      let sub2 = b.subscribe(
+        proc(newB: B): void =
+          lastB = some(newB)
+          if lastA.isSome() and lastC.isSome():
+            subscriber.onNext(mapper(lastA.get(), newB, lastC.get()))
+      )
+      let sub3 = c.subscribe(
+        proc(newC: C): void =
+          lastC = some(newC)
+          if lastA.isSome() and lastB.isSome():
+            subscriber.onNext(mapper(lastA.get(), lastB.get(), newC))
+      )
+      Subscription(
+        dispose: proc(): void =
+          sub1.dispose()
+          sub2.dispose()
+          sub3.dispose()
+      )
+  )
+
 proc merge*[A](a: Observable[A], b: Observable[A]): Observable[A] =
   ## Combines two observables, pushing both their values through a mapper function that maps to a new Observable type. The new observable triggers when **either** A or B changes.
   Observable[A](
@@ -290,6 +326,12 @@ proc switch*[A](observables: Observable[Observable[A]]): Observable[A] =
 proc log*[A](observable: Observable[A], prefix: string = "Observable changed: "): Observable[A] =
   observable.map(
     proc(x: A): A =
-      echo prefix, x
+      echo prefix, $x
       x
+  )
+
+proc loggingSubscription*[A](observable: Observable[A], prefix: string = "Observable changed: "): Subscription =
+  observable.subscribe(
+    proc(x: A): void =
+      echo prefix, $x
   )
