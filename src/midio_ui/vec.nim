@@ -95,6 +95,9 @@ proc max*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
 proc min*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
   vec2(min(other.x, self.x), min(other.y, self.y))
 
+proc clamp*[T:Number](self: Vec2[T], a: Vec2[T], b: Vec2[T]): Vec2[T] =
+  self.min(b).max(a)
+
 proc abs*[T:Number](self: Vec2[T]): Vec2[T] =
   vec2(abs(self.x), abs(self.y))
 

@@ -84,7 +84,7 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
           panel(visibility <- visibility):
             DebugTreeImpl(tree = x.c, filterText = filterText)
   )
-  stack:
+  stack(verticalAlignment = VerticalAlignment.Top, horizontalAlignment = HorizontalAlignment.Left):
     ...elems
 
 component DebugTree(tree: Element):
@@ -104,9 +104,44 @@ component DebugTree(tree: Element):
   var content = behaviorSubject[Element](DebugTreeImpl(tree = tree, filterText = searchBoxText))
 
   let thumbPos = behaviorSubject(0.0)
-  let scrollPos = thumbPos.map(
-    proc(val: float): Vec2[float] =
-      vec2(0.0, val / 400.0)
+
+  let contentSize = subject[Vec2[float]]()
+  let scrollViewSize = subject[Vec2[float]]()
+
+  let thumbHeight = contentSize.combineLatest(
+    scrollViewSize,
+    proc(contentSize: Vec2[float], scrollViewSize: Vec2[float]): float =
+      let ratio = scrollViewSize.y / contentSize.y
+      scrollViewSize.y * ratio
+  )
+
+
+  let scrollPos = thumbPos.combineLatest(
+    contentSize.source,
+    scrollViewSize.source,
+    proc(val: float, content: Vec2[float], sw: Vec2[float]): Vec2[float] =
+      let thumbHeight = min(1.0, (sw.y / content.y)) * sw.y
+      let maxOffset = sw.y - thumbHeight
+      let progress = clamp(val / maxOffset, 0.0, 1.0)
+      vec2(0.0, progress)
+  )
+
+  let maxOffset = behaviorSubject(
+    contentSize.source.combineLatest(
+      scrollViewSize.source,
+      proc(content: Vec2[float], scrollView: Vec2[float]): float =
+        let thumbHeight = min(1.0, scrollView.y / content.y) * scrollView.y
+        scrollView.y - thumbHeight
+    )
+  )
+
+  let actualThumbPos = thumbPos.combineLatest(
+    contentSize.source,
+    scrollViewSize.source,
+    proc(val: float, content: Vec2[float], sw: Vec2[float]): float =
+      let thumbHeight = min(1.0, sw.y / content.y) * sw.y
+      let maxOffset = sw.y - thumbHeight
+      clamp(val, 0.0, maxOffset)
   )
 
   CollapsablePanel:
@@ -119,18 +154,23 @@ component DebugTree(tree: Element):
         # )
       dock:
         docking(DockDirection.Right):
-          panel(width = 20.0):
+          panel(width = 8.0):
             rectangle(color = "red")
             rectangle(
               color = "yellow",
-              height = 10.0,
+              height <- thumbHeight,
               verticalAlignment = VerticalAlignment.Top,
-              y <- thumbPos
+              y <- actualThumbPos
             ):
               onDrag(
                 proc(diff: Vec2[float]): void =
-                  thumbPos.next(thumbPos.value + diff.y)
+                  thumbPos.next(clamp(thumbPos.value + diff.y, 0.0, maxOffset.value))
 
               )
-        scrollView(scrollProgress <- scrollPos, clipToBounds = true):
+        scrollView(
+          scrollProgress <- scrollPos,
+          clipToBounds = true,
+          contentSize = contentSize,
+          scrollViewSize = scrollViewSize
+        ):
           ...content
