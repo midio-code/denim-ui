@@ -53,7 +53,6 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   # We will move this somewhere so that it is not exposed all the way to this layer,
   # but for now, just keep this in mind if you play with this code.
   calculateWorldPositions(ctx.rootElement)
-  calculateClipBounds(ctx.rootElement)
 
   ctx.dispatchUpdate(dt)
   ctx.rootElement.render()

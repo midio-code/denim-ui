@@ -197,28 +197,3 @@ proc calculateWorldPositions*(elem: Element): void =
       child.setWorldPos(thisWorldPos)
   setWorldPos(elem, vec2(0.0))
 
-
-var clipBounds = initTable[Element, Bounds]()
-# TODO: Move somewhere else
-proc boundsOfClosestElementWithClipToBounds*(self: Element): Option[Bounds] =
-  if clipBounds.hasKey(self):
-    return some(clipBounds[self])
-  else:
-    return none[Bounds]()
-
-proc invalidateClipBoundsCache*(): void =
-  clipBounds.clear()
-
-proc calculateClipBounds*(root: Element): void =
-  invalidateClipBoundsCache()
-
-  proc setClipBounds(e: Element, closest: Option[Bounds]): void =
-    var actualClosest: Option[Bounds] = closest
-    if e.props.clipToBounds.get(false):
-      actualClosest = e.bounds.map(x => x.withPos(e.actualWorldPosition))
-      clipBounds[e] = actualClosest.get()
-    elif actualClosest.isSome():
-      clipBounds[e] = actualClosest.get()
-    for child in e.children:
-      setClipBounds(child, actualClosest)
-  setClipBounds(root, none[Bounds]())

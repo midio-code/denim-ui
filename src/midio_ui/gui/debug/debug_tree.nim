@@ -44,9 +44,6 @@ component DebugElem(label: string, elem: Element):
       (e: Element) => hovering.next(true),
       (e: Element) => hovering.next(false),
     )
-    onClicked(
-      (e: Element) => echo("ClipToBounds: ", e.boundsOfClosestElementWithClipToBounds())
-    )
 
 component DebugTreeImpl(tree: Element, filterText: Observable[string]):
   let elems = tree.children.map(
@@ -114,6 +111,6 @@ component DebugTree(tree: Element):
       scrollView(
         width = 200.0,
         height = 400.0,
-        #clipToBounds = true
+        clipToBounds = true
       ):
         ...content
