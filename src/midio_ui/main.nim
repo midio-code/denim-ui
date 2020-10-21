@@ -37,6 +37,13 @@ proc scaleMousePos(ctx: Context, pos: Vec2[float]): Vec2[float] =
 var samples = 0
 var startTime = float(getMonoTime().ticks) / 1000000.0
 proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
+
+  let availableRect = rect(zero(), windowSize.divide(ctx.scale))
+  performOutstandingLayoutsAndMeasures(availableRect)
+
+  # NOTE: This must be called before each frame
+  invalidateWorldPositionsCache()
+
   if pointerPosChangedThisFrame:
     ctx.rootElement.dispatchPointerMove(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
     pointerPosChangedThisFrame = false
@@ -49,13 +56,8 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
     ctx.rootElement.dispatchPointerUp(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
     pointerPressedLastFrame = false
 
-  let availableRect = rect(zero(), windowSize.divide(ctx.scale))
-  performOutstandingLayoutsAndMeasures(availableRect)
-
-  # NOTE: This must be called before each frame
-  invalidateWorldPositionsCache()
-
   update_manager.dispatchUpdate(dt)
+
   result = ctx.rootElement.render()
 
   samples += 1
