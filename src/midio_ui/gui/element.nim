@@ -13,7 +13,6 @@ import tag
 export types
 
 # NOTE: Forward declarations
-proc isRooted*(self: Element): bool
 proc isRoot*(self: Element): bool
 proc measure*(self: Element, availableSize: Vec2[float]): void
 proc arrange*(self: Element, rect: Rect): void
@@ -29,7 +28,7 @@ proc initLayoutManager*(): LayoutManager =
 let instance = initLayoutManager()
 
 proc measure*(self: LayoutManager, elem: Element, availableSize: Vec2[float]): void =
-  if not elem.isRooted():
+  if not elem.isRooted:
     return
 
   let parent = elem.parent
@@ -43,7 +42,7 @@ proc measure*(self: LayoutManager, elem: Element, availableSize: Vec2[float]): v
       elem.measure(elem.previousMeasure.get())
 
 proc arrange*(self: LayoutManager, elem: Element, rect: Bounds): void =
-  if not elem.isRooted():
+  if not elem.isRooted:
     echo "WARN: Tried to arrange an unrooted element: ", elem.id
     return
 
@@ -139,16 +138,15 @@ proc getRoot*(self: Element): Element =
   while result.parent.isSome():
     result = result.parent.get()
 
-proc isRooted*(self: Element): bool =
-  result = self.getRoot().map(x => x.hasTag("root")).get(false)
-
 proc dispatchOnRooted*(self: Element): void =
+  self.isRooted = true
   if self.onRooted.isSome():
     self.onRooted.get()(self)
   for child in self.children:
     child.dispatchOnRooted()
 
 proc dispatchOnUnrooted*(self: Element): void =
+  self.isRooted = false
   if self.onUnrooted.isSome():
     self.onUnrooted.get()(self)
   for child in self.children:
@@ -160,7 +158,7 @@ proc addChild*(self: Element, child: Element): void =
   child.parent = some(self)
   self.isMeasureValid = false
   self.isArrangeValid = false
-  if self.isRooted:
+  if self.isRooted or self.isRoot:
     child.dispatchOnRooted()
 
 proc detachFromParent(self: Element): void =
@@ -335,7 +333,7 @@ proc arrangeCore(self: Element, finalRect: Bounds): void =
   self.emitOnBoundsChanged()
 
 proc arrange*(self: Element, rect: Rect): void =
-  if not self.isRooted():
+  if not self.isRooted:
     echo "WARN: Tried to arrange an unrooted element: ", self.id
     return
 
@@ -385,7 +383,7 @@ proc childDesiredSizeChanged(self: Element): void =
     self.invalidateMeasure()
 
 proc measure*(self: Element, availableSize: Vec2[float]): void =
-  if not self.isRooted():
+  if not self.isRooted:
     return
 
   if availableSize.x == NaN or availableSize.y == NaN:

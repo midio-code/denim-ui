@@ -167,6 +167,7 @@ type
 
     layout*: Option[Layout]
     drawable*: Option[Drawable]
+    isRooted*: bool
     onRooted*: Option[(Element) -> void]
     onUnrooted*: Option[(Element) -> void]
 

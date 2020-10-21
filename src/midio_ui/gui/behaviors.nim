@@ -18,7 +18,7 @@ proc dispatchUpdate*(self: Element, dt: float): bool =
   for child in self.children:
     if child.dispatchUpdate(dt):
       stopBubbling = true
-  if self.isRooted() and behaviors_list.hasKey(self):
+  if self.isRooted and behaviors_list.hasKey(self):
     for behavior in behaviors_list[self]:
       if behavior.update.isSome():
         behavior.update.get()(self, dt)
