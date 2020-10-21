@@ -13,6 +13,10 @@ type
 
 
 proc renderPath(self: Element, props: PathProps): Option[Primitive] =
+  if self.bounds.isNone():
+    # TODO: Fix whatever caused the need for this check
+    echo "WARN: Bounds of path was none"
+    return none[Primitive]()
   let wp = self.actualWorldPosition()
   some(
     self.createPath(
