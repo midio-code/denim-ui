@@ -10,8 +10,8 @@ component CollapsablePanel():
   dock(
     x <- position.extract(x),
     y <- position.extract(y),
-    width = 200,
-    height = 400,
+    width <- isCollapsed.choose(none[float](), 200.0),
+    height <- isCollapsed.choose(none[float](), 400.0),
     clipToBounds = true
   ):
     docking(DockDirection.Top):
