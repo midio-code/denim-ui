@@ -1,8 +1,9 @@
-import sugar, options
+import sugar, options, strformat
 import gui/prelude
 import gui/primitives/text
 import gui/update_manager
 import gui/debug/debug_tree
+import std/monotimes
 
 type
   Context* = ref object
@@ -33,6 +34,8 @@ var windowSize: Vec2[float]
 proc scaleMousePos(ctx: Context, pos: Vec2[float]): Vec2[float] =
   vec2(pos.x / ctx.scale.x, pos.y / ctx.scale.y)
 
+var samples = 0
+var startTime = float(getMonoTime().ticks) / 1000000.0
 proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   if pointerPosChangedThisFrame:
     ctx.rootElement.dispatchPointerMove(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
@@ -53,7 +56,15 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   invalidateWorldPositionsCache()
 
   update_manager.dispatchUpdate(dt)
-  ctx.rootElement.render()
+  result = ctx.rootElement.render()
+
+  samples += 1
+  if samples >= 60:
+    let currentTime = float(getMonoTime().ticks) / 1000000.0
+    echo &"MS/frame: {float(currentTime - startTime)/60.0}"
+    samples = 0
+    startTime = currentTime
+
 
 proc dispatchWindowSizeChanged*(newSize: Vec2[float]): void {.exportc.} =
   windowSize = newSize
