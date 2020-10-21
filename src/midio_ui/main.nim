@@ -54,7 +54,7 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   # but for now, just keep this in mind if you play with this code.
   calculateWorldPositions(ctx.rootElement)
 
-  ctx.dispatchUpdate(dt)
+  update_manager.dispatchUpdate(dt)
   ctx.rootElement.render()
 
 proc dispatchWindowSizeChanged*(newSize: Vec2[float]): void {.exportc.} =
@@ -81,9 +81,6 @@ proc dispatchKeyDown*(keyCode: int, key: string): void {.exportc.} =
     )
   )
 
-proc dispatchUpdate*(dt: float): void =
-  update_manager.dispatchUpdate(dt)
-
 proc init*(
   size: Vec2[float],
   scale: Vec2[float],
@@ -106,9 +103,6 @@ proc init*(
     dispatchPointerUp: dispatchPointerRelease,
     dispatchKeyDown: dispatchKeyDown,
     dispatchWindowSizeChanged: dispatchWindowSizeChanged,
-    dispatchUpdate: proc(dt: float): void =
-      dispatchUpdate(dt)
-      discard rootElement.dispatchUpdate(dt),
     scale: scale,
     size: size,
   )
