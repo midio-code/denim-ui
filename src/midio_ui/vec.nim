@@ -81,6 +81,9 @@ proc mul*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
 proc mul*[T:Number](self: Vec2[T], otherX: T, otherY: T): Vec2[T] =
   vec2(self.x * otherX, self.y * otherY)
 
+proc `*`*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
+  self.mul(other)
+
 proc rotate*[T:Number](self: Vec2[T], rad: Number): Vec2[T] =
   let cs = cos(rad)
   let sn = sin(rad)

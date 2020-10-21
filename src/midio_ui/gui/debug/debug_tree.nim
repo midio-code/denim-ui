@@ -5,7 +5,7 @@ import ../debug_draw
 import ../update_manager
 
 component CollapsablePanel():
-  let isCollapsed = behaviorSubject(false)
+  let isCollapsed = behaviorSubject(true)
   let position = behaviorSubject(vec2(0.0, 0.0))
   dock(
     x <- position.extract(x),

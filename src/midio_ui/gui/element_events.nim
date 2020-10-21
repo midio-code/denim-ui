@@ -82,8 +82,6 @@ proc dispatchPointerDown*(self: Element, arg: PointerArgs): void =
     if arg.handled:
       return
   # TODO: Return bool instead of mutating arg
-  if arg.handled:
-    echo "ARG WAS HANDLED"
   if not(arg.handled) and not(self.pointerCapturedBySomeoneElse()) and self.isPointInside(arg.pos): # or self.pointerCaptured:
     self.emitPointerPressed(arg.withElem(self))
 
