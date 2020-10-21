@@ -184,12 +184,14 @@ var worldPositions = initTable[Element, Vec2[float]]()
 proc actualWorldPosition*(self: Element): Vec2[float] =
   if worldPositions.hasKey(self):
     worldPositions[self]
-  else:
-    var actualPos = vec2(self.bounds.map(b => b.x).get(0), self.bounds.map(b => b.y).get(0))
+  elif self.bounds.isSome():
+    var actualPos = self.bounds.get().pos
     if self.parent.isSome():
       actualPos = self.parent.get().actualWorldPosition().add(actualPos)
     worldPositions[self] = actualPos
     actualPos
+  else:
+    vec2(0.0)
 
 proc invalidateWorldPositionsCache*(): void =
   worldPositions.clear()
