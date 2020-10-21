@@ -29,7 +29,7 @@ type
 
 type
 
-  Transform* {.requiresInit.} = object
+  Transform* {.requiresInit.} = ref object
     scale*: Vec2[float]
     translation*: Vec2[float]
     rotation*: float
@@ -64,11 +64,11 @@ type
   PrimitiveKind* {.pure.} = enum
     Container, Text, Path, Circle, Ellipse, Rectangle
 
-  CircleInfo* = object
+  CircleInfo* = ref object
     center*: Point
     radius*: float
 
-  EllipseInfo* = object
+  EllipseInfo* = ref object
     center*: Point
     radius*: Vec2[float]
     rotation*: float
@@ -77,7 +77,7 @@ type
 
   CornerRadius* = tuple[l: float, t: float, r: float, b: float]
 
-  RectangleInfo* = object
+  RectangleInfo* = ref object
     bounds*: Rect[float]
 
   Primitive* = ref object

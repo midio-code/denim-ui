@@ -71,10 +71,10 @@ proc `[]`*[T:Number](self: Rect[T], i: range[0..3]): T =
     of 3: self.height()
 
 type
-  SubdivisionV[T:Number] = object
+  SubdivisionV[T:Number] = ref object
     top: Rect[T]
     bottom: Rect[T]
-  SubdivisionH[T:Number] = object
+  SubdivisionH[T:Number] = ref object
     left: Rect[T]
     right: Rect[T]
 
