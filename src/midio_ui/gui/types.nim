@@ -179,21 +179,16 @@ proc hash*(element: Element): Hash =
 # proof of concept for caching values that depends on layout calculations
 var worldPositions = initTable[Element, Vec2[float]]()
 # TODO: Find a better place for this
+#
 proc actualWorldPosition*(self: Element): Vec2[float] =
   if worldPositions.hasKey(self):
-    return worldPositions[self]
+    worldPositions[self]
+  else:
+    var actualPos = vec2(self.bounds.map(b => b.x).get(0), self.bounds.map(b => b.y).get(0))
+    if self.parent.isSome():
+      actualPos = self.parent.get().actualWorldPosition().add(actualPos)
+    worldPositions[self] = actualPos
+    actualPos
 
 proc invalidateWorldPositionsCache*(): void =
   worldPositions.clear()
-
-# TODO: Remove the need for calling this function manually each update
-proc calculateWorldPositions*(elem: Element): void =
-  invalidateWorldPositionsCache()
-
-  proc setWorldPos(e: Element, parentPos: Vec2[float]): void =
-    let thisWorldPos = vec2(e.bounds.map(b => b.x).get(0), e.bounds.map(b => b.y).get(0)).add(parentPos)
-    worldPositions[e] = thisWorldPos
-    for child in e.children:
-      child.setWorldPos(thisWorldPos)
-  setWorldPos(elem, vec2(0.0))
-

@@ -49,10 +49,8 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   let availableRect = rect(zero(), windowSize.divide(ctx.scale))
   performOutstandingLayoutsAndMeasures(availableRect)
 
-  # NOTE: It is very important that we calculate world positiosn before clip bounds.
-  # We will move this somewhere so that it is not exposed all the way to this layer,
-  # but for now, just keep this in mind if you play with this code.
-  calculateWorldPositions(ctx.rootElement)
+  # NOTE: This must be called before each frame
+  invalidateWorldPositionsCache()
 
   update_manager.dispatchUpdate(dt)
   ctx.rootElement.render()
