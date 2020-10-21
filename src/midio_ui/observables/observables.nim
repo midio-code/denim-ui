@@ -323,6 +323,18 @@ proc switch*[A](observables: Observable[Observable[A]]): Observable[A] =
       )
   )
 
+proc distinctUntilChanged*[T](self: Observable[T]): Observable[T] =
+  var lastValue: Option[T] = none[T]()
+  self.filter(
+    proc(val: T): bool =
+      if lastValue.isNone() or val != lastValue.get():
+        lastValue = some(val)
+        true
+      else:
+        false
+  )
+
+
 proc log*[A](observable: Observable[A], prefix: string = "Observable changed: "): Observable[A] =
   observable.map(
     proc(x: A): A =
