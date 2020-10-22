@@ -22,13 +22,11 @@ template createElementEvent*(name: untyped, T: typedesc): untyped =
       let arr: seq[T -> PointerEventResult] = @[]
       eventTable[self] = arr
     eventTable[self].add(handler)
-  proc `emit name`(self: Element, args: T): void =
+  proc `name handlers`(self: Element): seq[T -> PointerEventResult] =
     if eventTable.hasKey(self):
-      var e = eventTable[self]
-      for handler in e:
-        discard handler(args)
-  # proc `observe name`*(self: Element): Observable[T] =
-  #   eventTable[self].toObservable()
+      eventTable[self]
+    else:
+      @[]
 
 type
   KeyArgs* = ref object
@@ -93,8 +91,10 @@ proc dispatchPointerDown*(self: Element, arg: PointerArgs): PointerEventResult =
        return result
   # TODO: Return bool instead of mutating arg
   if self.isPointInside(arg.pos): # or self.pointerCaptured:
-    echo "Emitting pointer down"
-    self.emitPointerPressed(arg.withElem(self))
+    for handler in self.pointerPressedHandlers:
+      let res = handler(arg.withElem(self))
+      if res.handled:
+        return res
 
 proc dispatchPointerUp*(self: Element, arg: PointerArgs): PointerEventResult =
   if self.props.visibility == Visibility.Collapsed:
@@ -105,7 +105,10 @@ proc dispatchPointerUp*(self: Element, arg: PointerArgs): PointerEventResult =
     if result.handled:
       return result
   if (self.isPointInside(arg.pos) or self.pointerCaptured()):
-    self.emitPointerReleased(arg.withElem(self))
+    for handler in self.pointerReleasedHandlers:
+      let res = handler(arg.withElem(self))
+      if res.handled:
+        return res
 
 proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
   if self.props.visibility == Visibility.Collapsed:
@@ -118,11 +121,19 @@ proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
   let newArg = arg.withElem(self)
   if self.isPointInside(arg.pos) or self.pointerCaptured():
     if self.pointerInsideLastUpdate:
-      self.emitPointerMoved(newArg)
+      for handler in self.pointerMovedHandlers:
+        let res = handler(arg.withElem(self))
+        if res.handled:
+          return res
     else:
       self.pointerInsideLastUpdate = true
-      echo "emitting etnered"
-      self.emitPointerEntered(newArg)
+      for handler in self.pointerEnteredHandlers:
+        let res = handler(arg.withElem(self))
+        if res.handled:
+          return res
   elif self.pointerInsideLastUpdate and not(self.pointerCaptured):
     self.pointerInsideLastUpdate = false
-    self.emitPointerExited(newArg)
+    for handler in self.pointerExitedHandlers:
+      let res = handler(arg.withElem(self))
+      if res.handled:
+        return res
