@@ -5,7 +5,7 @@ import ../../events
 import ../element
 import ../element_events
 
-proc onPressed*(handler: (elem: Element) -> void): Behavior =
+proc onPressed*(handler: (elem: Element) -> PointerEventResult): Behavior =
   # TODO: Remove behavior when unrooted
   Behavior(
     added: some(
@@ -13,26 +13,24 @@ proc onPressed*(handler: (elem: Element) -> void): Behavior =
         elem.onPointerPressed(
           proc(arg: PointerArgs): PointerEventResult =
             handler(elem)
-            handled()
         )
     )
   )
 
-proc onReleased*(handler: (elem: Element) -> void): Behavior =
+proc onReleased*(handler: (elem: Element) -> PointerEventResult): Behavior =
   # TODO: Remove behavior when unrooted
   Behavior(
     added: some(
-      proc(elem: Element):void =
+      proc(elem: Element): void =
         elem.onPointerReleased(
           proc(arg: PointerArgs): PointerEventResult =
             handler(elem)
-            handled()
         )
     )
   )
 
 
-proc onPointerMoved*(handler: (elem: Element, pos: Point) -> void): Behavior =
+proc onPointerMoved*(handler: (elem: Element, pos: Point) -> PointerEventResult): Behavior =
   # TODO: Remove behavior when unrooted
   Behavior(
     added: some(
@@ -40,7 +38,6 @@ proc onPointerMoved*(handler: (elem: Element, pos: Point) -> void): Behavior =
         elem.onPointerMoved(
           proc(arg: PointerArgs): PointerEventResult =
             handler(elem, arg.pos)
-            handled()
         )
     )
   )
