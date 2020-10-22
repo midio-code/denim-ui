@@ -10,8 +10,8 @@ type
   Context* = ref object
     render*: (Context, float) -> Option[Primitive]
     dispatchPointerMove*: (x: float, y: float) -> void
-    dispatchPointerDown*: (x: float, y: float) -> void
-    dispatchPointerUp*: (x: float, y: float) -> void
+    dispatchPointerDown*: (x: float, y: float, pointerIndex: PointerIndex) -> void
+    dispatchPointerUp*: (x: float, y: float, pointerIndex: PointerIndex) -> void
     dispatchKeyDown*: (code: int, key: string) -> void
     dispatchWindowSizeChanged*: (newSize: Vec2[float]) -> void
     dispatchUpdate*: (float) -> void
@@ -79,12 +79,13 @@ proc dispatchPointerMove*(x: float, y: float): void {.exportc.} =
     pointerPosChangedThisFrame = true
     lastPointerPos = vec2(x, y)
 
-proc dispatchPointerPress*(x: float, y: float): void {.exportc.} =
+proc dispatchPointerPress*(x: float, y: float, pointerIndex: PointerIndex): void {.exportc.} =
   lastPointerPos = vec2(x, y)
   pointerPressedThisFrame = true
 
-proc dispatchPointerRelease*(x: float, y: float): void {.exportc.} =
+proc dispatchPointerRelease*(x: float, y: float, pointerIndex: PointerIndex): void {.exportc.} =
   lastPointerPos = vec2(x, y)
+  # TODO: This does not work if both press and release happens on the same frame
   pointerPressedThisFrame = false
 
 proc dispatchKeyDown*(keyCode: int, key: string): void {.exportc.} =

@@ -8,6 +8,10 @@ import ../thickness
 import ../rect
 
 type
+  PointerIndex* = enum
+    Primary = 0, Middle = 1, Secondary = 2
+
+type
   Color* = string
   Point* = Vec2[float]
   Points* = seq[Point]
