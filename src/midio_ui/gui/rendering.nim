@@ -6,11 +6,11 @@ import debug_draw
 proc render*(self: Element): Option[Primitive] =
   if self.props.visibility.get(Visibility.Visible) != Visibility.Visible:
     return none[Primitive]()
-  if not self.isArrangeValid:
-    echo "Arrange not valid"
-    return none[Primitive]()
   if not self.isRooted:
     echo "Not rooted"
+    return none[Primitive]()
+  if not self.isArrangeValid:
+    echo "Arrange not valid"
     return none[Primitive]()
 
   if self.drawable.isSome():

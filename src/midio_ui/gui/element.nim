@@ -71,11 +71,15 @@ proc performOutstandingArrange(self: LayoutManager, rect: Bounds): void =
     self.arrange(elem, rect)
 
 
-# NOTE: Defines: onLayoutPerformed, emitLayoutPerformed and observeLayoutPerformed
+# NOTE: Defines: onBeforeLayout, emitLayoutPerformed
+createEvent(beforeLayout, Bounds)
+
+# NOTE: Defines: onLayoutPerformed, emitLayoutPerformed
 createEvent(layoutPerformed, Bounds)
 
 # TODO(important): This is wrong, we cannot use the entire rect as available space for any other element than the root!
 proc performOutstandingLayoutsAndMeasures*(rect: Bounds): void =
+  emitBeforeLayout(rect)
   instance.performOutstandingMeasure(rect.size)
   instance.performOutstandingArrange(rect)
   emitLayoutPerformed(rect)
@@ -328,7 +332,7 @@ proc arrangeCore(self: Element, finalRect: Bounds): void =
     vec2(self.props.x.get(originX) + self.props.xOffset.get(0), self.props.y.get(originY) + self.props.yOffset.get(0)),
     vec2(self.props.width.get(size.x), self.props.height.get(size.y))
   )
-  self.emitOnBoundsChanged()
+  self.scheduleBoundsChangeEventForNextFrame()
 
 proc arrange*(self: Element, rect: Rect): void =
   if not self.isRooted:

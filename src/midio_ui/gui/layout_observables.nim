@@ -5,11 +5,12 @@ import ../events
 import ../observables/observables
 import ../vec
 import ../rect
+import element_bounds_changed_event
 
 proc observeWorldPosition*(self: Element): Observable[Vec2[float]] =
   var prevPos = self.actualWorldPosition()
   let state = behaviorSubject[Vec2[float]](prevPos)
-  onLayoutPerformed(
+  onBeforeLayout(
     proc(newVal: Rect[float]): void =
       let currentPos = self.actualWorldPosition()
       if currentPos != prevPos:

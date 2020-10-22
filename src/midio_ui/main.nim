@@ -4,6 +4,7 @@ import gui/primitives/text
 import gui/update_manager
 import gui/debug/debug_tree
 import std/monotimes
+import gui/element_bounds_changed_event
 
 type
   Context* = ref object
@@ -40,6 +41,7 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
 
   let availableRect = rect(zero(), windowSize.divide(ctx.scale))
   performOutstandingLayoutsAndMeasures(availableRect)
+  emitBoundsChangedEventsFromPreviousFrame()
 
   # NOTE: This must be called before each frame
   invalidateWorldPositionsCache()
