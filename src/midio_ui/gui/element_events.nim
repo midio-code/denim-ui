@@ -6,18 +6,29 @@ import ../events
 import ../utils
 import ../vec
 
+type
+  PointerEventResult* = object
+    handled: bool
+proc handled*(): PointerEventResult =
+  PointerEventResult(handled: true)
+proc unhandled*(): PointerEventResult =
+  PointerEventResult(handled: false)
+
 
 template createElementEvent*(name: untyped, T: typedesc): untyped =
-  var eventTable = initTable[Element, EventEmitter[T]]()
-  proc `on name`*(self: Element, handler: (T) -> void): void =
-    var e = eventTable.mGetOrPut(self, emitter[T]())
-    e.add(handler)
+  var eventTable = initTable[Element, seq[T -> PointerEventResult]]()
+  proc `on name`*(self: Element, handler: T -> PointerEventResult): void =
+    if not eventTable.hasKey(self):
+      let arr: seq[T -> PointerEventResult] = @[]
+      eventTable[self] = arr
+    eventTable[self].add(handler)
   proc `emit name`(self: Element, args: T): void =
     if eventTable.hasKey(self):
       var e = eventTable[self]
-      e.emit(args)     
-  proc `observe name`*(self: Element): Observable[T] =
-    eventTable[self].toObservable()
+      for handler in e:
+        discard handler(args)
+  # proc `observe name`*(self: Element): Observable[T] =
+  #   eventTable[self].toObservable()
 
 type
   KeyArgs* = ref object
@@ -26,7 +37,6 @@ type
 
   PointerArgs* = ref object
     sender*: Element
-    handled*: bool
     pos*: Vec2[float]
 
 template createPointerEvent(name: untyped): untyped =
@@ -72,44 +82,46 @@ proc pointerArgs*(element: Element, x, y: float): PointerArgs =
   PointerArgs(sender: element, pos: vec2(x,y))
 
 proc withElem(self: PointerArgs, elem: Element): PointerArgs =
-  PointerArgs(sender: elem, pos: self.pos, handled: self.handled)
+  PointerArgs(sender: elem, pos: self.pos)
 
-proc dispatchPointerDown*(self: Element, arg: PointerArgs): void =
-  if arg.handled or self.props.visibility == Visibility.Collapsed:
+proc dispatchPointerDown*(self: Element, arg: PointerArgs): PointerEventResult =
+  if self.props.visibility == Visibility.Collapsed:
     return
   for child in self.children.reverse():
-    child.dispatchPointerDown(arg)
-    if arg.handled:
-      return
+    let result = child.dispatchPointerDown(arg)
+    if result.handled:
+       return result
   # TODO: Return bool instead of mutating arg
-  if not(arg.handled) and not(self.pointerCapturedBySomeoneElse()) and self.isPointInside(arg.pos): # or self.pointerCaptured:
+  if self.isPointInside(arg.pos): # or self.pointerCaptured:
+    echo "Emitting pointer down"
     self.emitPointerPressed(arg.withElem(self))
 
-proc dispatchPointerUp*(self: Element, arg: PointerArgs): void =
-  if arg.handled or self.props.visibility == Visibility.Collapsed:
+proc dispatchPointerUp*(self: Element, arg: PointerArgs): PointerEventResult =
+  if self.props.visibility == Visibility.Collapsed:
     return
 
   for child in self.children.reverse():
-    child.dispatchPointerUp(arg)
-    if arg.handled:
-      return
-  if not(self.pointerCapturedBySomeoneElse()) and ((self.isPointInside(arg.pos) or self.pointerCaptured())):
+    let result = child.dispatchPointerUp(arg)
+    if result.handled:
+      return result
+  if (self.isPointInside(arg.pos) or self.pointerCaptured()):
     self.emitPointerReleased(arg.withElem(self))
 
-proc dispatchPointerMove*(self: Element, arg: PointerArgs): void =
-  if arg.handled or self.props.visibility == Visibility.Collapsed:
+proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
+  if self.props.visibility == Visibility.Collapsed:
     return
   for child in self.children.reverse():
-    child.dispatchPointerMove(arg)
-    if arg.handled:
-      return
+    result = child.dispatchPointerMove(arg)
+    if result.handled:
+      return result
 
   let newArg = arg.withElem(self)
-  if (not(self.pointerCapturedBySomeoneElse()) and (self.isPointInside(arg.pos)) or self.pointerCaptured()):
+  if self.isPointInside(arg.pos) or self.pointerCaptured():
     if self.pointerInsideLastUpdate:
       self.emitPointerMoved(newArg)
     else:
       self.pointerInsideLastUpdate = true
+      echo "emitting etnered"
       self.emitPointerEntered(newArg)
   elif self.pointerInsideLastUpdate and not(self.pointerCaptured):
     self.pointerInsideLastUpdate = false
