@@ -72,6 +72,12 @@ proc divide*[T:Number](self: Vec2[T], val: Number): Vec2[T] =
 proc divide*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
   vec2(self.x / other.x, self.y / other.y)
 
+template `/`*[T:Number](self: Vec2[T], val: Number): Vec2[T] =
+  self.divide(val)
+
+template `/`*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
+  self.divide(other)
+
 proc mul*[T:Number](self: Vec2[T], other: T): Vec2[T] =
   vec2(self.x * other, self.y * other)
 

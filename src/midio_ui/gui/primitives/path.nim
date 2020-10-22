@@ -4,6 +4,12 @@ import ../element
 import ../drawing_primitives
 import ../../vec
 
+export drawing_primitives.moveTo
+export drawing_primitives.lineTo
+export drawing_primitives.quadraticCurveTo
+export drawing_primitives.bezierCurveTo
+export drawing_primitives.close
+
 type
   PathProps* = ref object
     fill*: Option[Color]
