@@ -11,27 +11,27 @@ proc onDrag*(moved: (Vec2[float] -> void)): Behavior =
 
   Behavior(
     added: some(
-      proc(element: Element):void =
+      proc(element: Element): void =
         element.onPointerMoved(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs): PointerEventResult =
             if element.hasPointerCapture():
               let diff = arg.pos.sub(pastPos)
               moved(diff)
               pastPos = arg.pos
         )
         element.onPointerPressed(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs): PointerEventResult =
             element.capturePointer()
             pastPos = arg.pos
+            handled()
         )
 
         element.onPointerReleased(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs): PointerEventResult =
             arg.sender.releasePointer()
         )
     )
   )
-
 
 proc onDragAbsolute*(moved: (Vec2[float] -> void)): Behavior =
   ## Like onDrag, but gives the position of the pointer instead of the
@@ -40,17 +40,17 @@ proc onDragAbsolute*(moved: (Vec2[float] -> void)): Behavior =
     added: some(
       proc(element: Element):void =
         element.onPointerMoved(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs): PointerEventResult =
             if element.hasPointerCapture():
               moved(arg.pos)
         )
         element.onPointerPressed(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs): PointerEventResult =
             element.capturePointer()
         )
 
         element.onPointerReleased(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs): PointerEventResult =
             arg.sender.releasePointer()
         )
     )

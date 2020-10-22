@@ -10,11 +10,12 @@ proc onHover*(entered: (Element) -> void, exited: (Element) -> void): Behavior =
     added: some(
       proc(element: Element):void =
         element.onPointerEntered(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs): PointerEventResult =
+            echo "Got entered"
             entered(element)
         )
         element.onPointerExited(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs): PointerEventResult =
             exited(element)
         )
     )
@@ -25,7 +26,7 @@ proc onHover*(entered: (Element) -> void): Behavior =
     added: some(
       proc(element: Element):void =
         element.onPointerEntered(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs): PointerEventResult =
             entered(element)
         )
     )

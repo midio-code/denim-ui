@@ -6,18 +6,27 @@ import ../events
 import ../utils
 import ../vec
 
+type
+  PointerEventResult* = object
+    handled: bool
+proc handled*(): PointerEventResult =
+  PointerEventResult(handled: true)
+proc unhandled*(): PointerEventResult =
+  PointerEventResult(handled: false)
+
 
 template createElementEvent*(name: untyped, T: typedesc): untyped =
-  var eventTable = initTable[Element, EventEmitter[T]]()
-  proc `on name`*(self: Element, handler: (T) -> void): void =
-    var e = eventTable.mGetOrPut(self, emitter[T]())
-    e.add(handler)
-  proc `emit name`(self: Element, args: T): void =
+  var eventTable = initTable[Element, seq[T -> PointerEventResult]]()
+  proc `on name`*(self: Element, handler: T -> PointerEventResult): void =
+    if not eventTable.hasKey(self):
+      let arr: seq[T -> PointerEventResult] = @[]
+      eventTable[self] = arr
+    eventTable[self].add(handler)
+  proc `name handlers`(self: Element): seq[T -> PointerEventResult] =
     if eventTable.hasKey(self):
-      var e = eventTable[self]
-      e.emit(args)     
-  proc `observe name`*(self: Element): Observable[T] =
-    eventTable[self].toObservable()
+      eventTable[self]
+    else:
+      @[]
 
 type
   KeyArgs* = ref object
@@ -26,7 +35,6 @@ type
 
   PointerArgs* = ref object
     sender*: Element
-    handled*: bool
     pos*: Vec2[float]
 
 template createPointerEvent(name: untyped): untyped =
@@ -72,45 +80,60 @@ proc pointerArgs*(element: Element, x, y: float): PointerArgs =
   PointerArgs(sender: element, pos: vec2(x,y))
 
 proc withElem(self: PointerArgs, elem: Element): PointerArgs =
-  PointerArgs(sender: elem, pos: self.pos, handled: self.handled)
+  PointerArgs(sender: elem, pos: self.pos)
 
-proc dispatchPointerDown*(self: Element, arg: PointerArgs): void =
-  if arg.handled or self.props.visibility == Visibility.Collapsed:
+proc dispatchPointerDown*(self: Element, arg: PointerArgs): PointerEventResult =
+  if self.props.visibility == Visibility.Collapsed:
     return
   for child in self.children.reverse():
-    child.dispatchPointerDown(arg)
-    if arg.handled:
-      return
+    let result = child.dispatchPointerDown(arg)
+    if result.handled:
+       return result
   # TODO: Return bool instead of mutating arg
-  if not(arg.handled) and not(self.pointerCapturedBySomeoneElse()) and self.isPointInside(arg.pos): # or self.pointerCaptured:
-    self.emitPointerPressed(arg.withElem(self))
+  if self.isPointInside(arg.pos): # or self.pointerCaptured:
+    for handler in self.pointerPressedHandlers:
+      let res = handler(arg.withElem(self))
+      if res.handled:
+        return res
 
-proc dispatchPointerUp*(self: Element, arg: PointerArgs): void =
-  if arg.handled or self.props.visibility == Visibility.Collapsed:
+proc dispatchPointerUp*(self: Element, arg: PointerArgs): PointerEventResult =
+  if self.props.visibility == Visibility.Collapsed:
     return
 
   for child in self.children.reverse():
-    child.dispatchPointerUp(arg)
-    if arg.handled:
-      return
-  if not(self.pointerCapturedBySomeoneElse()) and ((self.isPointInside(arg.pos) or self.pointerCaptured())):
-    self.emitPointerReleased(arg.withElem(self))
+    let result = child.dispatchPointerUp(arg)
+    if result.handled:
+      return result
+  if (self.isPointInside(arg.pos) or self.pointerCaptured()):
+    for handler in self.pointerReleasedHandlers:
+      let res = handler(arg.withElem(self))
+      if res.handled:
+        return res
 
-proc dispatchPointerMove*(self: Element, arg: PointerArgs): void =
-  if arg.handled or self.props.visibility == Visibility.Collapsed:
+proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
+  if self.props.visibility == Visibility.Collapsed:
     return
   for child in self.children.reverse():
-    child.dispatchPointerMove(arg)
-    if arg.handled:
-      return
+    result = child.dispatchPointerMove(arg)
+    if result.handled:
+      return result
 
   let newArg = arg.withElem(self)
-  if (not(self.pointerCapturedBySomeoneElse()) and (self.isPointInside(arg.pos)) or self.pointerCaptured()):
+  if self.isPointInside(arg.pos) or self.pointerCaptured():
     if self.pointerInsideLastUpdate:
-      self.emitPointerMoved(newArg)
+      for handler in self.pointerMovedHandlers:
+        let res = handler(arg.withElem(self))
+        if res.handled:
+          return res
     else:
       self.pointerInsideLastUpdate = true
-      self.emitPointerEntered(newArg)
+      for handler in self.pointerEnteredHandlers:
+        let res = handler(arg.withElem(self))
+        if res.handled:
+          return res
   elif self.pointerInsideLastUpdate and not(self.pointerCaptured):
     self.pointerInsideLastUpdate = false
-    self.emitPointerExited(newArg)
+    for handler in self.pointerExitedHandlers:
+      let res = handler(arg.withElem(self))
+      if res.handled:
+        return res

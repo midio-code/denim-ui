@@ -45,15 +45,15 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   invalidateWorldPositionsCache()
 
   if pointerPosChangedThisFrame:
-    ctx.rootElement.dispatchPointerMove(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
+    discard ctx.rootElement.dispatchPointerMove(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
     pointerPosChangedThisFrame = false
 
   if pointerPressedLastFrame == false and pointerPressedThisFrame == true:
-    ctx.rootElement.dispatchPointerDown(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
+    discard ctx.rootElement.dispatchPointerDown(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
     pointerPressedLastFrame = true
 
   if pointerPressedLastFrame == true and pointerPressedThisFrame == false:
-    ctx.rootElement.dispatchPointerUp(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
+    discard ctx.rootElement.dispatchPointerUp(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
     pointerPressedLastFrame = false
 
   update_manager.dispatchUpdate(dt)

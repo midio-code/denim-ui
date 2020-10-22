@@ -11,9 +11,9 @@ proc onPressed*(handler: (elem: Element) -> void): Behavior =
     added: some(
       proc(elem: Element):void =
         elem.onPointerPressed(
-          proc(arg: PointerArgs): void =
-            arg.handled = true
+          proc(arg: PointerArgs): PointerEventResult =
             handler(elem)
+            handled()
         )
     )
   )
@@ -24,9 +24,9 @@ proc onReleased*(handler: (elem: Element) -> void): Behavior =
     added: some(
       proc(elem: Element):void =
         elem.onPointerReleased(
-          proc(arg: PointerArgs): void =
-            arg.handled = true
+          proc(arg: PointerArgs): PointerEventResult =
             handler(elem)
+            handled()
         )
     )
   )
@@ -38,9 +38,9 @@ proc onPointerMoved*(handler: (elem: Element, pos: Point) -> void): Behavior =
     added: some(
       proc(elem: Element):void =
         elem.onPointerMoved(
-          proc(arg: PointerArgs): void =
-            arg.handled = true
+          proc(arg: PointerArgs): PointerEventResult =
             handler(elem, arg.pos)
+            handled()
         )
     )
   )
