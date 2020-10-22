@@ -23,8 +23,10 @@ type
 
   TextInputProps* = ref object
     text*: string
+    placeholder*: Option[string]
     fontSize*: Option[float]
     color*: Option[string]
+    placeholderColor*: Option[string]
     onChange*: Option[TextChanged]
 
 type

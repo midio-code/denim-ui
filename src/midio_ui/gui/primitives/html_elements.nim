@@ -18,16 +18,16 @@ let nativeContainer = getElementById("nativeContainer")
 let hardCodedScale = 2.0
 
 proc updateTextProps(self: dom.Element, props: TextInputProps): void =
-  self.style.color = props.color.get("white")
+  self.style.color = props.color.get("black")
   self.style.fontSize = $props.fontSize.get(15) & "pt"
 
 proc createHtmlTextInput(props: TextInputProps): dom.Element =
-  result = document.createElement("SPAN")
-  result.setAttribute("role", "textbox")
-  result.setAttribute("contenteditable", "true")
+  result = document.createElement("INPUT")
   result.style.position = "absolute"
   result.updateTextProps(props)
-  result.innerHtml = props.text
+  if props.placeholder.isSome():
+    result.setAttribute("placeholder", props.placeholder.get())
+  result.value = props.text
 
 proc measureHtmlTextInput(self: dom.Element, availableSize: Vec2[float]): Vec2[float] =
   let r = self.getBoundingClientRect()
@@ -65,7 +65,8 @@ proc htmlTextInput*(props: TextInputProps): element.Element =
     "input",
     proc(ev: dom.Event): void =
       result.invalidateLayout()
-      let t = domElement.innerText
+      let t = domElement.value
+      echo "Got new value: ", t
       if props.onChange.isSome():
         props.onChange.get()($t)
   )
