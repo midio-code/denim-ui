@@ -10,7 +10,12 @@ import ../../utils
 var measureText*: (text: string, fontSize: float, font: string, baseline: string) -> Vec2[float]
 
 proc renderText*(self: Element, props: TextProps): Option[Primitive] =
-  some(self.createTextPrimitive(props.text, props.color.get("white"), props.fontSize.get(12.0), props.font.get("system-ui")))
+  some(self.createTextPrimitive(
+    props.text,
+    props.color.get("white"),
+    props.fontSize.get(12.0),
+    props.font.get("system-ui"))
+  )
 
 proc internalMeasure(element: Element, text: string, fontSize: float, font: string, baseline: string): Vec2[float] =
   measureText(text, fontSize, font, baseline)

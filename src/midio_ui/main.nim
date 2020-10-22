@@ -57,6 +57,7 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
     pointerPressedLastFrame = false
 
   update_manager.dispatchUpdate(dt)
+  performOutstandingLayoutsAndMeasures(availableRect)
 
   result = ctx.rootElement.render()
 

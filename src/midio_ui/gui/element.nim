@@ -156,8 +156,7 @@ proc dispatchOnUnrooted*(self: Element): void =
 proc addChild*(self: Element, child: Element): void =
   self.children.add(child)
   child.parent = some(self)
-  self.isMeasureValid = false
-  self.isArrangeValid = false
+  self.invalidateLayout()
   if self.isRooted or self.isRoot:
     child.dispatchOnRooted()
 
@@ -169,8 +168,7 @@ proc removeChild*(self: Element, child: Element): void =
   let index = self.children.find(child)
   if index >= 0:
     self.children.delete(index)
-    self.isMeasureValid = false
-    self.isArrangeValid = false
+    self.invalidateLayout()
     child.detachFromParent()
 
 # TODO: Hide the children field or make this easier to discover
