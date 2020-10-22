@@ -35,14 +35,22 @@ type
     rotation*: float
 
   PathSegmentKind* {.pure.} = enum
-    MoveTo, LineTo, QuadraticCurveTo, Close
+    MoveTo, LineTo, QuadraticCurveTo, BezierCurveTo, Close
   PathSegment* = ref object
     case kind*: PathSegmentKind
     of MoveTo, LineTo:
       to*: Point
     of QuadraticCurveTo:
-      controlPoint*: Point
-      point*: Point
+      quadraticInfo*: tuple[
+        controlPoint: Point,
+        point: Point
+      ]
+    of BezierCurveTo:
+      bezierInfo*: tuple[
+        controlPoint1: Point,
+        controlPoint2: Point,
+        point: Point
+      ]
     of Close:
       discard
 
@@ -58,18 +66,15 @@ type
     fontSize*: float
     textBaseline*: string
     font*: string
-    pos*: Point
     alignment*: string
 
   PrimitiveKind* {.pure.} = enum
     Container, Text, Path, Circle, Ellipse, Rectangle
 
   CircleInfo* = ref object
-    center*: Point
     radius*: float
 
   EllipseInfo* = ref object
-    center*: Point
     radius*: Vec2[float]
     rotation*: float
     startAngle*: float

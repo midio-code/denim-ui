@@ -13,10 +13,6 @@ type
     strokeWidth*: Option[float]
 
 proc renderRectangle(self: Element, props: RectProps): Option[Primitive] =
-  let
-    worldPos = self.actualWorldPosition()
-    x = worldPos.x
-    y = worldPos.y
   let width = self.bounds.get().width()
   let height = self.bounds.get().height()
   let radius = props.radius.get((0.0, 0.0, 0.0, 0.0))
@@ -25,15 +21,15 @@ proc renderRectangle(self: Element, props: RectProps): Option[Primitive] =
     self.createPath(
       some(ColorInfo(fill: props.color, stroke: props.stroke)),
       some(StrokeInfo(width: props.strokeWidth.get(0.0))),
-      moveTo(x + radius[0], y),
-      lineTo(x + width - radius[1], y),
-      curveTo(x + width, y, x + width, y + radius[1]),
-      lineTo(x + width, y + height - radius[2]),
-      curveTo(x + width, y + height, x + width - radius[2], y + height),
-      lineTo(x + radius[3], y + height),
-      curveTo(x, y + height, x, y + height - radius[3]),
-      lineTo(x, y + radius[0]),
-      curveTo(x, y, x + radius[0], y),
+      moveTo(radius[0], 0),
+      lineTo(width - radius[1], 0),
+      quadraticCurveTo(width, 0, width, radius[1]),
+      lineTo(width, height - radius[2]),
+      quadraticCurveTo(width, height, width - radius[2], height),
+      lineTo(radius[3], height),
+      quadraticCurveTo(0, height, 0, height - radius[3]),
+      lineTo(0, radius[0]),
+      quadraticCurveTo(0, 0, radius[0], 0),
       close()
     )
   )

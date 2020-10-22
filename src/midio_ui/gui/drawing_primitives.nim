@@ -8,14 +8,19 @@ import ../utils
 proc createTextPrimitive*(
   self: Element,
   text: string,
-  pos: Point = vec2(0.0,0.0),
   color: string = "white",
   fontSize: float = 12.0,
   font: string = "system-ui",
   textBaseline: string = "top",
   alignment: string = "left"
 ): Primitive =
-  let textInfo = TextInfo(text: text, fontSize: fontSize, textBaseline: textBaseline, font: font, pos: pos, alignment: alignment)
+  let textInfo = TextInfo(
+    text: text,
+    fontSize: fontSize,
+    textBaseline: textBaseline,
+    font: font,
+    alignment: alignment
+  )
   Primitive(
     transform: self.props.transform,
     bounds: self.bounds.get(),
@@ -30,8 +35,10 @@ proc moveTo*(x: float, y: float): PathSegment =
   PathSegment(kind: MoveTo, to: vec2(x,y))
 proc lineTo*(x: float, y: float): PathSegment =
   PathSegment(kind: LineTo, to: vec2(x,y))
-proc curveTo*(cpx: float, cpy: float, x: float, y: float): PathSegment =
-  PathSegment(kind: QuadraticCurveTo, controlPoint: vec2(cpx, cpy), point: vec2(x, y))
+proc quadraticCurveTo*(cpx: float, cpy: float, x: float, y: float): PathSegment =
+  PathSegment(kind: QuadraticCurveTo, quadraticInfo: (vec2(cpx, cpy), vec2(x, y)))
+proc bezierCurveTo*(cp1x, cp1y, cp2x, cp2y, x, y: float): PathSegment =
+  PathSegment(kind: BezierCurveTo, bezierInfo: (vec2(cp1x, cp1y), vec2(cp2x, cp2y), vec2(x, y)))
 proc close*(): PathSegment =
   PathSegment(kind: Close)
 
@@ -67,11 +74,11 @@ proc circle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[Str
     kind: Circle,
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
-    circleInfo: CircleInfo(center: center, radius: radius),
+    circleInfo: CircleInfo(radius: radius),
     children: @[],
   )
 
-proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], center: Point, radius: Vec2[float]): Primitive =
+proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], radius: Vec2[float]): Primitive =
   Primitive(
     transform: self.props.transform,
     bounds: self.bounds.get(),
@@ -79,7 +86,7 @@ proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[St
     kind: Ellipse,
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
-    ellipseInfo: EllipseInfo(center: center, radius: radius, endAngle: TAU),
+    ellipseInfo: EllipseInfo(radius: radius, endAngle: TAU),
     children: @[],
   )
 
