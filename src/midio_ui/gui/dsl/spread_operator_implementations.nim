@@ -17,7 +17,7 @@ proc bindChildCollection*(self: Element, item: Subject[Element]): void =
       self.addChild(e)
   )
 
-proc bindChildCollection*(self: Element, item: Subject[Option[Element]]): void =
+proc bindChildCollection*(self: Element, item: Observable[Option[Element]]): void =
   var prevElem: Element
   ## TODO: handle subscription
   discard item.subscribe(
@@ -28,6 +28,9 @@ proc bindChildCollection*(self: Element, item: Subject[Option[Element]]): void =
         prevElem = e.get()
         self.addChild(e.get())
   )
+
+template bindChildCollection*(self: Element, item: Subject[Option[Element]]): void =
+  bindChildCollection(item.source)
 
 proc bindChildCollection*(self: Element, items: seq[Element]): void =
   for item in items:
