@@ -1,6 +1,8 @@
 import sugar, options, strformat
 import gui/prelude
 import gui/primitives/text
+import gui/primitives/path
+import gui/debug_draw
 import gui/update_manager
 import gui/debug/debug_tree
 import std/monotimes
@@ -62,6 +64,8 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   performOutstandingLayoutsAndMeasures(availableRect)
 
   result = ctx.rootElement.render()
+  if result.isSome:
+    result.get().children = result.get().children & flushDebugDrawings()
 
   samples += 1
   if samples >= 60:
@@ -100,9 +104,11 @@ proc init*(
   size: Vec2[float],
   scale: Vec2[float],
   measureTextFunction: (string, float, string, string) -> Vec2[float],
+  hitTestPath: (Element, PathProps, Point) -> bool,
   render: () -> Element
 ): Context {.exportc.} =
   text.measureText = measureTextFunction
+  path.hitTestPath = hitTestPath
   windowSize = size
   let rootElement =
     render()

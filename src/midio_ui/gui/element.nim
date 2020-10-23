@@ -187,6 +187,7 @@ proc newElement*(
   props: ElemProps = ElemProps(),
   children: seq[Element] = @[],
   layout: Option[Layout] = none[Layout](),
+  hitTest: Option[(Element, Point) -> bool] = none[(Element, Point) -> bool](),
   drawable: Option[Drawable] = none[Drawable](),
   onRooted: Option[(Element) -> void] = none[(Element) -> void](),
   onUnrooted: Option[(Element) -> void] = none[(Element) -> void](),
@@ -196,6 +197,7 @@ proc newElement*(
     props: props,
     children: children,
     layout: layout,
+    hitTest: hitTest,
     drawable: drawable,
     parent: none[Element](),
     onRooted: onRooted,
@@ -430,9 +432,12 @@ proc boundsInWorldSpace*(self: Element): Option[Bounds] =
   self.bounds.map(x => x.withPos(self.actualWorldPosition))
 
 proc isPointInside*(self: Element, point: Vec2[float]): bool =
-  let pos = self.actualWorldPosition
-  let size = self.bounds.map(x => x.size).get(zero())
-  pos.x < point.x and point.x < pos.x + size.x and pos.y < point.y and point.y < pos.y + size.y
+  if self.hitTest.isSome():
+    self.hitTest.get()(self, point)
+  else:
+    let pos = self.actualWorldPosition
+    let size = self.bounds.map(x => x.size).get(zero())
+    pos.x < point.x and point.x < pos.x + size.x and pos.y < point.y and point.y < pos.y + size.y
 
 proc relativeTo*(self: Vec2[float], elem: Element): Vec2[float] =
   self.sub(elem.actualWorldPosition)

@@ -17,6 +17,24 @@ type
     strokeWidth*: Option[float]
     data*: seq[PathSegment] # TODO: Not sure we should expose this type here, but will deal with that later
 
+# proc internalMeasure(self: Element, props: PathProps): Vec2[float] =
+#   var smallest = zero()
+#   var largest = zero()
+#   for p in props.data:
+#     var point: Point = zero()
+#     case p.kind:
+#       of PathSegmentKind.MoveTo, PathSegmentKind.LineTo:
+#         point = p.to
+#       of PathSegmentKind.QuadraticCurveTo:
+#         point = p.quadraticInfo.point
+#       of PathSegmentKind.BezierCurveTo:
+#         point = p.bezierInfo.point
+#       else: discard
+#     smallest = min(point, smallest)
+#     largest = max(point, largest)
+#   result = largest - smallest
+#   echo "Result is: ", result
+
 
 proc renderPath(self: Element, props: PathProps): Option[Primitive] =
   if self.bounds.isNone():
@@ -32,9 +50,23 @@ proc renderPath(self: Element, props: PathProps): Option[Primitive] =
     )
   )
 
+# NOTE: This is set by main during initialization
+# TODO: Make initialization of these native dependent functions more explicit
+var hitTestPath*: (Element, PathProps, Point) -> bool
+
 proc createPath*(props: PathProps = PathProps(), elemProps: ElemProps = ElemProps(), children: seq[Element] = @[]): Element =
   newElement(
     props = elemProps,
+    # layout = some(
+    #   Layout(
+    #     name: "path(layout)",
+    #     measure: (self: Element, avSize: Vec2[float]) => internalMeasure(self, props),
+    #   )
+    # ),
+    hitTest = some(
+      proc(e: Element, p: Point): bool =
+        hitTestPath(e, props, p)
+    ),
     drawable = some(Drawable(
       name: "path",
       render: (elem: Element) => renderPath(elem, props)

@@ -103,7 +103,9 @@ proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[
   )
 
 proc rectangle*(bounds: Bounds, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo]): Primitive =
+  echo "Debug rect: ", bounds.size
   Primitive(
+    bounds: bounds,
     kind: Rectangle,
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,

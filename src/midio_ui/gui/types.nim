@@ -178,6 +178,7 @@ type
 
     layout*: Option[Layout]
     drawable*: Option[Drawable]
+    hitTest*: Option[(Element, Point) -> bool]
     isRooted*: bool
     onRooted*: Option[(Element) -> void]
     onUnrooted*: Option[(Element) -> void]

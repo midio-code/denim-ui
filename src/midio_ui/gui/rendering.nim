@@ -28,4 +28,4 @@ proc render*(self: Element): Option[Primitive] =
     result.get().children = self.children
       .map(x => x.render())
       .filter(x => x.isSome())
-      .map(x => x.get()) & flushDebugDrawings()
+      .map(x => x.get())
