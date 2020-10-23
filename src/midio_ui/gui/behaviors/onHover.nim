@@ -11,7 +11,6 @@ proc onHover*(entered: (Element) -> void, exited: (Element) -> void): Behavior =
       proc(element: Element):void =
         element.onPointerEntered(
           proc(arg: PointerArgs): PointerEventResult =
-            echo "Got entered"
             entered(element)
         )
         element.onPointerExited(
