@@ -36,17 +36,15 @@ proc remove*[T](self: CollectionSubject[T], item: T): void =
     subscriber(item)
 
 proc contains*[T](self: CollectionSubject[T], item: T): Observable[bool] =
-  create(
+  createObservable(
     proc(subscriber: Subscriber[bool]): Subscription =
       if self.values.contains(item):
         subscriber.onNext(true)
       self.source(
         proc(val: T): void =
-          echo "CONTAINS: ", val
           if val == item:
             subscriber.onNext(true),
         proc(val: T): void =
-          echo "CONTAINS NOT?: ", val
           if val == item:
             subscriber.onNext(false)
       )
@@ -80,7 +78,7 @@ template map*[T,R](self: CollectionSubject[T], mapper: (T) -> R): ObservableColl
   self.source.map(mapper)
 
 proc toObservable*[T](self: ObservableCollection[T]): Observable[seq[T]] =
-  create(
+  createObservable(
     proc(subscriber: Subscriber[T]): Subscription =
       self.source(
         proc(added: T): void =

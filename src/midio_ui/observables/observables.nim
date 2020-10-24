@@ -72,12 +72,12 @@ proc behaviorSubject*[T](value: T): Subject[T] =
   )
   ret
 
-proc create*[T](onSubscribe: (Subscriber[T]) -> Subscription): Observable[T] =
+proc createObservable*[T](onSubscribe: (Subscriber[T]) -> Subscription): Observable[T] =
   Observable[T](onSubscribe: onSubscribe)
 
 
-proc create*[T](values: seq[T]): Observable[T] =
-  create(
+proc createObservable*[T](values: seq[T]): Observable[T] =
+  createObservable(
     proc(subscriber: Subscriber[T]): Subscription =
       for value in values:
         subscriber.onNext(value)
@@ -90,7 +90,7 @@ proc create*[T](values: seq[T]): Observable[T] =
 
 proc then*[T](first: Observable[T], second: Observable[T]): Observable[T] =
   var currentSub: Subscription
-  create(
+  createObservable(
     proc(subscriber: Subscriber[T]): Subscription =
       currentSub =  first.subscribe(
         Subscriber[T](

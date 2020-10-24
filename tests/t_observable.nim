@@ -78,7 +78,7 @@ suite "observable tests":
     check(subscriptionCalls == 4)
 
   test "Completing observable":
-    let obs = create(@[1,2,3,4,5])
+    let obs = createObservable(@[1,2,3,4,5])
     var value = 0
     var completed = false
     discard obs.subscribe(
@@ -99,8 +99,8 @@ suite "observable tests":
       subj.next(3)
 
   test "Observable then":
-    let a = create(@[1,3,5])
-    let b = create(@[2,4,6])
+    let a = createObservable(@[1,3,5])
+    let b = createObservable(@[2,4,6])
 
     let combined = a.then(b)
 
@@ -219,9 +219,6 @@ suite "observable collection tests":
     check(val.value == true)
     collection.remove(10)
     check(val.value == false)
-
-
-
 
 
 suite "More observable tests":
