@@ -9,7 +9,7 @@ template bindProp*[T](prop: typed, observable: Observable[T]): untyped =
   )
 
 template bindCollection*[T](prop: seq[T], collection: ObservableCollection[T]): untyped =
-  collection(
+  collection.subscribe(
     proc(newVal: T): void =
       prop.add(newVal),
     proc(removedVal: T): void =

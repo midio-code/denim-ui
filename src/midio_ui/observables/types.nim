@@ -26,3 +26,15 @@ type
     value*: T
     didComplete*: bool
     subscribers*: seq[Subscriber[T]]
+
+  CollectionSubscriber*[T] = ref object
+    onAdded*: T -> void
+    onRemoved*: T -> void
+
+  ObservableCollection*[T] = ref object
+    onSubscribe*: CollectionSubscriber[T] -> Subscription
+
+  CollectionSubject*[T] = ref object
+    source*: ObservableCollection[T]
+    values*: seq[T]
+    subscribers*: seq[CollectionSubscriber[T]]

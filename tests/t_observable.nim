@@ -121,7 +121,7 @@ suite "observable collection tests":
   test "Added and removed notifications":
     let collection = observableCollection[int](@[])
     var total = 0
-    collection.source(
+    discard collection.subscribe(
       proc(item: int): void =
         total += item
       ,
@@ -139,7 +139,7 @@ suite "observable collection tests":
   test "Mapping observable collection":
     let collection = observableCollection[int](@[])
     var total = 0
-    collection.source(
+    discard collection.subscribe(
       proc(item: int): void =
         total += item
       ,
@@ -147,11 +147,11 @@ suite "observable collection tests":
         total -= item
     )
     var mapped = 0
-    let mappedCollection = collection.source.map(
+    let mappedCollection = collection.map(
       proc(x: int): int =
         x * 2
     )
-    mappedCollection(
+    discard mappedCollection.subscribe(
       proc(item: int): void =
         mapped += item
       ,
@@ -176,20 +176,20 @@ suite "observable collection tests":
     var total = 0
     var a = 0
     var b = 0
-    let mappedCollection = collection.source.map(
+    let mappedCollection = collection.map(
       proc(x: int): int =
         echo "Mapping"
         total += 1
         x
     )
-    mappedCollection(
+    discard mappedCollection.subscribe(
       proc(item: int): void =
         a += 1
       ,
       proc(item: int): void =
         a -= 1
     )
-    mappedCollection(
+    discard mappedCollection.subscribe(
       proc(item: int): void =
         b += 1
       ,
@@ -201,7 +201,10 @@ suite "observable collection tests":
     collection.add(3)
     collection.add(4)
 
-    check(total == 4)
+    check(total == 8) # This is 8 because the subscriptions are
+                      # kept by collection (which is the subject),
+                      # meaning that for each of the mappings, the mappedCollection mapping
+                      # will be called (one time per second mapping)
     check(a == 4)
     check(b == 4)
 

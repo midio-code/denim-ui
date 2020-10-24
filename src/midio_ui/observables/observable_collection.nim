@@ -2,46 +2,46 @@ import sugar
 import types
 import observables
 
-type
-  AddedSubscriber*[T] = (T) -> void
-  RemovedSubscriber*[T] = (T) -> void
-  ObservableCollection*[T] = (AddedSubscriber[T], RemovedSubscriber[T]) -> void
-
-  CollectionSubject*[T] = ref object
-    source*: ObservableCollection[T]
-    values*: seq[T]
-    addedSubscribers: seq[AddedSubscriber[T]]
-    removedSubscribers: seq[RemovedSubscriber[T]]
 
 proc observableCollection*[T](values: seq[T] = @[]): CollectionSubject[T] =
   let subject = CollectionSubject[T](
-    values: values,
+    values: values
   )
-  subject.source =
-    proc(addedSubscriber: AddedSubscriber[T], removedSubscriber: RemovedSubscriber[T]): void =
-      subject.addedSubscribers.add(addedSubscriber)
-      subject.removedSubscribers.add(removedSubscriber)
-      # TODO: Create an observable collection behavior subject
-      # for item in subject.values:
-      #   addedSubscriber(item)
+  subject.source = ObservableCollection[T](
+    onSubscribe: proc(subscriber: CollectionSubscriber[T]): Subscription =
+      subject.subscribers.add(subscriber)
+      Subscription(
+        dispose: proc(): void =
+          subject.subscribers.remove(subscriber)
+      )
+  )
   subject
 
 proc add*[T](self: CollectionSubject[T], item: T): void =
   self.values.add(item)
-  for subscriber in self.addedSubscribers:
-    subscriber(item)
+  for subscriber in self.subscribers:
+    subscriber.onAdded(item)
 
 proc remove*[T](self: CollectionSubject[T], item: T): void =
   self.values.delete(self.values.find(item))
-  for subscriber in self.removedSubscribers:
-    subscriber(item)
+  for subscriber in self.subscribers:
+    subscriber.onRemoved(item)
+
+proc subscribe*[T](self: ObservableCollection[T], onAdded: T -> void, onRemoved: T -> void): Subscription =
+  self.onSubscribe(CollectionSubscriber[T](
+    onAdded: onAdded,
+    onRemoved: onRemoved
+  ))
+
+proc subscribe*[T](self: CollectionSubject[T], onAdded: T -> void, onRemoved: T -> void): Subscription =
+  self.source.subscribe(onAdded, onRemoved)
 
 proc contains*[T](self: CollectionSubject[T], item: T): Observable[bool] =
   createObservable(
     proc(subscriber: Subscriber[bool]): Subscription =
       if self.values.contains(item):
         subscriber.onNext(true)
-      self.source(
+      let subscription = self.subscribe(
         proc(val: T): void =
           if val == item:
             subscriber.onNext(true),
@@ -51,15 +51,19 @@ proc contains*[T](self: CollectionSubject[T], item: T): Observable[bool] =
       )
       # TODO: Handle subscriptions for observable collection
       Subscription(
-        dispose: proc(): void = discard
+        dispose: subscription.dispose
       )
   )
+
+# TODO: Implement contains for ObservableCollection
+# proc contains*[T](self: ObservableCollection[T], item: T): Observable[bool] =
+#   self.source.contains(item)
 
 proc len*[T](self: CollectionSubject[T]): Observable[int] =
   createObservable(
     proc(subscriber: Subscriber[int]): Subscription =
       subscriber.onNext(self.values.len())
-      self.source(
+      let subscription = self.subscribe(
         proc(val: T): void =
           subscriber.onNext(self.values.len()),
         proc(val: T): void =
@@ -67,29 +71,29 @@ proc len*[T](self: CollectionSubject[T]): Observable[int] =
       )
       # TODO: Handle subscriptions for observable collection
       Subscription(
-        dispose: proc(): void = discard
+        dispose: subscription.dispose
       )
   )
 
+# TODO: Implement len for ObservableCollection
+# proc len*[T](self: ObservableCollection[T]): Observable[int] =
+#   self.source.len()
+
 proc map*[T,R](self: ObservableCollection[T], mapper: (T) -> R): ObservableCollection[R] =
-  # TODO: Have a separate object to keep subscribers so that we don't need a subject here
-  var hasSubscribedToSource = false
-  let subject = CollectionSubject[R]()
-  result = proc(added: AddedSubscriber[R], removed: RemovedSubscriber[R]): void =
-    if not hasSubscribedToSource:
-      hasSubscribedToSource = true
-      self(
+  ObservableCollection[T](
+    onSubscribe: proc(subscriber: CollectionSubscriber[T]): Subscription =
+      let subscription = self.subscribe(
         proc(newVal: T): void =
           let mapped = mapper(newVal)
-          for sub in subject.addedSubscribers:
-            sub(mapped),
+          subscriber.onAdded(mapped),
         proc(removedVal: T): void =
           let mapped = mapper(removedVal)
-          for sub in subject.removedSubscribers:
-            sub(mapped),
+          subscriber.onRemoved(mapped),
       )
-    subject.addedSubscribers.add(added)
-    subject.removedSubscribers.add(removed)
+      Subscription(
+        dispose: subscription.dispose
+      )
+  )
 
 template map*[T,R](self: CollectionSubject[T], mapper: (T) -> R): ObservableCollection[R] =
   self.source.map(mapper)
@@ -109,15 +113,25 @@ proc toObservable*[T](self: ObservableCollection[T]): Observable[seq[T]] =
       )
   )
 
+# TODO: Find a better name for this
 proc observableCollection*[T](source: ObservableCollection[T]): CollectionSubject[T] =
+  ## Wraps an ObservableCollection[T] in a CollectionSubject[T] so that its items are
+  ## synchronously available.
   let subject = CollectionSubject[T](
     source: source,
   )
-  subject.source(
-    proc(newVal: T): void =
-      subject.values.add(newVal),
-    proc(removedVal: T): void =
-      subject.values.delete(subject.values.find(removedVal))
+  subject.source = ObservableCollection[T](
+    onSubscribe: proc(subscriber: CollectionSubscriber[T]): Subscription =
+      let subscription = source.subscribe(
+        proc(added: T): void =
+          subject.add(added),
+        proc(removed: T): void =
+          subject.remove(removed)
+      )
+
+      Subscription(
+        dispose: subscription.dispose
+      )
   )
   subject
 

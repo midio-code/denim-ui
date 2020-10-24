@@ -1,5 +1,5 @@
 import sugar
-import observables
+#import observables
 
 type
   EventHandler*[T] = (T) -> void
@@ -38,13 +38,13 @@ proc add*[T](self: var EventEmitter[T], listener: EventHandler[T]): void =
 proc remove*[T](self: var EventEmitter[T], listener: EventHandler[T]): void =
   self.toRemove.add(listener)
 
-proc toObservable*[T](emitter: var EventEmitter[T]): Observable[T] =
-  let subj = subject[T]()
-  emitter.add(
-    proc(newVal: T): void =
-      subj.next(newVal)
-  )
-  subj.source
+# proc toObservable*[T](emitter: var EventEmitter[T]): Observable[T] =
+#   let subj = subject[T]()
+#   emitter.add(
+#     proc(newVal: T): void =
+#       subj.next(newVal)
+#   )
+#   subj.source
 
 template createEvent*(name: untyped, T: typedesc): untyped =
   var emitter = emitter[T]()
@@ -52,5 +52,5 @@ template createEvent*(name: untyped, T: typedesc): untyped =
     emitter.add(handler)
   proc `emit name`*(args: T): void =
     emitter.emit(args)
-  proc `observe name`*(): Observable[T] =
-    emitter.toObservable()
+  # proc `observe name`*(): Observable[T] =
+  #   emitter.toObservable()
