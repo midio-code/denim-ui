@@ -205,6 +205,26 @@ suite "observable collection tests":
     check(a == 4)
     check(b == 4)
 
+  test "ObservableCollection.contains":
+    let collection = observableCollection[int](@[])
+    let c = collection.contains(10)
+    let val = behaviorSubject(c)
+
+    check(val.value == false)
+    collection.add(10)
+    check(val.value == true)
+    collection.add(11)
+    check(val.value == true)
+    collection.remove(11)
+    check(val.value == true)
+    collection.remove(10)
+    check(val.value == false)
+
+
+
+
+
+suite "More observable tests":
   test "Subject (PublishSubject) basics":
     let subj = subject[int]()
     var ret = 123

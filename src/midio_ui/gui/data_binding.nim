@@ -1,5 +1,6 @@
 import element
 import ../observables/observables
+import ../observables/observable_collection
 
 template bindProp*[T](prop: typed, observable: Observable[T]): untyped =
   # TODO: Handle disposing of subscription

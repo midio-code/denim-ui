@@ -1,9 +1,6 @@
 import options
 import sugar
-import observable_collection
 import ../utils
-
-export observable_collection
 
 type
   Error = string

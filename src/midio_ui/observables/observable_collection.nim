@@ -1,4 +1,5 @@
 import sugar
+import observables
 
 type
   AddedSubscriber*[T] = (T) -> void
@@ -34,6 +35,27 @@ proc remove*[T](self: CollectionSubject[T], item: T): void =
   for subscriber in self.removedSubscribers:
     subscriber(item)
 
+proc contains*[T](self: CollectionSubject[T], item: T): Observable[bool] =
+  create(
+    proc(subscriber: Subscriber[bool]): Subscription =
+      if self.values.contains(item):
+        subscriber.onNext(true)
+      self.source(
+        proc(val: T): void =
+          echo "CONTAINS: ", val
+          if val == item:
+            subscriber.onNext(true),
+        proc(val: T): void =
+          echo "CONTAINS NOT?: ", val
+          if val == item:
+            subscriber.onNext(false)
+      )
+      # TODO: Handle subscriptions for observable collection
+      Subscription(
+        dispose: proc(): void = discard
+      )
+  )
+
 proc map*[T,R](self: ObservableCollection[T], mapper: (T) -> R): ObservableCollection[R] =
   # TODO: Have a separate object to keep subscribers so that we don't need a subject here
   var hasSubscribedToSource = false
@@ -56,6 +78,21 @@ proc map*[T,R](self: ObservableCollection[T], mapper: (T) -> R): ObservableColle
 
 template map*[T,R](self: CollectionSubject[T], mapper: (T) -> R): ObservableCollection[R] =
   self.source.map(mapper)
+
+proc toObservable*[T](self: ObservableCollection[T]): Observable[seq[T]] =
+  create(
+    proc(subscriber: Subscriber[T]): Subscription =
+      self.source(
+        proc(added: T): void =
+          subscriber.onNext(self.values),
+        proc(removeD: T): void =
+          subscriber.onNext(self.values)
+      )
+      Subscription(
+        # TODO: Make subscriptions for observable collection
+        dispose: proc(): void = discard
+      )
+  )
 
 proc observableCollection*[T](source: ObservableCollection[T]): CollectionSubject[T] =
   let subject = CollectionSubject[T](

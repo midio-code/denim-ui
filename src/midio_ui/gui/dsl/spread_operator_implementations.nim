@@ -57,8 +57,9 @@ proc bindChildCollection*(self: Element, subj: Subject[seq[Element]]): void =
 
       # Add the new elements
       for elem in newVal:
-        if not self.children.any((x) => x.id == elem.id):
-          elementsManagedByThisBinding.incl(elem.id)
+        let elemId = elem.id
+        if not self.children.any((x) => x.id == elemId):
+          elementsManagedByThisBinding.incl(elemId)
           self.addChild(elem)
     )
 

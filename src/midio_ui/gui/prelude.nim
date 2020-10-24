@@ -3,6 +3,7 @@ import ../vec
 import ../rect
 import ../thickness
 import ../observables/observables
+import ../observables/observable_collection
 import ../observables/observable_utils
 import types, element, ../events
 import containers/dock, containers/stack, containers/container, containers/scroll_view
@@ -18,7 +19,7 @@ export options, vec, rect
 export types, element, events, dock, stack, rectangle, path, text, container, scroll_view
 export circle, rendering, behaviors, tag, data_binding, element_events
 export onClicked, onHover, onDrag, onPointer
-export observables, observable_utils
+export observables, observable_utils, observable_collection
 export animation
 export utils
 export thickness
