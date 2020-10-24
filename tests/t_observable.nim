@@ -220,6 +220,22 @@ suite "observable collection tests":
     collection.remove(10)
     check(val.value == false)
 
+  test "ObservableCollection.len":
+    let collection = observableCollection[int](@[])
+    let c = collection.len()
+    let val = behaviorSubject(c)
+
+    check(val.value == 0)
+    collection.add(1)
+    check(val.value == 1)
+    collection.add(1)
+    check(val.value == 2)
+    collection.add(2)
+    collection.add(2)
+    check(val.value == 4)
+    collection.remove(2)
+    check(val.value == 3)
+
 
 suite "More observable tests":
   test "Subject (PublishSubject) basics":

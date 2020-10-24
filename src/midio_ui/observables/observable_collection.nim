@@ -54,6 +54,22 @@ proc contains*[T](self: CollectionSubject[T], item: T): Observable[bool] =
       )
   )
 
+proc len*[T](self: CollectionSubject[T]): Observable[int] =
+  createObservable(
+    proc(subscriber: Subscriber[int]): Subscription =
+      subscriber.onNext(self.values.len())
+      self.source(
+        proc(val: T): void =
+          subscriber.onNext(self.values.len()),
+        proc(val: T): void =
+          subscriber.onNext(self.values.len())
+      )
+      # TODO: Handle subscriptions for observable collection
+      Subscription(
+        dispose: proc(): void = discard
+      )
+  )
+
 proc map*[T,R](self: ObservableCollection[T], mapper: (T) -> R): ObservableCollection[R] =
   # TODO: Have a separate object to keep subscribers so that we don't need a subject here
   var hasSubscribedToSource = false
