@@ -1,8 +1,7 @@
 import options, sets, sequtils, sugar
 import ../types
 import ../element
-import ../../observables/observables
-import ../../observables/observable_collection
+import ../../observables
 import ../../guid
 import ../../utils
 

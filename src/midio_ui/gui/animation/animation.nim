@@ -1,5 +1,5 @@
 import sugar, options, strformat
-import ../../observables/observables
+import ../../observables
 import ../update_manager
 import ../../vec
 import easings

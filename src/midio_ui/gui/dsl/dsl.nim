@@ -8,7 +8,7 @@ import ../../guid
 import spread_operator_implementations
 
 import macroutils except name, body
-import ../../observables/observables
+import ../../observables
 
 export macros
 export types
@@ -202,6 +202,9 @@ proc expandNiceAttributeSyntax*(attributesAndChildren: NimNode): ExpandedNiceSyn
               # We do typechecking later in a later pass
               # since we do not yet have type information here
               childrenAndBehaviors.add(child)
+      of nnkIdent:
+        # TODO: When just given a single identifier, use it as the name to bind the current instance to.
+        error("Name binding is currently wip")
       else:
         # TODO: Support spread operator (...) on expressions, like:
         # ...foo.map(x => ....

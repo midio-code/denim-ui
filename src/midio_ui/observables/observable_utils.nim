@@ -1,3 +1,4 @@
+import ./types
 import ./observables
 
 proc choose*[T](self: Observable[bool], onTrue: T, onFalse: T): Observable[T] =

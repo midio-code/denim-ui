@@ -1,5 +1,5 @@
 import sugar
-import observables/observables
+import observables
 
 type
   EventHandler*[T] = (T) -> void
