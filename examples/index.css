@@ -1,0 +1,13 @@
+
+#rootCanvas {
+	flex: 1;
+	--size: 2000px;
+	background-color: #1b2a39;
+	position: absolute;
+	left: 0; top: 0; right: 0; bottom: 0;
+}
+
+#nativeContainer {
+	position: absolute;
+	left: 0; top: 0; right: 0; bottom: 0;
+}
