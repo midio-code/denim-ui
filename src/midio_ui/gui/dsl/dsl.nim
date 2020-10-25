@@ -265,12 +265,21 @@ template element_type(attributesAndChildren: untyped, propsType: untyped, constr
     collectionBindings
 
     #echo "collection bindings: ", collectionBindings.treerepr()
-    #
+
   # let collectionBindings = genCollectionBindings()
   # echo "COLLECTION_BINDINGS: ", collectionBindings.treerepr()
 
-  result = BlockStmt(
+  var elementSym = Ident "this"
+
+  BlockStmt(
     StmtList(
+      VarSection(
+        IdentDefs(
+          elementSym,
+          Ident "Element",
+          Empty()
+        )
+      ),
       LetSection(
         IdentDefs(
           Ident "elemParts",
@@ -285,22 +294,19 @@ template element_type(attributesAndChildren: untyped, propsType: untyped, constr
       ),
       restStatements,
       Call(Ident"extractChildren", childrenAndBehaviors, childrenSym, behaviorsSym),
-      VarSection(
-        IdentDefs(
-          Ident "res",
-          Empty(),
-          Call(
-            quote do:
-              constructor,
-            DotExpr(Ident "elemParts", Ident "componentProps"),
-            DotExpr(Ident "elemParts", Ident "elemProps"),
-            childrenSym
-          )
+      Asgn(
+        elementSym,
+        Call(
+          quote do:
+            constructor,
+          DotExpr(Ident "elemParts", Ident "componentProps"),
+          DotExpr(Ident "elemParts", Ident "elemProps"),
+          childrenSym
         )
       ),
       Call(
         Ident "extractBindings",
-        Ident "res",
+        elementSym,
         Ident "elemParts",
         quote do:
           propsType,
@@ -309,11 +315,11 @@ template element_type(attributesAndChildren: untyped, propsType: untyped, constr
       ForStmt(
         [Ident "behavior"],
         behaviorsSym,
-        Call(DotExpr(Ident "res", Ident "addBehavior"), Ident "behavior")
+        Call(DotExpr(elementSym, Ident "addBehavior"), Ident "behavior")
 
       ),
-      genCollectionBindings(Ident "res"),
-      Ident "res"
+      genCollectionBindings(elementSym),
+      elementSym
     )
   )
 
