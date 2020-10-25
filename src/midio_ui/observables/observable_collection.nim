@@ -117,9 +117,7 @@ proc toObservable*[T](self: ObservableCollection[T]): Observable[seq[T]] =
 proc observableCollection*[T](source: ObservableCollection[T]): CollectionSubject[T] =
   ## Wraps an ObservableCollection[T] in a CollectionSubject[T] so that its items are
   ## synchronously available.
-  let subject = CollectionSubject[T](
-    source: source,
-  )
+  let subject = CollectionSubject[T]()
   subject.source = ObservableCollection[T](
     onSubscribe: proc(subscriber: CollectionSubscriber[T]): Subscription =
       let subscription = source.subscribe(
@@ -137,29 +135,37 @@ proc observableCollection*[T](source: ObservableCollection[T]): CollectionSubjec
 
 
 proc combineLatest*[A,B,R](a: ObservableCollection[A], b: ObservableCollection[B], mapper: (A,B) -> R): ObservableCollection[R] =
-  result = proc(added: AddedSubscriber[R], removed: RemovedSubscriber[R]): void =
-    var lastAddedA: A
-    var lastAddedB: B
+  ObservableCollection(
+    onSubscribe: proc(subscriber: CollectionSubscriber[R]): Subscription =
+      var lastAddedA: A
+      var lastAddedB: B
 
-    var lastRemovedA: A
-    var lastRemovedB: B
-    a(
-      proc(newA: A): void =
-        lastAddedA = newA
-        if not isNil(newA) and not isNil(lastAddedB):
-          added(mapper(newA, lastAddedB)),
-      proc(removedA: A): void =
-        lastRemovedA = removedA
-        if not isNil(lastRemovedB):
-          removed(mapper(removedA, lastRemovedB)),
-    )
-    b(
-      proc(newB: B): void =
-        lastAddedB = newB
-        if not isNil(newB) and not isNil(lastAddedA):
-          added(mapper(lastAddedA, newB)),
-      proc(removedB: B): void =
-        lastRemovedB = removedB
-        if not isNil(lastRemovedA):
-          removed(mapper(lastRemovedA, removedB)),
-    )
+      var lastRemovedA: A
+      var lastRemovedB: B
+      let subscriptionA = a.subscribe(
+        proc(newA: A): void =
+          lastAddedA = newA
+          if not isNil(newA) and not isNil(lastAddedB):
+            subscriber.onAdded(mapper(newA, lastAddedB)),
+        proc(removedA: A): void =
+          lastRemovedA = removedA
+          if not isNil(lastRemovedB):
+            subscriber.onRemoved(mapper(removedA, lastRemovedB)),
+      )
+      let subscriptionB = b.subscribe(
+        proc(newB: B): void =
+          lastAddedB = newB
+          if not isNil(newB) and not isNil(lastAddedA):
+            subscriber.onAdded(mapper(lastAddedA, newB)),
+        proc(removedB: B): void =
+          lastRemovedB = removedB
+          if not isNil(lastRemovedA):
+            subscriber.onRemoved(mapper(lastRemovedA, removedB)),
+      )
+
+      Subscription(
+        dispose: proc(): void =
+          subscriptionA.dispose()
+          subscriptionB.dispose()
+      )
+  )
