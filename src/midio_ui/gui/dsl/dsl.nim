@@ -271,7 +271,7 @@ template element_type(attributesAndChildren: untyped, propsType: untyped, constr
 
   var elementSym = genSym(nskLet, "this")
 
-  result = BlockStmt(
+  BlockStmt(
     StmtList(
       LetSection(
         IdentDefs(
@@ -318,7 +318,6 @@ template element_type(attributesAndChildren: untyped, propsType: untyped, constr
       elementSym
     )
   )
-  echo "RESULT IS: ", result.repr()
 
 macro rectangle*(attributesAndChildren: varargs[untyped]): untyped =
   element_type(attributesAndChildren, RectProps, createRectangle)
