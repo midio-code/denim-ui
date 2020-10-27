@@ -269,17 +269,10 @@ template element_type(attributesAndChildren: untyped, propsType: untyped, constr
   # let collectionBindings = genCollectionBindings()
   # echo "COLLECTION_BINDINGS: ", collectionBindings.treerepr()
 
-  var elementSym = Ident "this"
+  var elementSym = genSym(nskLet, "this")
 
-  BlockStmt(
+  result = BlockStmt(
     StmtList(
-      VarSection(
-        IdentDefs(
-          elementSym,
-          Ident "Element",
-          Empty()
-        )
-      ),
       LetSection(
         IdentDefs(
           Ident "elemParts",
@@ -294,14 +287,17 @@ template element_type(attributesAndChildren: untyped, propsType: untyped, constr
       ),
       restStatements,
       Call(Ident"extractChildren", childrenAndBehaviors, childrenSym, behaviorsSym),
-      Asgn(
-        elementSym,
-        Call(
-          quote do:
-            constructor,
-          DotExpr(Ident "elemParts", Ident "componentProps"),
-          DotExpr(Ident "elemParts", Ident "elemProps"),
-          childrenSym
+      LetSection(
+        IdentDefs(
+          elementSym,
+          Empty(),
+          Call(
+            quote do:
+              constructor,
+            DotExpr(Ident "elemParts", Ident "componentProps"),
+            DotExpr(Ident "elemParts", Ident "elemProps"),
+            childrenSym
+          )
         )
       ),
       Call(
@@ -322,6 +318,7 @@ template element_type(attributesAndChildren: untyped, propsType: untyped, constr
       elementSym
     )
   )
+  echo "RESULT IS: ", result.repr()
 
 macro rectangle*(attributesAndChildren: varargs[untyped]): untyped =
   element_type(attributesAndChildren, RectProps, createRectangle)
