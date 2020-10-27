@@ -67,12 +67,12 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   if result.isSome:
     result.get().children = result.get().children & flushDebugDrawings()
 
-  samples += 1
-  if samples >= 60:
-    let currentTime = float(getMonoTime().ticks) / 1000000.0
-    echo &"MS/frame: {float(currentTime - startTime)/60.0}"
-    samples = 0
-    startTime = currentTime
+  # samples += 1
+  # if samples >= 60:
+  #   let currentTime = float(getMonoTime().ticks) / 1000000.0
+  #   echo &"MS/frame: {float(currentTime - startTime)/60.0}"
+  #   samples = 0
+  #   startTime = currentTime
 
 
 proc dispatchWindowSizeChanged*(newSize: Vec2[float]): void {.exportc.} =
