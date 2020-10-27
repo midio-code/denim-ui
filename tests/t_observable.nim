@@ -223,6 +223,21 @@ suite "observable collection tests":
     collection.remove(10)
     check(val.value == false)
 
+  test "ObservableCollection.contains - already items in the collection":
+    let collection = observableCollection[int](@[10])
+    let c = collection.contains(10)
+    let val = behaviorSubject(c)
+
+    check(val.value == true)
+    collection.add(10)
+    check(val.value == true)
+    collection.add(11)
+    check(val.value == true)
+    collection.remove(11)
+    check(val.value == true)
+    collection.remove(10)
+    check(val.value == false)
+
   test "ObservableCollection.len":
     let collection = observableCollection[int](@[])
     let c = collection.len()

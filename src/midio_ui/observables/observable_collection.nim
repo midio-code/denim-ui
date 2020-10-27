@@ -39,16 +39,13 @@ proc subscribe*[T](self: CollectionSubject[T], onAdded: T -> void, onRemoved: T 
 proc contains*[T](self: CollectionSubject[T], item: T): Observable[bool] =
   createObservable(
     proc(subscriber: Subscriber[bool]): Subscription =
-      if self.values.contains(item):
-        subscriber.onNext(true)
       let subscription = self.subscribe(
         proc(val: T): void =
-          if val == item:
-            subscriber.onNext(true),
+          subscriber.onNext(self.values.contains(item)),
         proc(val: T): void =
-          if val == item:
-            subscriber.onNext(false)
+          subscriber.onNext(self.values.contains(item))
       )
+      subscriber.onNext(self.values.contains(item))
       # TODO: Handle subscriptions for observable collection
       Subscription(
         dispose: subscription.dispose
