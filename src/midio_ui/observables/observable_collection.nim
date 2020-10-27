@@ -95,18 +95,18 @@ proc map*[T,R](self: ObservableCollection[T], mapper: (T) -> R): ObservableColle
 template map*[T,R](self: CollectionSubject[T], mapper: (T) -> R): ObservableCollection[R] =
   self.source.map(mapper)
 
-proc toObservable*[T](self: ObservableCollection[T]): Observable[seq[T]] =
+proc toObservable*[T](self: CollectionSubject[T]): Observable[seq[T]] =
   createObservable(
-    proc(subscriber: Subscriber[T]): Subscription =
-      self.source(
+    proc(subscriber: Subscriber[seq[T]]): Subscription =
+      subscriber.onNext(self.values)
+      let subscription = self.subscribe(
         proc(added: T): void =
           subscriber.onNext(self.values),
         proc(removeD: T): void =
           subscriber.onNext(self.values)
       )
       Subscription(
-        # TODO: Make subscriptions for observable collection
-        dispose: proc(): void = discard
+        dispose: subscription.dispose
       )
   )
 
