@@ -29,7 +29,7 @@ proc bindChildCollection*(self: Element, item: Observable[Option[Element]]): voi
   )
 
 template bindChildCollection*(self: Element, item: Subject[Option[Element]]): void =
-  bindChildCollection(item.source)
+  bindChildCollection(self, item.source)
 
 proc bindChildCollection*(self: Element, items: seq[Element]): void =
   for item in items:
