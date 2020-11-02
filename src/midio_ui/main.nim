@@ -28,6 +28,7 @@ proc setParentOnChildren(elem: prelude.Element): void =
 
 var pointerPosChangedThisFrame = false
 var lastPointerPos = vec2(0.0, 0.0)
+var lastPointerIndex: PointerIndex
 
 var pointerPressedLastFrame = false
 var pointerPressedThisFrame = false
@@ -49,15 +50,15 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   invalidateWorldPositionsCache()
 
   if pointerPosChangedThisFrame:
-    discard ctx.rootElement.dispatchPointerMove(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
+    discard ctx.rootElement.dispatchPointerMove(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos), lastPointerIndex))
     pointerPosChangedThisFrame = false
 
   if pointerPressedLastFrame == false and pointerPressedThisFrame == true:
-    discard ctx.rootElement.dispatchPointerDown(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
+    discard ctx.rootElement.dispatchPointerDown(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos), lastPointerIndex))
     pointerPressedLastFrame = true
 
   if pointerPressedLastFrame == true and pointerPressedThisFrame == false:
-    discard ctx.rootElement.dispatchPointerUp(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos)))
+    discard ctx.rootElement.dispatchPointerUp(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos), lastPointerIndex))
     pointerPressedLastFrame = false
 
   update_manager.dispatchUpdate(dt)
@@ -85,10 +86,12 @@ proc dispatchPointerMove*(x: float, y: float): void {.exportc.} =
 
 proc dispatchPointerPress*(x: float, y: float, pointerIndex: PointerIndex): void {.exportc.} =
   lastPointerPos = vec2(x, y)
+  lastPointerIndex = pointerIndex
   pointerPressedThisFrame = true
 
 proc dispatchPointerRelease*(x: float, y: float, pointerIndex: PointerIndex): void {.exportc.} =
   lastPointerPos = vec2(x, y)
+  lastPointerIndex = pointerIndex
   # TODO: This does not work if both press and release happens on the same frame
   pointerPressedThisFrame = false
 

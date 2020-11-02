@@ -36,6 +36,7 @@ type
   PointerArgs* = ref object
     sender*: Element
     pos*: Vec2[float]
+    pointerIndex*: PointerIndex
 
 createElementEvent(pointerEntered, PointerArgs, void)
 createElementEvent(pointerExited, PointerArgs, void)
@@ -71,14 +72,14 @@ proc capturePointer*(self: Element): void =
   pointerCapturedTo = some(self)
   pointerCapturedEmitter.emit(self)
 
-proc pointerArgs*(element: Element, pos: Vec2[float]): PointerArgs =
-  PointerArgs(sender: element, pos: pos)
+proc pointerArgs*(element: Element, pos: Vec2[float], pointerIndex: PointerIndex): PointerArgs =
+  PointerArgs(sender: element, pos: pos, pointerIndex: pointerIndex)
 
-proc pointerArgs*(element: Element, x, y: float): PointerArgs =
-  PointerArgs(sender: element, pos: vec2(x,y))
+proc pointerArgs*(element: Element, x, y: float, pointerIndex: PointerIndex): PointerArgs =
+  PointerArgs(sender: element, pos: vec2(x,y), pointerIndex: pointerIndex)
 
 proc withElem(self: PointerArgs, elem: Element): PointerArgs =
-  PointerArgs(sender: elem, pos: self.pos)
+  PointerArgs(sender: elem, pos: self.pos, pointerIndex: self.pointerIndex)
 
 
 var elementsHandledPointerDownThisUpdate = initHashSet[Element]()
