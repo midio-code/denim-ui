@@ -15,14 +15,14 @@ proc unhandled*(): PointerEventResult =
   PointerEventResult(handled: false)
 
 
-template createElementEvent*(name: untyped, T: typedesc): untyped =
-  var eventTable = initTable[Element, seq[T -> PointerEventResult]]()
-  proc `on name`*(self: Element, handler: T -> PointerEventResult): void =
+template createElementEvent*(name: untyped, T: typedesc, TRes: typedesc): untyped =
+  var eventTable = initTable[Element, seq[T -> TRes]]()
+  proc `on name`*(self: Element, handler: T -> TRes): void =
     if not eventTable.hasKey(self):
-      let arr: seq[T -> PointerEventResult] = @[]
+      let arr: seq[T -> TRes] = @[]
       eventTable[self] = arr
     eventTable[self].add(handler)
-  proc `name handlers`(self: Element): seq[T -> PointerEventResult] =
+  proc `name handlers`(self: Element): seq[T -> TRes] =
     if eventTable.hasKey(self):
       eventTable[self]
     else:
@@ -37,15 +37,13 @@ type
     sender*: Element
     pos*: Vec2[float]
 
-template createPointerEvent(name: untyped): untyped =
-  createElementEvent(name, PointerArgs)
+createElementEvent(pointerEntered, PointerArgs, void)
+createElementEvent(pointerExited, PointerArgs, void)
+createElementEvent(pointerMoved, PointerArgs, PointerEventResult)
+createElementEvent(pointerClicked, PointerArgs, PointerEventResult)
+createElementEvent(pointerPressed, PointerArgs, PointerEventResult)
+createElementEvent(pointerReleased, PointerArgs, PointerEventResult)
 
-createPointerEvent(pointerEntered)
-createPointerEvent(pointerExited)
-createPointerEvent(pointerMoved)
-createPointerEvent(pointerClicked)
-createPointerEvent(pointerPressed)
-createPointerEvent(pointerReleased)
 var pointerCapturedEmitter* = emitter[Element]()
 var pointerCaptureReleasedEmitter* = emitter[Element]()
 var keyDownEmitter* = emitter[KeyArgs]()
@@ -87,6 +85,9 @@ var elementsHandledPointerDownThisUpdate = initHashSet[Element]()
 proc dispatchPointerDownImpl*(self: Element, arg: PointerArgs): PointerEventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
+  if not self.isPointInside(arg.pos):
+    return
+
   for child in self.children.reverse():
     let result = child.dispatchPointerDownImpl(arg)
     if result.handled:
@@ -102,6 +103,8 @@ var elementsHandledPointerUpThisUpdate = initHashSet[Element]()
 proc dispatchPointerUpImpl*(self: Element, arg: PointerArgs): PointerEventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
+  if not self.isPointInside(arg.pos) and not self.hasPointerCapture:
+    return
 
   for child in self.children.reverse():
     let result = child.dispatchPointerUpImpl(arg)
@@ -114,35 +117,43 @@ proc dispatchPointerUpImpl*(self: Element, arg: PointerArgs): PointerEventResult
       if res.handled:
         return res
 
+
+proc pointerEntered(self: Element, arg: PointerArgs): void =
+  self.pointerInsideLastUpdate = true
+  for handler in self.pointerEnteredHandlers:
+    handler(arg.withElem(self))
+
+proc pointerExited(self: Element, arg: PointerArgs): void =
+  self.pointerInsideLastUpdate = false
+  for handler in self.pointerExitedHandlers:
+    handler(arg.withElem(self))
+  for child in self.children:
+    if child.pointerInsideLastUpdate:
+      child.pointerExited(arg)
+
+
 var elementsHandledPointerMoveThisUpdate = initHashSet[Element]()
 proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs): PointerEventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
-  for child in self.children.reverse():
-    result = child.dispatchPointerMoveImpl(arg)
-    if result.handled:
-      return result
 
-  let newArg = arg.withElem(self)
-  if self.isPointInside(arg.pos) or self.pointerCaptured():
+  let pointInside = self.isPointInside(arg.pos)
+
+  if pointInside or self.hasPointerCapture:
+    if self.pointerInsideLastUpdate == false:
+      self.pointerEntered(arg)
     elementsHandledPointerMoveThisUpdate.incl(self)
-    if self.pointerInsideLastUpdate:
-      for handler in self.pointerMovedHandlers:
-        let res = handler(arg.withElem(self))
-        if res.handled:
-          return res
-    else:
-      self.pointerInsideLastUpdate = true
-      for handler in self.pointerEnteredHandlers:
-        let res = handler(arg.withElem(self))
-        if res.handled:
-          return res
-  elif self.pointerInsideLastUpdate and not(self.pointerCaptured):
-    self.pointerInsideLastUpdate = false
-    for handler in self.pointerExitedHandlers:
+    for handler in self.pointerMovedHandlers:
       let res = handler(arg.withElem(self))
       if res.handled:
         return res
+    for child in self.children.reverse():
+      result = child.dispatchPointerMoveImpl(arg)
+      if result.handled:
+        return result
+  elif self.pointerInsideLastUpdate:
+    self.pointerExited(arg)
+    return
 
 proc dispatchPointerDown*(self: Element, arg: PointerArgs): PointerEventResult =
   elementsHandledPointerDownThisUpdate.clear()
@@ -150,8 +161,17 @@ proc dispatchPointerDown*(self: Element, arg: PointerArgs): PointerEventResult =
 
 proc dispatchPointerUp*(self: Element, arg: PointerArgs): PointerEventResult =
   elementsHandledPointerUpThisUpdate.clear()
-  self.dispatchPointerUpImpl(arg)
+  result = self.dispatchPointerUpImpl(arg)
+  if pointerCapturedTo.isSome():
+    let capturedElem = pointerCapturedTo.get()
+    if not elementsHandledPointerUpThisUpdate.contains(capturedElem):
+      discard capturedElem.dispatchPointerUpImpl(arg)
+
 
 proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
   elementsHandledPointerMoveThisUpdate.clear()
-  self.dispatchPointerMoveImpl(arg)
+  result = self.dispatchPointerMoveImpl(arg)
+  if pointerCapturedTo.isSome():
+    let capturedElem = pointerCapturedTo.get()
+    if not elementsHandledPointerMoveThisUpdate.contains(capturedElem):
+      discard capturedElem.dispatchPointerMoveImpl(arg)
