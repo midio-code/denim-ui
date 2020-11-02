@@ -1,4 +1,4 @@
-import sugar, tables, options
+import sugar, tables, options, sets
 import types
 import element
 import ../observables/observables
@@ -82,44 +82,50 @@ proc pointerArgs*(element: Element, x, y: float): PointerArgs =
 proc withElem(self: PointerArgs, elem: Element): PointerArgs =
   PointerArgs(sender: elem, pos: self.pos)
 
-proc dispatchPointerDown*(self: Element, arg: PointerArgs): PointerEventResult =
+
+var elementsHandledPointerDownThisUpdate = initHashSet[Element]()
+proc dispatchPointerDownImpl*(self: Element, arg: PointerArgs): PointerEventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
   for child in self.children.reverse():
-    let result = child.dispatchPointerDown(arg)
+    let result = child.dispatchPointerDownImpl(arg)
     if result.handled:
        return result
-  # TODO: Return bool instead of mutating arg
-  if self.isPointInside(arg.pos): # or self.pointerCaptured:
+  if self.isPointInside(arg.pos):
+    elementsHandledPointerDownThisUpdate.incl(self)
     for handler in self.pointerPressedHandlers:
       let res = handler(arg.withElem(self))
       if res.handled:
         return res
 
-proc dispatchPointerUp*(self: Element, arg: PointerArgs): PointerEventResult =
+var elementsHandledPointerUpThisUpdate = initHashSet[Element]()
+proc dispatchPointerUpImpl*(self: Element, arg: PointerArgs): PointerEventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
 
   for child in self.children.reverse():
-    let result = child.dispatchPointerUp(arg)
+    let result = child.dispatchPointerUpImpl(arg)
     if result.handled:
       return result
   if (self.isPointInside(arg.pos) or self.pointerCaptured()):
+    elementsHandledPointerUpThisUpdate.incl(self)
     for handler in self.pointerReleasedHandlers:
       let res = handler(arg.withElem(self))
       if res.handled:
         return res
 
-proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
+var elementsHandledPointerMoveThisUpdate = initHashSet[Element]()
+proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs): PointerEventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
   for child in self.children.reverse():
-    result = child.dispatchPointerMove(arg)
+    result = child.dispatchPointerMoveImpl(arg)
     if result.handled:
       return result
 
   let newArg = arg.withElem(self)
   if self.isPointInside(arg.pos) or self.pointerCaptured():
+    elementsHandledPointerMoveThisUpdate.incl(self)
     if self.pointerInsideLastUpdate:
       for handler in self.pointerMovedHandlers:
         let res = handler(arg.withElem(self))
@@ -137,3 +143,15 @@ proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
       let res = handler(arg.withElem(self))
       if res.handled:
         return res
+
+proc dispatchPointerDown*(self: Element, arg: PointerArgs): PointerEventResult =
+  elementsHandledPointerDownThisUpdate.clear()
+  self.dispatchPointerDownImpl(arg)
+
+proc dispatchPointerUp*(self: Element, arg: PointerArgs): PointerEventResult =
+  elementsHandledPointerUpThisUpdate.clear()
+  self.dispatchPointerUpImpl(arg)
+
+proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
+  elementsHandledPointerMoveThisUpdate.clear()
+  self.dispatchPointerMoveImpl(arg)
