@@ -25,7 +25,7 @@ component CollapsablePanel():
             panel(horizontalAlignment = HorizontalAlignment.Right, verticalAlignment = VerticalAlignment.Center):
               circle(color = "#FE5D55", radius = 5.0, margin = thickness(5.0))
               onClicked(
-                (e: Element) => isCollapsed.next(not isCollapsed.value)
+                (e: Element, args: PointerArgs) => isCollapsed.next(not isCollapsed.value)
               )
           text(text = "Debug", horizontalAlignment = HorizontalAlignment.Left, verticalAlignment = VerticalAlignment.Center, margin = thickness(5.0))
     panel(minHeight = 5.0):
@@ -74,7 +74,7 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
               transform <- arrowRotation
             )
             onClicked(
-              proc(e: Element): void =
+              proc(e: Element, args: PointerArgs): void =
                 toggledByUser.next(not toggledByUser.value)
             )
         stack(margin = thickness(10.0, 0.0), horizontalAlignment = HorizontalAlignment.Left):

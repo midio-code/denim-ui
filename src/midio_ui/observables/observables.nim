@@ -47,6 +47,9 @@ proc behaviorSubject*[T](value: T): Subject[T] =
   )
   ret
 
+template state*[T](value: T): untyped =
+  behaviorSubject(value)
+
 proc createObservable*[T](onSubscribe: (Subscriber[T]) -> Subscription): Observable[T] =
   Observable[T](onSubscribe: onSubscribe)
 
