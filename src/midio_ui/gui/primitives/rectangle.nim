@@ -13,8 +13,9 @@ type
     strokeWidth*: Option[float]
 
 proc renderRectangle(self: Element, props: RectProps): Option[Primitive] =
-  let width = self.bounds.get().width()
-  let height = self.bounds.get().height()
+  let bounds = self.bounds.get()
+  let width = bounds.width()
+  let height = bounds.height()
   let radius = props.radius.get((0.0, 0.0, 0.0, 0.0))
 
   some(

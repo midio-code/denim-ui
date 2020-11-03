@@ -17,7 +17,7 @@ proc measureStack(self: Element, props: StackProps, availableSize: Vec2[float]):
   var accumulatedHeight = 0.0
   let isVertical = props.direction == StackDirection.Vertical
   for child in self.children:
-    child.measure(choose(isVertical, availableSize.withY(0.0), availableSize.withX(0.0)))
+    child.measure(choose(isVertical, availableSize.withY(INF), availableSize.withX(INF)))
     if child.desiredSize.isSome():
       width = max(width, choose(isVertical, child.desiredSize.get().x, child.desiredSize.get().y))
       accumulatedHeight += choose(isVertical, child.desiredSize.get().y, child.desiredSize.get().x)

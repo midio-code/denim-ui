@@ -25,6 +25,9 @@ type
 proc initLayoutManager*(): LayoutManager =
   LayoutManager(toMeasure: initHashSet[Element](), toArrange: initHashSet[Element]())
 
+proc log*(self: Element, message: string): void =
+  echo &"{self.id}: {message}"
+
 let instance = initLayoutManager()
 
 proc measure*(self: LayoutManager, elem: Element, availableSize: Vec2[float]): void =
@@ -218,60 +221,50 @@ proc createPanel*(props: ElemProps, children: seq[Element]): Element =
 proc createPanel*(margin: Thickness[float], children: varargs[Element]): Element =
   newElement(ElemProps(margin: margin), @children)
 
+type
+  MinMax = object
+    minWidth: float
+    maxWidth: float
+    minHeight: float
+    maxHeight: float
+
+proc minMax(e: Element): MinMax =
+  var maxHeight = e.props.maxHeight.get(INF)
+  var minHeight = e.props.minHeight.get(0.0)
+
+  var height = e.props.height.get(INF)
+  maxHeight = max(min(height, maxHeight), minHeight)
+
+  height = e.props.height.get(0.0)
+  minHeight = max(min(maxHeight, height), minHeight)
+
+  var maxWidth = e.props.maxWidth.get(INF)
+  var minWidth = e.props.minWidth.get(0.0)
+
+  var width = e.props.width.get(INF)
+  maxWidth = max(min(width, maxWidth), minWidth)
+
+  width = e.props.width.get(0.0)
+  minWidth = max(min(maxWidth, width), minWidth)
+
+  MinMax(
+    minWidth: minWidth,
+    maxWidth: maxWidth,
+    minHeight: minHeight,
+    maxHeight: maxHeight
+  )
+
 proc applyLayoutConstraints*(element: Element, constraints: Vec2[float]): Vec2[float] =
-  let elementWidth = element.props.width.get(0)
-  let elementHeight = element.props.height.get(0)
-
-  var width = if elementWidth > 0: elementWidth
-              else: constraints.x
-  var height = if elementHeight > 0: elementHeight
-               else: constraints.y
-
-  if (element.props.maxWidth.isSome()):
-    width = min(width, element.props.maxWidth.get())
-  if (element.props.minWidth.isSome()):
-    width = max(width, element.props.minWidth.get())
-  if (element.props.maxHeight.isSome()):
-    height = min(height, element.props.maxHeight.get(0))
-  if (element.props.maxHeight.isSome()):
-    height = max(height, element.props.minHeight.get(0))
-  vec2(width, height)
-
-proc getTreeDepth(self: Element): int =
-  var i = 0
-  var p = self.parent
-  while p.isSome():
-    i += 1
-    let parent = p.get()
-    if isNil(parent):
-      return i
-    p = parent.parent
-  return i
-
-proc getSpacesForDepth(self: Element): string =
-  let depth = self.getTreeDepth()
-  return repeat("    ", depth)
-
-proc log*(self: Element, msg: string): void =
-  echo self.getSpacesForDepth(), msg
-
-proc printTree*(self: Element, prefix: string = ""): void =
-  echo prefix & self.getSpacesForDepth() & self.layout.map(x => x.name).get("element") & &" - {self.id} - " & self.drawable.map(x => x.name).get("x") & " " & $self.bounds.get(rect(0.0, 0.0, 0.0, 0.0))
-  for child in self.children:
-    child.printTree()
-
-proc `$`*(p: ElemProps): string =
-  result = &"props: {$p.x} {$p.y} {$p.width} {$p.height}"
-
-proc `$`*(p: Element): string =
-  result = "Elem: " & $p.props
+  let mm = element.minMax()
+  vec2(
+    clamp(constraints.x, mm.minWidth, mm.maxWidth),
+    clamp(constraints.y, mm.minHeight, mm.maxHeight)
+  )
 
 proc margin*(p: Element): Thickness[float] =
   p.props.margin.get(thickness(0.0))
 
-
 # Forward declaration
-
 proc arrangeOverride*(self: Element, finalSize: Vec2[float]): Vec2[float] =
   if self.layout.filter(x => not(isNil(x.arrange))).isSome():
     self.layout.get().arrange(self, finalSize)
@@ -331,8 +324,14 @@ proc arrangeCore(self: Element, finalRect: Bounds): void =
   #   return
 
   self.bounds = rect(
-    vec2(self.props.x.get(originX) + self.props.xOffset.get(0), self.props.y.get(originY) + self.props.yOffset.get(0)),
-    vec2(self.props.width.get(size.x), self.props.height.get(size.y))
+    vec2(
+      self.props.x.get(originX) + self.props.xOffset.get(0),
+      self.props.y.get(originY) + self.props.yOffset.get(0)
+    ),
+    vec2(
+      self.props.width.get(size.x),
+      self.props.height.get(size.y)
+    )
   )
   self.scheduleBoundsChangeEventForNextFrame()
 
@@ -362,23 +361,20 @@ proc measureCore(self: Element, availableSize: Vec2[float]): Vec2[float] =
   let margin = self.margin()
 
   let constrained = self.applyLayoutConstraints(availableSize.deflate(margin))
-  var measured = self.measureOverride(constrained)
+  var
+    measured = self.measureOverride(constrained)
+    width = self.props.width.get(measured.x)
+    height = self.props.height.get(measured.y)
 
-  var width = measured.x
-  var height = measured.y
 
-  if self.props.width.isSome():
-    width = self.props.width.get()
-  if self.props.maxWidth.isSome():
-    width = min(width, self.props.maxWidth.get())
-  if self.props.minWidth.isSome():
-    width = max(width, self.props.minWidth.get())
-  if self.props.height.isSome():
-    height = self.props.height.get()
-  if self.props.maxHeight.isSome():
-    height = min(height, self.props.maxHeight.get())
-  if self.props.minHeight.isSome():
-    height = max(height, self.props.minHeight.get())
+  width = min(width, self.props.maxWidth.get(INF))
+  width = max(width, self.props.minWidth.get(0.0))
+
+  height = min(height, self.props.maxHeight.get(INF))
+  height = max(height, self.props.minHeight.get(0.0))
+
+  width = min(width, availableSize.x)
+  height = min(height, availableSize.y)
 
   result = vec2(width, height).inflate(margin).nonNegative()
 
@@ -404,9 +400,6 @@ proc measure*(self: Element, availableSize: Vec2[float]): void =
       desiredSize = self.measureCore(availableSize)
     finally:
       self.measuring = false
-
-    #if isInvalidSize(desiredSize):
-    #throw new Error("Invalid size result =ed for Measure.")
 
     self.desiredSize = some(desiredSize)
     self.previousMeasure = some(availableSize)
@@ -444,4 +437,3 @@ proc relativeTo*(self: Vec2[float], elem: Element): Vec2[float] =
 
 proc relativeTo*(self: Rect[float], elem: Element): Rect[float] =
   self.withPos(self.pos.relativeTo(elem))
-

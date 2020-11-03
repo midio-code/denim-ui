@@ -40,9 +40,9 @@ component DebugElem(label: string, elem: Element):
   let hovering = behaviorSubject(false)
   panel:
     text(text = label, color <- hovering.map((h: bool) => choose(h, "black", "white")))
-    # onClicked(
-    #   (e: Element) => debugDrawRect(elem.bounds.get().withPos(elem.actualWorldPosition)),
-    # )
+    onHover(
+      (e: Element) => debugDrawRect(elem.bounds.get().withPos(elem.actualWorldPosition)),
+    )
     onHover(
       (e: Element) => hovering.next(true),
       (e: Element) => hovering.next(false),
@@ -70,7 +70,12 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
         docking(DockDirection.Left):
           panel(verticalAlignment = VerticalAlignment.Top, visibility = choose(x.c.children.len() > 0, Visible, Hidden)):
             path(
-              data = @[moveTo(0.0, 10.0), lineTo(10.0, 5.0), lineTo(0.0, 0.0), lineTo(0.0, 10.0)], width = 10.0, height = 10.0, fill = "red", strokeWidth = 1.0, stroke = "black",
+              data = @[moveTo(0.0, 10.0), lineTo(10.0, 5.0), lineTo(0.0, 0.0), lineTo(0.0, 10.0)],
+              width = 10.0,
+              height = 10.0,
+              fill = "red",
+              strokeWidth = 1.0,
+              stroke = "black",
               transform <- arrowRotation
             )
             onClicked(

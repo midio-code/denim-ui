@@ -16,7 +16,7 @@ type
 
 proc measureScrollView(self: Element, props: ScrollViewProps, availableSize: Vec2[float]): Vec2[float] =
   for child in self.children:
-    child.measure(vec2(0.0, 0.0))
+    child.measure(availableSize.withY(INF))
   var largestChild = vec2(0.0)
   for child in self.children:
     largestChild = largestChild.max(child.desiredSize.get())

@@ -49,7 +49,7 @@ proc measureDock(self: Element, constraint: Vec2[float]): Vec2[float] =
 
     # Measure child.
     child.measure(childConstraint)
-    let childDesiredSize = child.desiredSize.get() # TODO: Remove ! operator
+    let childDesiredSize = child.desiredSize.get()
 
     # Now, we adjust:
     # 1. Size consumed by children (accumulatedSize).  This will be used when computing subsequent
@@ -101,7 +101,7 @@ proc arrangeDock(self: Element, arrangeSize: Vec2[float]): Vec2[float] =
   var i = -1
   for child in self.children:
     i += 1
-    let childDesiredSize = child.desiredSize.get() # TODO: Remove ! operator
+    let childDesiredSize = child.desiredSize.get()
 
     var childRect = rect(
       vec2(
@@ -113,7 +113,7 @@ proc arrangeDock(self: Element, arrangeSize: Vec2[float]): Vec2[float] =
         max(0.0, arrangeSize.y - (accumulatedTop + accumulatedBottom))
       )
     )
-    let dock = getDocking(child) # rename to getDock
+    let dock = getDocking(child)
     if i < nonFillChildrenCount and dock.isSome():
       case dock.get():
       of DockDirection.Left:
@@ -161,7 +161,6 @@ proc createDock*(props: ElemProps, children: seq[Element]): Element =
 proc createDock*(dockings: seq[Docking], elemProps: ElemProps = ElemProps()): Element =
   let children = dockings.map((c) => c.elem)
   for x in dockings:
-    echo "Setting dock: ", x.dir
     setDocking(x.elem, x.dir)
   createDock(elemProps, children)
 
