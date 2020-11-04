@@ -20,7 +20,7 @@ let hardCodedScale = 2.0
 
 proc updateTextProps(self: dom.Element, props: TextInputProps): void =
   self.style.color = props.color.get("black")
-  self.style.fontSize = $props.fontSize.get(15) & "pt"
+  self.style.fontSize = $props.fontSize.get(12.0) & "pt"
 
 proc createHtmlTextInput(props: TextInputProps): dom.Element =
   result = document.createElement("INPUT")
@@ -45,11 +45,13 @@ proc renderHtmlTextInput(self: dom.Element, owner: element.Element, props: TextI
   let scale = vec2(1.0, 1.0)
   let positionScale = vec2(2.0, 2.0) # TODO: Get correct scaling
   let worldPos = owner.actualWorldPosition().mul(positionScale)
+  let fontSize = props.fontSize.get(12.0) * 2.0
   self.style.transform = &"translate({worldPos.x}px,{worldPos.y}px) scale({scale.x}, {scale.y})"
   self.style.background = "none"
   self.style.border = "none"
   self.style.width = &"{owner.bounds.get().width * 2.0}px"
   self.style.height = &"{owner.bounds.get().height * 2.0}px"
+  self.style.setProperty("font-size", &"{fontSize}px")
   self.updateTextProps(props)
   if props.text != self.innerHtml:
     self.innerHtml = props.text
