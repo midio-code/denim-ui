@@ -1,5 +1,5 @@
 import element
-import ../observables
+import rx_nim
 
 template bindProp*[T](prop: typed, observable: Observable[T]): untyped =
   # TODO: Handle disposing of subscription

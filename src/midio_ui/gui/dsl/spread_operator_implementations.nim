@@ -1,7 +1,7 @@
 import options, sets, sequtils, sugar
 import ../types
 import ../element
-import ../../observables
+import rx_nim
 import ../../guid
 import ../../utils
 
