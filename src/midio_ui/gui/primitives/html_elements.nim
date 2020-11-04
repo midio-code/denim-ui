@@ -1,4 +1,5 @@
 import options, strformat, sugar, dom
+import ./text
 import ../element
 import ../drawing_primitives
 import ../types
@@ -29,10 +30,15 @@ proc createHtmlTextInput(props: TextInputProps): dom.Element =
     result.setAttribute("placeholder", props.placeholder.get())
   result.value = props.text
 
-proc measureHtmlTextInput(self: dom.Element, availableSize: Vec2[float]): Vec2[float] =
-  let r = self.getBoundingClientRect()
-  let size = vec2(r.width, r.height)
-  size.divide(2.0)
+proc measureHtmlTextInput(props: TextInputProps): Vec2[float] =
+  let actualText =
+    if props.text == "":
+      props.placeholder.get("")
+    else:
+      props.text
+
+  let measured = measureText(actualText, props.fontSize.get(12.0), props.font.get("system-ui"), "top")
+  measured / vec2(2.0, 1.0)
 
 # TODO: We are kind of misusing render here. Create a way to react to layouts instead of using render.
 proc renderHtmlTextInput(self: dom.Element, owner: element.Element, props: TextInputProps): Option[Primitive] =
@@ -40,6 +46,10 @@ proc renderHtmlTextInput(self: dom.Element, owner: element.Element, props: TextI
   let positionScale = vec2(2.0, 2.0) # TODO: Get correct scaling
   let worldPos = owner.actualWorldPosition().mul(positionScale)
   self.style.transform = &"translate({worldPos.x}px,{worldPos.y}px) scale({scale.x}, {scale.y})"
+  self.style.background = "none"
+  self.style.border = "none"
+  self.style.width = &"{owner.bounds.get().width * 2.0}px"
+  self.style.height = &"{owner.bounds.get().height * 2.0}px"
   self.updateTextProps(props)
   if props.text != self.innerHtml:
     self.innerHtml = props.text
@@ -66,6 +76,7 @@ proc htmlTextInput*(props: TextInputProps): element.Element =
     proc(ev: dom.Event): void =
       result.invalidateLayout()
       let t = domElement.value
+      props.text = $t
       echo "Got new value: ", t
       if props.onChange.isSome():
         props.onChange.get()($t)
@@ -73,7 +84,7 @@ proc htmlTextInput*(props: TextInputProps): element.Element =
   result = newElement(
     layout = some(Layout(
       name: "textInput(layout)",
-      measure: (self: element.Element, avSize: Vec2[float]) => domElement.measureHtmlTextInput(avSize),
+      measure: (self: element.Element, avSize: Vec2[float]) => measureHtmlTextInput(props),
       arrange: (self: element.Element, avSize: Vec2[float]) => domElement.arrangeHtmlTextInput(self, avSize)
     )),
     drawable = some(Drawable(

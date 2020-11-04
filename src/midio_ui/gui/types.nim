@@ -27,6 +27,7 @@ type
 
   TextInputProps* = ref object
     text*: string
+    font*: Option[string]
     placeholder*: Option[string]
     fontSize*: Option[float]
     color*: Option[string]
