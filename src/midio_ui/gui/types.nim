@@ -11,6 +11,13 @@ type
   PointerIndex* = enum
     Primary = 0, Middle = 1, Secondary = 2
 
+proc isPrimary*(pi: PointerIndex): bool =
+  pi == PointerIndex.Primary
+proc isSecondary*(pi: PointerIndex): bool =
+  pi == PointerIndex.Secondary
+proc isMiddle*(pi: PointerIndex): bool =
+  pi == PointerIndex.Middle
+
 type
   Color* = string
   Point* = Vec2[float]
