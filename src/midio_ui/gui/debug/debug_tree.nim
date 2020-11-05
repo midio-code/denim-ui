@@ -22,12 +22,12 @@ component CollapsablePanel():
         rectangle(radius = (5.0,5.0,0.0,0.0), color = "#3C3C3C")
         dock:
           docking(DockDirection.Right):
-            panel(horizontalAlignment = HorizontalAlignment.Right, verticalAlignment = VerticalAlignment.Center):
+            panel(alignment = CenterRight):
               circle(color = "#FE5D55", radius = 5.0, margin = thickness(5.0))
               onClicked(
                 (e: Element, args: PointerArgs) => isCollapsed.next(not isCollapsed.value)
               )
-          text(text = "Debug", horizontalAlignment = HorizontalAlignment.Left, verticalAlignment = VerticalAlignment.Center, margin = thickness(5.0))
+          text(text = "Debug", alignment = CenterLeft, margin = thickness(5.0))
     panel(minHeight = 5.0):
       rectangle(color = "#252526", radius = (0.0, 0.0, 5.0, 5.0))
       panel(visibility <- isCollapsed.map((x: bool) => choose(x, Visibility.Collapsed, Visibility.Visible))):
@@ -68,7 +68,7 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
       ).animate(lerp, 200.0)
       dock:
         docking(DockDirection.Left):
-          panel(verticalAlignment = VerticalAlignment.Top, visibility = choose(x.c.children.len() > 0, Visible, Hidden)):
+          panel(alignment = Alignment.Top, visibility = choose(x.c.children.len() > 0, Visible, Hidden)):
             path(
               data = @[moveTo(0.0, 10.0), lineTo(10.0, 5.0), lineTo(0.0, 0.0), lineTo(0.0, 10.0)],
               width = 10.0,
@@ -82,14 +82,14 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
               proc(e: Element, args: PointerArgs): void =
                 toggledByUser.next(not toggledByUser.value)
             )
-        stack(margin = thickness(10.0, 0.0), horizontalAlignment = HorizontalAlignment.Left):
+        stack(margin = thickness(10.0, 0.0), alignment = Alignment.Left):
           panel:
             rectangle(stroke = "red", strokeWidth <- highlightStrokeWidth)
             DebugElem(label = x.t, elem = x.c)
           panel(visibility <- visibility):
             DebugTreeImpl(tree = x.c, filterText = filterText)
   )
-  stack(verticalAlignment = VerticalAlignment.Top, horizontalAlignment = HorizontalAlignment.Left):
+  stack(alignment = TopLeft):
     ...elems
 
 component DebugTree(tree: Element):
@@ -164,7 +164,7 @@ component DebugTree(tree: Element):
             rectangle(
               color = "yellow",
               height <- thumbHeight,
-              verticalAlignment = VerticalAlignment.Top,
+              alignment = Alignment.Top,
               y <- actualThumbPos
             ):
               onDrag(

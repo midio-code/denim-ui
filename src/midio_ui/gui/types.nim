@@ -127,6 +127,27 @@ type
   VerticalAlignment* {.pure.} = enum
     Stretch, Center, Top, Bottom
 
+  Alignment* {.pure.} = enum
+    Stretch, Left, TopLeft, Top, TopRight, Right,
+    BottomRight, Bottom, BottomLeft, Center,
+    CenterLeft, CenterRight, TopCenter, BottomCenter,
+    HorizontalCenter, VerticalCenter
+
+proc horizontalPart*(alignment: Alignment): HorizontalAlignment =
+  case alignment:
+    of Alignment.Left, TopLeft, BottomLeft, CenterLeft: HorizontalAlignment.Left
+    of Alignment.Center, TopCenter, BottomCenter, HorizontalCenter: HorizontalAlignment.Center
+    of Alignment.Right, TopRight, BottomRight, CenterRight: HorizontalAlignment.Right
+    of Alignment.Top, Alignment.Bottom, VerticalCenter, Alignment.Stretch: HorizontalAlignment.Stretch
+
+proc verticalPart*(alignment: Alignment): VerticalAlignment =
+  case alignment:
+    of Alignment.Top, TopLeft, TopRight, TopCenter: VerticalAlignment.Top
+    of Alignment.Bottom, BottomLeft, BottomRight, BottomCenter: VerticalAlignment.Bottom
+    of VerticalCenter, Alignment.Center, CenterLeft, CenterRight: VerticalAlignment.Center
+    of Alignment.Left, Alignment.Right, HorizontalCenter, Alignment.Stretch: VerticalAlignment.Stretch
+
+type
   Visibility* {.pure.} = enum
     Visible, Collapsed, Hidden
 
@@ -142,8 +163,7 @@ type
     xOffset*: Option[float]
     yOffset*: Option[float]
     margin*: Option[Thickness[float]]
-    horizontalAlignment*: Option[HorizontalAlignment]
-    verticalAlignment*: Option[VerticalAlignment]
+    alignment*: Option[Alignment]
     visibility*: Option[Visibility]
     clipToBounds*: Option[bool]
     # TODO: Implement all transforms for all rendering backends

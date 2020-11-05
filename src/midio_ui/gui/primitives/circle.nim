@@ -40,5 +40,5 @@ proc createCircle*(props: CircleProps = CircleProps(), elemProps: ElemProps = El
 proc createCircle*(color: Color, pos: Vec2[float], radius: float): Element =
   createCircle(CircleProps(color: some(color), radius: radius), ElemProps(x: pos.x, y: pos.y))
 
-proc createCircle*(color: Color, radius: float): Element =
-  createCircle(CircleProps(color: some(color), radius: radius), ElemProps(horizontalAlignment: HorizontalAlignment.Center))
+# proc createCircle*(color: Color, radius: float): Element =
+#   createCircle(CircleProps(color: some(color), radius: radius), ElemProps(alignment: HorizontalAlignment.Center))

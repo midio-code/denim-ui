@@ -289,8 +289,9 @@ proc arrangeCore(self: Element, finalRect: Bounds): void =
     max(0.0, finalRect.width() - margin.left() - margin.right()),
     max(0.0, finalRect.height() - margin.top() - margin.bottom())
   )
-  let horizontalAlignment = self.props.horizontalAlignment.get(HorizontalAlignment.Stretch)
-  let verticalAlignment = self.props.verticalAlignment.get(VerticalAlignment.Stretch)
+  let alignment = self.props.alignment.get(Alignment.Stretch)
+  let horizontalAlignment = alignment.horizontalPart
+  let verticalAlignment = alignment.verticalPart
   var size = availableSizeMinusMargins
 
   if horizontalAlignment != HorizontalAlignment.Stretch:
