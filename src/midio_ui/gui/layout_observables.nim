@@ -2,7 +2,7 @@ import tables, options
 import types
 import element
 import ../events
-import ../observables
+import rx_nim
 import ../vec
 import ../rect
 import element_bounds_changed_event

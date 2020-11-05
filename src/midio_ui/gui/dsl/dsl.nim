@@ -8,14 +8,14 @@ import ../../guid
 import spread_operator_implementations
 
 import macroutils except name, body
-import ../../observables
+import rx_nim
 
 export macros
 export types
 export spread_operator_implementations
 export utils
 export behaviors
-export observables
+export rx_nim
 export element
 
 type

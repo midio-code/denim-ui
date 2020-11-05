@@ -1,7 +1,7 @@
 import sugar, options
 import types, element_bounds_changed_event
 import ../rect
-import ../observables
+import rx_nim
 
 proc observeBounds*(e: Element): Observable[Rect[float]] =
   let state = behaviorSubject(e.bounds.get(rect(0.0)))

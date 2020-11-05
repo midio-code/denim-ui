@@ -1,7 +1,7 @@
 import sugar, tables, options, sets
 import types
 import element
-import ../observables/observables
+import rx_nim
 import ../events
 import ../utils
 import ../vec

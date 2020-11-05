@@ -1,5 +1,5 @@
 import sugar
-#import observables
+#import rx_nim
 
 type
   EventHandler*[T] = (T) -> void
