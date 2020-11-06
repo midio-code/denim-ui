@@ -82,6 +82,17 @@ proc bindChildCollection*(self: Element, obs: Observable[seq[Element]]): void =
   let subj = behaviorSubject(obs)
   self.bindChildCollection(subj)
 
+proc bindChildCollection*(self: Element, obs: ObservableCollection[Element]): void =
+  # TODO: Handle subscriptions for bound child collections
+  discard obs.subscribe(
+    proc(added: Element): void =
+      self.addChild(added),
+    proc(removed: Element): void =
+      self.removeChild(removed),
+    proc(initial: seq[Element]): void =
+      for i in initial:
+        self.addChild(i)
+  )
 
 proc bindChildCollection*(self: Element, subj: CollectionSubject[Element]): void =
   for child in subj.values:
@@ -91,5 +102,8 @@ proc bindChildCollection*(self: Element, subj: CollectionSubject[Element]): void
     proc(added: Element): void =
       self.addChild(added),
     proc(removed: Element): void =
-      self.removeChild(removed)
+      self.removeChild(removed),
+    proc(initial: seq[Element]): void =
+      for i in initial:
+        self.addChild(i)
   )
