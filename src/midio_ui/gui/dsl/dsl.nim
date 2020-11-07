@@ -1,4 +1,4 @@
-import macros, sugar, sets, sequtils, tables, options, strformat
+import macros, sugar, sets, sequtils, tables, options, strformat, strutils
 import ../types, ../data_binding, ../element, ../behaviors
 import ../containers/stack, ../containers/dock
 import ../primitives/text, ../primitives/rectangle
@@ -348,6 +348,9 @@ proc newElement(compProps: NoProps, elemProps: ElemProps, children: seq[Element]
   result = Element()
   initElement(result, elemProps, children)
 
+type
+  Panel* = ref object of Element
+
 macro panel*(attributesAndChildren: varargs[untyped]): untyped =
   element_type(attributesAndChildren, NoProps, newElement)
 
@@ -394,49 +397,134 @@ macro textInput*(attributesAndChildren: varargs[untyped]): untyped =
 # TODO: Make binding syntax (foo <- observable), work for components
 # One currently has to make the prop an observable and bind inside the component for this to work.
 # This might be an ok solution for now though
-macro component*(head: untyped, body: untyped): untyped =
-  var compName: NimNode
+macro component*(parentType: untyped, head: untyped, body: untyped): untyped =
+  #parentType.expectKind(nnkSym)
+  var name: NimNode
   var props: seq[NimNode] = @[]
+  echo "HEAD: ", head.treeRepr
   case head.kind:
     of nnkObjConstr:
       head.expectKind(nnkObjConstr)
-      compName = head[0]
+      name = head[0]
       for i in [1..head.len() - 1]:
         props.add(head[i])
     of nnkCall:
-      compName = head[0]
+      name = head[0]
     else:
       error(&"Error creating prop. Expected identifier, but got <{head.treeRepr()}>")
 
-  let propsIdent = Ident(compName.strVal & "Props")
+  var nameStrUpperFirst = name.strVal
+  nameStrUpperFirst[0] = name.strVal[0].toUpperAscii()
+  var nameStrLowerFirst = name.strVal
+  nameStrLowerFirst[0] = name.strVal[0].toLowerAscii()
+
+  let compName = Ident(nameStrUpperFirst & "Comp")
+  let compConstructorName = Ident(nameStrUpperFirst)
+  let propsTypeIdent = Ident(nameStrUpperFirst & "Props")
+  let propsFieldIdent = Ident(nameStrLowerFirst& "Props")
+
   let createCompIdent = Ident("create" & compName.strVal)
 
   # Let bindings for the props so that they can be used in the body
   var typeBody = nnkRecList.newTree()
-  var expandedProps = LetSection()
-  for prop in props:
-    expandedProps.add(IdentDefs(prop[0], Empty(), DotExpr(Ident("props"), prop[0])))
-    typeBody.add(IdentDefs(PostFix(Ident("*"), prop[0]), prop[1], Empty()))
+  var expandedProps =
+    if props.len() > 0:
+      let section =  LetSection()
+      for prop in props:
+        section.add(IdentDefs(prop[0], Empty(), DotExpr(Ident("props"), prop[0])))
+        typeBody.add(IdentDefs(PostFix(Ident("*"), prop[0]), prop[1], Empty()))
+      section
+    else:
+      Empty()
 
   let propsArgIdent = Ident("props")
 
-  let typeDef = TypeSection(TypeDef(PostFix(Ident("*"), propsIdent), Empty(), RefTy(ObjectTy(Empty(), Empty(), typeBody))))
+  let typeDef = TypeSection(TypeDef(PostFix(Ident("*"), propsTypeIdent), Empty(), RefTy(ObjectTy(Empty(), Empty(), typeBody))))
 
   let childrenIdent = Ident("children")
 
-  let compTypeName = Ident(compName.strVal & "Type")
+  echo "Got here: ", body.treerepr
+  echo "expanded props: ", expandedProps.treeRepr()
 
   result = quote do:
     `typeDef`
 
     type
-      `compTypeName` = ref object of Element
+      `compName`* = ref object of `parentType`
+        `propsFieldIdent`*: `propsTypeIdent`
 
-    macro `compName`*(attributesAndChildren: varargs[untyped]): untyped =
-      element_type(attributesAndChildren, `propsIdent`, `createCompIdent`)
 
-    proc `createCompIdent`*(`propsArgIdent`: `propsIdent`, elemProps: ElemProps, `childrenIdent`: seq[Element]): Element =
+    macro `compConstructorName`*(attributesAndChildren: varargs[untyped]): untyped =
+      element_type(attributesAndChildren, `propsTypeIdent`, `createCompIdent`)
+
+    proc `createCompIdent`*(`propsArgIdent`: `propsTypeIdent`, elemProps: ElemProps, `childrenIdent`: seq[Element]): `compName` =
       `expandedProps`
-      `body`
+      let content = block:
+        compileComponentBody(`body`)
+      let (children, behaviors) = sortChildren(content)
+      let ret = `compName`(
+        `propsFieldIdent`: `propsArgIdent`
+      )
+      initElement(ret, elemProps, children & `childrenIdent`)
+      for b in behaviors:
+        ret.addBehavior(b)
+      ret
 
+  echo "Result is: ", result.repr()
 # TODO: parse body so that we can have multiple children and specify a root type in the "constructor"
+
+
+macro compileComponentBody*(body: untyped): untyped =
+  echo "\n\n\n"
+  echo "Component: "#, `nameStrUpperFirst`
+  echo "Body kind: ", body.kind
+  #echo "Body type: ", body.getTypeInst().repr
+  echo body.repr()
+
+  let content = StmtList()
+  var children: seq[(NimNode, NimNode)] = @[]
+  for item in body:
+    echo "----------"
+    echo "  - kind: ", item.kind
+    #let t = macroIsElement(item)
+    case item.kind:
+      of nnkCall:
+        children.add((genSym(nskLet, "child"), item))
+      of nnkLetSection, nnkVarSection, nnkDiscardStmt, nnkProcDef:
+        content.add(item)
+      else:
+        error(&"Node of kind <{item.kind}> is not allowed in component bodies.")
+  echo "\n\n\n"
+  let childrenDefinitions = LetSection()
+  for c in children:
+    let (sym, def) = c
+    childrenDefinitions.add(IdentDefs(sym, Empty(), def))
+  let childrenTuple = Par()
+  for c in children:
+    let (sym, _) = c
+    childrenTuple.add(sym)
+
+  result = quote do:
+    `content`
+    `childrenDefinitions`
+    sortChildren(`childrenTuple`)
+  echo "Compiled body: ", result.repr()
+
+macro sortChildren*(childrenTuple: typed): untyped =
+  echo "CHILDREN: ", childrenTuple.treerepr()
+  echo "    len: ", childrenTuple.len
+  let behaviors = Bracket()
+  let children = Bracket()
+  for child in childrenTuple:
+    echo "child: ", child.repr()
+    echo "  type: ", child.getTypeInst().repr()
+    echo "  is behavior?: ", child.getTypeInst().sameType(Behavior.getType())
+    if child.getTypeInst().sameType(Behavior.getType()):
+      behaviors.add(child)
+    else:
+      children.add(Call(Ident"safeCastToElement", child))
+  result = quote do:
+    let children: seq[Element] = @`children`
+    let behaviors: seq[Behavior] = @`behaviors`
+    (children, behaviors)
+  echo "SORTED CHILDREN: ", result.repr()
