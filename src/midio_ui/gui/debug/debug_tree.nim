@@ -34,7 +34,7 @@ component CollapsablePanel():
         ...children
 
 proc descriptor(self: Element): string =
-  self.layout.map(x => x.name).get("element")
+  "some element type (todo: get actual name)"
 
 component DebugElem(label: string, elem: Element):
   let hovering = behaviorSubject(false)

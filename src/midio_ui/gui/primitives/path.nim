@@ -17,6 +17,9 @@ type
     strokeWidth*: Option[float]
     data*: seq[PathSegment] # TODO: Not sure we should expose this type here, but will deal with that later
 
+  Path* = ref object of Element
+    pathProps*: PathProps
+
 # proc internalMeasure(self: Element, props: PathProps): Vec2[float] =
 #   var smallest = zero()
 #   var largest = zero()
@@ -36,7 +39,8 @@ type
 #   echo "Result is: ", result
 
 
-proc renderPath(self: Element, props: PathProps): Option[Primitive] =
+method render(self: Path): Option[Primitive] =
+  let props = self.pathProps
   if self.bounds.isNone():
     # TODO: Fix whatever caused the need for this check
     echo "WARN: Bounds of path was none"
@@ -54,21 +58,11 @@ proc renderPath(self: Element, props: PathProps): Option[Primitive] =
 # TODO: Make initialization of these native dependent functions more explicit
 var hitTestPath*: (Element, PathProps, Point) -> bool
 
-proc createPath*(props: PathProps = PathProps(), elemProps: ElemProps = ElemProps(), children: seq[Element] = @[]): Element =
-  newElement(
-    props = elemProps,
-    # layout = some(
-    #   Layout(
-    #     name: "path(layout)",
-    #     measure: (self: Element, avSize: Vec2[float]) => internalMeasure(self, props),
-    #   )
-    # ),
-    hitTest = some(
-      proc(e: Element, p: Point): bool =
-        hitTestPath(e, props, p)
-    ),
-    drawable = some(Drawable(
-      name: "path",
-      render: (elem: Element) => renderPath(elem, props)
-    ))
+method isPointInside(self: Path, point: Point): bool =
+  hitTestPath(self, self.pathProps, point)
+
+proc createPath*(props: PathProps = PathProps(), elemProps: ElemProps = ElemProps(), children: seq[Element] = @[]): Path =
+  result = Path(
+    pathProps: props
   )
+  initElement(result, elemProps, children)

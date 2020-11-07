@@ -6,13 +6,18 @@ import ../../thickness
 import ../../utils
 
 type
+  Stack* = ref object of Element
+    stackProps*: StackProps
+
   StackDirection* = enum
     Vertical, Horizontal
+
   StackProps* = ref object
     direction*: StackDirection
 
 
-proc measureStack(self: Element, props: StackProps, availableSize: Vec2[float]): Vec2[float] =
+method overrideMeasure(self: Stack, availableSize: Vec2[float]): Vec2[float] =
+  let props = self.stackProps
   var width = 0.0
   var accumulatedHeight = 0.0
   let isVertical = props.direction == StackDirection.Vertical
@@ -26,7 +31,8 @@ proc measureStack(self: Element, props: StackProps, availableSize: Vec2[float]):
 
   choose(isVertical, vec2(width, accumulatedHeight), vec2(accumulatedHeight, width))
 
-proc arrangeStack(self: Element, props: StackProps, availableSize: Vec2[float]): Vec2[float] =
+proc overrideArrange(self: Stack, availableSize: Vec2[float]): Vec2[float] =
+  let props = self.stackProps
   var nextPos = vec2(0.0, 0.0)
   let isVertical = props.direction == StackDirection.Vertical
   for child in self.children:
@@ -46,12 +52,11 @@ proc arrangeStack(self: Element, props: StackProps, availableSize: Vec2[float]):
       echo "WARN: Child of stack did not have a desired size"
   self.desiredSize.get()
 
-proc createStack*(stackProps: StackProps, props: ElemProps = ElemProps(), children: seq[Element] = @[]): Element =
-  result = newElement(props, children, some(Layout(
-    name: "stack",
-    measure: proc(elem: Element, avSize: Vec2[float]): Vec2[float] = measureStack(elem, stackProps, avSize),
-    arrange: proc(self: Element, availableSize: Vec2[float]): Vec2[float] = arrangeStack(self, stackProps, availableSize)
-  )))
+proc createStack*(stackProps: StackProps, props: ElemProps = ElemProps(), children: seq[Element] = @[]): Stack =
+  result = Stack(
+    stackProps: stackProps
+  )
+  initElement(result, props, children)
 
 # proc createStack*(props: ElemProps = ElemProps(), children: varargs[Element] = @[]): Element =
 #   createStack(props, @children)

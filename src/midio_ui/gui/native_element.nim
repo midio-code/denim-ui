@@ -8,30 +8,15 @@ import ../vec
 when defined(js):
   import primitives/html_elements
 
-  proc createTextInput*(props: TextInputProps): Element =
-    htmlTextInput(props)
-
-  proc createTextInput*(text: string, onChange: TextChanged): Element =
-    createTextInput(
-      TextInputProps(
-        text: text,
-        onChange: onChange
-      )
-    )
+  proc createTextInput*(props: ElemProps, textInputProps: TextInputProps): Element =
+    htmlTextInput(props, textInputProps)
 
 else:
-  proc createTextInput*(props: TextInputProps): Element =
+  proc createTextInput*(props: ElemProps, textInputProps: TextInputProps): Element =
     createText(
       TextProps(
         text: props.text,
         fontSize: props.fontSize,
         color: props.color,
-      )
-    )
-
-  proc createTextInput*(text: string, onChange: TextChanged): Element =
-    createText(
-      TextProps(
-        text: text
       )
     )

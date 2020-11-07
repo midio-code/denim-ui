@@ -1,4 +1,4 @@
-import sugar, tables, strformat, options, macros, strutils, sets
+import sugar, tables, strformat, options, macros, strutils, sets, sequtils
 import ../vec
 import ../rect
 import ../thickness
@@ -130,11 +130,6 @@ proc `pos=`*(props: ElemProps, value: Vec2[float]): void =
   props.x = some(value.x)
   props.y = some(value.y)
 
-proc description*(self: Element): string =
-  let layoutName = self.layout.map(x => x.name).get("no layout")
-  let drawableName = self.drawable.map(x => x.name).get("no drawable")
-  &"({layoutName}):({drawableName})"
-
 proc isRoot*(self: Element): bool =
   self.hasTag("root")
 
@@ -145,17 +140,22 @@ proc getRoot*(self: Element): Element =
   while result.parent.isSome():
     result = result.parent.get()
 
+method onRooted*(self: Element): void {.base.} =
+  discard
+
 proc dispatchOnRooted*(self: Element): void =
   self.isRooted = true
-  if self.onRooted.isSome():
-    self.onRooted.get()(self)
+  self.onRooted()
   for child in self.children:
     child.dispatchOnRooted()
 
+
+method onUnrooted*(self: Element): void {.base.} =
+  discard
+
 proc dispatchOnUnrooted*(self: Element): void =
   self.isRooted = false
-  if self.onUnrooted.isSome():
-    self.onUnrooted.get()(self)
+  self.onUnrooted()
   for child in self.children:
     child.dispatchOnUnrooted()
 
@@ -186,40 +186,16 @@ proc setChildren*(self: Element, value: seq[Element]): void =
   for child in value:
     self.addChild(child)
 
-proc newElement*(
+proc initElement*(
+  self: Element,
   props: ElemProps = ElemProps(),
-  children: seq[Element] = @[],
-  layout: Option[Layout] = none[Layout](),
-  hitTest: Option[(Element, Point) -> bool] = none[(Element, Point) -> bool](),
-  drawable: Option[Drawable] = none[Drawable](),
-  onRooted: Option[(Element) -> void] = none[(Element) -> void](),
-  onUnrooted: Option[(Element) -> void] = none[(Element) -> void](),
-  ): Element =
-  result = Element(
-    id: genGuid(),
-    props: props,
-    children: children,
-    layout: layout,
-    hitTest: hitTest,
-    drawable: drawable,
-    parent: none[Element](),
-    onRooted: onRooted,
-    onUnrooted: onUnrooted
-  )
+  children: seq[Element] = @[]
+): void =
+  self.id = genGuid()
+  self.props = props
+  self.children = children
   for child in children:
-    child.parent = result
-
-proc createPanel*(children: varargs[Element]): Element =
-  newElement(children = @children)
-
-proc createPanel*(props: ElemProps, children: varargs[Element]): Element =
-  newElement(props, @children)
-
-proc createPanel*(props: ElemProps, children: seq[Element]): Element =
-  newElement(props, children)
-
-proc createPanel*(margin: Thickness[float], children: varargs[Element]): Element =
-  newElement(ElemProps(margin: margin), @children)
+    child.parent = self
 
 type
   MinMax = object
@@ -265,20 +241,17 @@ proc margin*(p: Element): Thickness[float] =
   p.props.margin.get(thickness(0.0))
 
 # Forward declaration
-proc arrangeOverride*(self: Element, finalSize: Vec2[float]): Vec2[float] =
-  if self.layout.filter(x => not(isNil(x.arrange))).isSome():
-    self.layout.get().arrange(self, finalSize)
-  else:
-    var largestChild = zero()
-    for child in self.children:
-      if child.desiredSize.isSome():
-        largestChild = largestChild.max(child.desiredSize.get())
+method arrangeOverride*(self: Element, finalSize: Vec2[float]): Vec2[float] {.base.} =
+  var largestChild = zero()
+  for child in self.children:
+    if child.desiredSize.isSome():
+      largestChild = largestChild.max(child.desiredSize.get())
 
-    let arrangeRect = rect(zero(), finalSize.max(largestChild))
-    for child in self.children:
-      child.arrange(arrangeRect)
+  let arrangeRect = rect(zero(), finalSize.max(largestChild))
+  for child in self.children:
+    child.arrange(arrangeRect)
 
-    arrangeRect.size
+  arrangeRect.size
 
 proc arrangeCore(self: Element, finalRect: Bounds): void =
 
@@ -349,8 +322,12 @@ proc arrange*(self: Element, rect: Rect): void =
     self.isArrangeValid = true
     self.previousArrange = some(rect)
 
+proc childDesiredSizeChanged(self: Element): void =
+  if not self.measuring:
+    self.invalidateMeasure()
+
 # forward declarations
-proc measureOverride*(self: Element, availableSize: Vec2[float]): Vec2[float]
+method measureOverride*(self: Element, availableSize: Vec2[float]): Vec2[float]
 
 proc measureCore(self: Element, availableSize: Vec2[float]): Vec2[float] =
   if self.props.visibility.get(Visibility.Visible) == Visibility.Collapsed:
@@ -379,10 +356,6 @@ proc measureCore(self: Element, availableSize: Vec2[float]): Vec2[float] =
 
   result = vec2(width, height).inflate(margin).nonNegative()
 
-proc childDesiredSizeChanged(self: Element): void =
-  if not self.measuring:
-    self.invalidateMeasure()
-
 proc measure*(self: Element, availableSize: Vec2[float]): void =
   if not self.isRooted:
     return
@@ -408,33 +381,51 @@ proc measure*(self: Element, availableSize: Vec2[float]): void =
     if desiredSize != previousDesiredSize and self.parent.isSome():
       self.parent.get().childDesiredSizeChanged()
 
-proc measureOverride*(self: Element, availableSize: Vec2[float]): Vec2[float] =
-  if self.layout.filter(x => not(isNil(x.measure))).isSome():
-    return self.layout.get().measure(self, availableSize)
-  else:
-    var width = 0.0
-    var height = 0.0
+method measureOverride*(self: Element, availableSize: Vec2[float]): Vec2[float] {.base.} =
+  var width = 0.0
+  var height = 0.0
 
-    for child in self.children:
-      child.measure(availableSize)
-      width = max(width, child.desiredSize.get().x)
-      height = max(height, child.desiredSize.get().y)
+  for child in self.children:
+    child.measure(availableSize)
+    width = max(width, child.desiredSize.get().x)
+    height = max(height, child.desiredSize.get().y)
 
-    return vec2(width, height)
+  return vec2(width, height)
 
 proc boundsInWorldSpace*(self: Element): Option[Bounds] =
   self.bounds.map(x => x.withPos(self.actualWorldPosition))
 
-proc isPointInside*(self: Element, point: Vec2[float]): bool =
-  if self.hitTest.isSome():
-    self.hitTest.get()(self, point)
-  else:
-    let pos = self.actualWorldPosition
-    let size = self.bounds.map(x => x.size).get(zero())
-    pos.x < point.x and point.x < pos.x + size.x and pos.y < point.y and point.y < pos.y + size.y
+method isPointInside*(self: Element, point: Vec2[float]): bool {.base.} =
+  let pos = self.actualWorldPosition
+  let size = self.bounds.map(x => x.size).get(zero())
+  pos.x < point.x and point.x < pos.x + size.x and pos.y < point.y and point.y < pos.y + size.y
 
 proc relativeTo*(self: Vec2[float], elem: Element): Vec2[float] =
   self.sub(elem.actualWorldPosition)
 
 proc relativeTo*(self: Rect[float], elem: Element): Rect[float] =
   self.withPos(self.pos.relativeTo(elem))
+
+method render*(self: Element): Option[Primitive] {.base.} =
+  if self.props.visibility.get(Visibility.Visible) != Visibility.Visible:
+    return none[Primitive]()
+  if not self.isRooted:
+    echo "Not rooted"
+    return none[Primitive]()
+  if not self.isArrangeValid:
+    echo "Arrange not valid"
+    return none[Primitive]()
+
+  result = some(
+    Primitive(
+      transform: self.props.transform,
+      bounds: self.bounds.get(),
+      clipToBounds: self.props.clipToBounds.get(false),
+      kind: PrimitiveKind.Container
+    )
+  )
+  if result.isSome():
+    result.get().children = self.children
+      .map((x: Element) => x.render())
+      .filter((x: Option[Primitive]) => x.isSome())
+      .map((x: Option[Primitive]) => x.get())

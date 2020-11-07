@@ -223,14 +223,27 @@ template rectangle_impl*(attributes: untyped): untyped =
     let elemParts = extractProps(RectProps, attributes)
     createRectangle(elemParts.componentProps, elemParts.elemProps)
 
+macro safeCastToElement*(self: string or int or float): untyped =
+  error("strings and numbers are children is not supported")
+
+proc safeCastToElement*[T](self: T): Element =
+  if self is Element:
+    cast[Element](self)
+  else:
+    # TODO: Make this check static, if possible.
+    # TODO: Make safeCastToElement report exactly where the error is and what went wrong.
+    raise newException(Exception, "Child did not inherit from Element")
+
 macro extractChildren*(childrenOrBehaviors: typed, childrenIdent: untyped, behaviorsIdent: untyped): untyped =
   let children = Bracket()
   let behaviors = Bracket()
   for item in childrenOrBehaviors:
-    if item.getTypeInst().sameType(Element.getType()):
-      children.add item
-    elif item.getTypeInst().sameType(Behavior.getType()):
+    if item.getTypeInst().sameType(Behavior.getType()):
       behaviors.add item
+    else:
+      # NOTE: Assyming all other items inherit from Element and are valid children.
+      # This is autmatically verified later, by the type system after macro expansion.
+      children.add Call(Ident"safeCastToElement", item)
   result = quote do:
     var
       `childrenIdent`: seq[Element] = @`children`
@@ -331,8 +344,9 @@ macro stack*(attributesAndChildren: varargs[untyped]): untyped =
 macro scrollView*(attributesAndChildren: varargs[untyped]): untyped =
   element_type(attributesAndChildren, ScrollViewProps, createScrollView)
 
-proc newElement(compProps: NoProps, elemProps: ElemProps, children: seq[Element]): Element = 
-  newElement(elemProps, children)
+proc newElement(compProps: NoProps, elemProps: ElemProps, children: seq[Element]): Element =
+  result = Element()
+  initElement(result, elemProps, children)
 
 macro panel*(attributesAndChildren: varargs[untyped]): untyped =
   element_type(attributesAndChildren, NoProps, newElement)
@@ -372,7 +386,7 @@ macro circle*(attributesAndChildren: varargs[untyped]): untyped =
   element_type(attributesAndChildren, CircleProps, createCircle)
 
 proc createTextInput(props: TextInputProps, elemProps: ElemProps, children: seq[Element]): Element =
-  createTextInput(props)
+  createTextInput(elemProps, props)
 
 macro textInput*(attributesAndChildren: varargs[untyped]): untyped =
   element_type(attributesAndChildren, TextInputProps, createTextInput)
@@ -410,8 +424,13 @@ macro component*(head: untyped, body: untyped): untyped =
 
   let childrenIdent = Ident("children")
 
+  let compTypeName = Ident(compName.strVal & "Type")
+
   result = quote do:
     `typeDef`
+
+    type
+      `compTypeName` = ref object of Element
 
     macro `compName`*(attributesAndChildren: varargs[untyped]): untyped =
       element_type(attributesAndChildren, `propsIdent`, `createCompIdent`)
@@ -419,3 +438,5 @@ macro component*(head: untyped, body: untyped): untyped =
     proc `createCompIdent`*(`propsArgIdent`: `propsIdent`, elemProps: ElemProps, `childrenIdent`: seq[Element]): Element =
       `expandedProps`
       `body`
+
+# TODO: parse body so that we can have multiple children and specify a root type in the "constructor"

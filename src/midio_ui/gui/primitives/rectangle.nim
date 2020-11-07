@@ -6,17 +6,22 @@ import ../../vec
 import ../../rect
 
 type
+  Rectangle* = ref object of Element
+    rectProps*: RectProps
+
   RectProps* = ref object
     color*: Option[Color]
     radius*: Option[CornerRadius]
     stroke*: Option[Color]
     strokeWidth*: Option[float]
 
-proc renderRectangle(self: Element, props: RectProps): Option[Primitive] =
-  let bounds = self.bounds.get()
-  let width = bounds.width()
-  let height = bounds.height()
-  let radius = props.radius.get((0.0, 0.0, 0.0, 0.0))
+method render(self: Rectangle): Option[Primitive] =
+  let
+    props = self.rectProps
+    bounds = self.bounds.get()
+    width = bounds.width()
+    height = bounds.height()
+    radius = props.radius.get((0.0, 0.0, 0.0, 0.0))
 
   some(
     self.createPath(
@@ -35,20 +40,8 @@ proc renderRectangle(self: Element, props: RectProps): Option[Primitive] =
     )
   )
 
-proc createRectangle*(props: RectProps = RectProps(), elemProps: ElemProps = ElemProps(), children: seq[Element] = @[]): Element =
-  newElement(
-    props = elemProps,
-    drawable = some(Drawable(
-      name: "rectangle",
-      render: (elem: Element) => renderRectangle(elem, props)
-    ))
+proc createRectangle*(props: RectProps = RectProps(), elemProps: ElemProps = ElemProps(), children: seq[Element] = @[]): Rectangle =
+  result = Rectangle(
+    rectProps: props
   )
-
-proc fill*(color: Color, elemProps: ElemProps = ElemProps()): Element =
-  createRectangle(props = RectProps(color: some(color)), elemProps = elemProps)
-
-proc fill*(color: Color, radius: CornerRadius): Element =
-  createRectangle(props = RectProps(color: some(color), stroke: some(color), radius: some(radius)))
-
-proc border*(strokeColor: Color, strokeWidth: Option[float] = none[float](), radius: Option[CornerRadius] = none[CornerRadius]()): Element =
-  createRectangle(props = RectProps(stroke: some(strokeColor), strokeWidth: strokeWidth, radius: radius))
+  initElement(result, elemProps, children)

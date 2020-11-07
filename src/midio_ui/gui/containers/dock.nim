@@ -9,6 +9,8 @@ import ../../thickness
 import ../../rect
 
 type
+  Dock = ref object of Element
+
   DockDirection* {.pure.} = enum
     Default, Left, Top, Right, Bottom
 
@@ -30,7 +32,7 @@ proc getDocking*(elem: Element): Option[DockDirection] =
     none[DockDirection]()
 
 # TODO: See if this step is unnecessary
-proc measureDock(self: Element, constraint: Vec2[float]): Vec2[float] =
+method measureOverride(self: Dock, constraint: Vec2[float]): Vec2[float] =
   var parentWidth = 0.0    # Our current required width due to children thus far.
   var parentHeight = 0.0   # Our current required height due to children thus far.
   var accumulatedWidth = 0.0   # Total width consumed by children.
@@ -90,7 +92,7 @@ proc measureDock(self: Element, constraint: Vec2[float]): Vec2[float] =
 
   vec2(parentWidth, parentHeight)
 
-proc arrangeDock(self: Element, arrangeSize: Vec2[float]): Vec2[float] =
+method arrangeOverride(self: Dock, arrangeSize: Vec2[float]): Vec2[float] =
   var accumulatedLeft = 0.0
   var accumulatedTop = 0.0
   var accumulatedRight = 0.0
@@ -147,31 +149,24 @@ proc arrangeDock(self: Element, arrangeSize: Vec2[float]): Vec2[float] =
 ## available space that is used to place the next child.
 ## Note that the last child can be made to fill the remaining space
 ## by not assigning it a dock value.
-proc createDock*(props: ElemProps, children: seq[Element]): Element =
-  result = newElement(
-    props,
-    children,
-    some(Layout(
-      name: "dock",
-      measure: measureDock,
-      arrange: arrangeDock
-    ))
-  )
+proc createDock*(props: ElemProps, children: seq[Element]): Dock =
+  result = Dock()
+  initElement(result, props, children)
 
-proc createDock*(dockings: seq[Docking], elemProps: ElemProps = ElemProps()): Element =
+proc createDock*(dockings: seq[Docking], elemProps: ElemProps = ElemProps()): Dock =
   let children = dockings.map((c) => c.elem)
   for x in dockings:
     setDocking(x.elem, x.dir)
   createDock(elemProps, children)
 
-proc createDock*(children: varargs[Docking] = @[]):  Element =
-  createDock(@children)
+# proc createDock*(children: varargs[Docking] = @[]):  Dock =
+#   createDock(@children)
 
-proc createDock*(margin: Thickness[float], children: varargs[Docking] = @[]): Element =
-  createDock(@children, elemProps = ElemProps(margin: some(margin)))
+# proc createDock*(margin: Thickness[float], children: varargs[Docking] = @[]): Dock =
+#   createDock(@children, elemProps = ElemProps(margin: some(margin)))
 
-proc createDock*(elemProps: ElemProps, children: varargs[Docking] = @[]): Element =
-  createDock(@children, elemProps = elemProps)
+# proc createDock*(elemProps: ElemProps, children: varargs[Docking] = @[]): Dock =
+#   createDock(@children, elemProps = elemProps)
 
 proc left*(element: Element): Docking =
   (element, DockDirection.Left)

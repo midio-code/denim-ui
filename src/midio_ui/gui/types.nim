@@ -191,7 +191,7 @@ type
   # TODO: Make children (and possible other properties private)
   # This would require moving the type declaration to the place where
   # the implementation can access its private fields.
-  Element* = ref object
+  Element* = ref object of RootObj
     id*: Guid
     children*: seq[Element]
     props*: ElemProps
@@ -204,12 +204,7 @@ type
     isMeasureValid*: bool
     measuring*: bool
 
-    layout*: Option[Layout]
-    drawable*: Option[Drawable]
-    hitTest*: Option[(Element, Point) -> bool]
     isRooted*: bool
-    onRooted*: Option[(Element) -> void]
-    onUnrooted*: Option[(Element) -> void]
 
     pointerInsideLastUpdate*: bool
 
