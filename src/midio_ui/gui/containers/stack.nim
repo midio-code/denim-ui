@@ -16,7 +16,7 @@ type
     direction*: StackDirection
 
 
-method overrideMeasure(self: Stack, availableSize: Vec2[float]): Vec2[float] =
+method measureOverride(self: Stack, availableSize: Vec2[float]): Vec2[float] =
   let props = self.stackProps
   var width = 0.0
   var accumulatedHeight = 0.0
@@ -31,7 +31,7 @@ method overrideMeasure(self: Stack, availableSize: Vec2[float]): Vec2[float] =
 
   choose(isVertical, vec2(width, accumulatedHeight), vec2(accumulatedHeight, width))
 
-proc overrideArrange(self: Stack, availableSize: Vec2[float]): Vec2[float] =
+method arrangeOverride(self: Stack, availableSize: Vec2[float]): Vec2[float] =
   let props = self.stackProps
   var nextPos = vec2(0.0, 0.0)
   let isVertical = props.direction == StackDirection.Vertical
