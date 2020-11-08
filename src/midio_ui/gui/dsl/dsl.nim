@@ -24,23 +24,11 @@ type
 
   MemberTable = OrderedTable[string, NimNode]
 
-proc extractMembersFromPropsType(propType: NimNode): OrderedTable[string, NimNode] =
-  let pt = propType.getTypeInst()[1]
-  if pt.kind != nnkBracketExpr:
-    error(&"Prop types must be ref object types, was: <{pt.repr()}>. TODO: Implement for non ref types.")
+  PropsMembers = tuple
+    objects: Table[string, NimNode]
+    typeMembers: Table[string, HashSet[string]]
 
-  let propTypeInfo = propType.getType()[1].getType()[1]
-  let propTypeFieldsInfo = propTypeInfo.getTypeImpl()[2]
-  result = initOrderedTable[string, NimNode]()
-  for m in propTypeFieldsInfo:
-    result[m[0].strVal] = m[1]
-
-proc extractMembersFromElemProps(): OrderedTable[string, NimNode] =
-  result = initOrderedTable[string, NimNode]()
-  for m in ElemProps.getType()[1].getTypeImpl()[2]:
-    result[m[0].strVal] = m[1]
-
-macro extractProps*(propTypes: typed, attributes: typed): untyped =
+proc extractMembersFromPropsTypes(propTypes: NimNode): PropsMembers =
   propTypes.expectKind(nnkTupleConstr)
   var propObjects = initTable[string, NimNode]()
   var propTypeMembers = initTable[string, HashSet[string]]()
@@ -60,7 +48,13 @@ macro extractProps*(propTypes: typed, attributes: typed): untyped =
     propObjects[propName] = ObjConstr(
       Ident(propName)
     )
+  (
+    objects: propObjects,
+    typeMembers: propTypeMembers
+  )
 
+macro extractProps*(propTypes: typed, attributes: typed): untyped =
+  let (propObjects, propTypeMembers) = extractMembersFromPropsTypes(propTypes)
   for attr in attributes:
     block attributeBlock:
       case attr.kind:
@@ -94,45 +88,43 @@ macro extractProps*(propTypes: typed, attributes: typed): untyped =
     result.add(propObject)
   echo "Par result: ", result.repr()
 
-template bindPropWithInvalidation*[T](elem: Element, prop: typed, observable: Observable[T]): untyped =
+template bindPropWithInvalidation*[T](elem: Element, propType: untyped, prop: untyped, observable: Observable[T]): untyped =
   # TODO: Handle disposing of subscription
   discard observable.subscribe(
     proc(newVal: T): void =
-      prop = newVal
+      elem.propType.prop = newVal
       elem.invalidateLayout()
   )
 
 proc createBinding(element: NimNode, targetProp: NimNode, attrib: NimNode, sourceObservable: NimNode): NimNode =
   quote do:
-    bindPropWithInvalidation(`element`, `targetProp`.`attrib`, `sourceObservable`)
+    bindPropWithInvalidation(`element`, `targetProp`, `attrib`, `sourceObservable`)
 
-proc createLayoutBinding(element: NimNode, attrib: NimNode, sourceObservable: NimNode): NimNode =
-  quote do:
-    bindLayoutProp(`element`, `attrib`, `sourceObservable`)
-
-macro extractBindings*(element: untyped, targetProp: untyped, propType: typed, attributes: typed): untyped =
-  let propsTypeMembers = extractMembersFromPropsType(propType)
-  let elemPropsMembers = extractMembersFromElemProps()
-  let propName = propType.strVal
-
+macro extractBindings*(element: untyped, propTypes: typed, attributes: typed): untyped =
+  let (propObjects, propTypeMembers) = extractMembersFromPropsTypes(propTypes)
   let bindings = StmtList()
-
   for attr in attributes:
-    case attr.kind:
-      of nnkTupleConstr:
-        let fieldName = attr[0].strVal
-        let node = attr[1]
-        if propsTypeMembers.hasKey(fieldName):
-          bindings.add(createBinding(element, DotExpr(targetProp, Ident("componentProps")), Ident(fieldName), node))
-
-        elif elemPropsMembers.hasKey(fieldName):
-          bindings.add(createLayoutBinding(element, Ident(fieldName), node))
+    block attributesBlock:
+      case attr.kind:
+        of nnkTupleConstr:
+          let fieldName = attr[0].strVal
+          let node = attr[1]
+          for propType in propTypes:
+            let propName = propType.strVal
+            if propTypeMembers[propName].contains(fieldName):
+              var propNameWithLowerFirst = propName
+              propNameWithLowerFirst[0] = propNameWithLowerFirst[0].toLowerAscii
+              let propsFieldIdent = Ident(propNameWithLowerFirst)
+              bindings.add(createBinding(element, propsFieldIdent, Ident(fieldName), node))
+              break attributesBlock
+          var propNamesList = ""
+          for pt in propTypes:
+            propNamesList = propNamesList & " " & pt.name.strVal
+          error(&"Field '{fieldName}' not found on any of the possible props types <{propNamesList}>")
+        of nnkEmpty: discard
         else:
-          error(&"Field '{fieldName}' not found on type <{propName}>")
-      of nnkEmpty: discard
-      else:
-        echo "Attr repr: ", attr.treeRepr()
-        error(&"Attribute error for '{attr.repr()}' type of <{attr.getType().repr()}> not supported")
+          echo "Attr repr: ", attr.treeRepr()
+          error(&"Attribute error for '{attr.repr()}' type of <{attr.getType().repr()}> not supported")
   result = bindings
 
 type
@@ -304,7 +296,7 @@ macro typedPass*(
         )
       ),
       # TODO: Readd rest statements
-      #restStatements,
+      restStatements,
       Call(Ident"extractChildren", childrenAndBehaviors, childrenSym, behaviorsSym),
       LetSection(
         IdentDefs(
@@ -317,14 +309,12 @@ macro typedPass*(
           )
         )
       ),
-      # Call(
-      #   Ident "extractBindings",
-      #   elementSym,
-      #   Ident "elemParts",
-      #   quote do:
-      #     propsType,
-      #   bindingsTuples
-      # ),
+      Call(
+        Ident "extractBindings",
+        elementSym,
+        propTypes,
+        bindingsTuples
+      ),
       ForStmt(
         [Ident "behavior"],
         behaviorsSym,
