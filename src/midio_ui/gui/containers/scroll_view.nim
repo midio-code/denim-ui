@@ -38,8 +38,10 @@ method arrangeOverride(self: ScrollView, availableSize: Vec2[float]): Vec2[float
     child.arrange(rect(-progress.x * childSizeOverBounds.x, -progress.y * childSizeOverBounds.y, availableSize.x, availableSize.y))
   self.desiredSize.get()
 
-proc createScrollView*(scrollViewProps: ScrollViewProps, props: ElementProps = ElementProps(), children: seq[Element] = @[]): ScrollView =
-  result = ScrollView(
-    scrollViewProps: scrollViewProps
-  )
-  initElement(result, props, children)
+proc initScrollView*(self: ScrollView, props: ScrollViewProps): void =
+  self.scrollViewProps = props
+proc createScrollView*(props: (ElementProps, ScrollViewProps), children: seq[Element] = @[]): ScrollView =
+  let (elemProps, scrollViewProps) = props
+  result = ScrollView()
+  initElement(result, elemProps, children)
+  initScrollView(result, scrollViewProps)

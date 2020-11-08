@@ -61,8 +61,10 @@ var hitTestPath*: (Element, PathProps, Point) -> bool
 method isPointInside(self: Path, point: Point): bool =
   hitTestPath(self, self.pathProps, point)
 
-proc createPath*(props: PathProps = PathProps(), elemProps: ElementProps = ElementProps(), children: seq[Element] = @[]): Path =
-  result = Path(
-    pathProps: props
-  )
+proc initPath*(self: Path, props: PathProps): void =
+  self.pathProps = props
+proc createPath*(props: (ElementProps, PathProps), children: seq[Element] = @[]): Path =
+  let (elemProps, pathProps) = props
+  result = Path()
   initElement(result, elemProps, children)
+  initPath(result, pathProps)

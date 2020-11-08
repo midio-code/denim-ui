@@ -7,9 +7,9 @@ import ../../rect
 
 type
   RectangleElem* = ref object of Element
-    rectProps*: RectProps
+    rectangleProps*: RectangleProps
 
-  RectProps* = ref object
+  RectangleProps* = ref object
     color*: Option[Color]
     radius*: Option[CornerRadius]
     stroke*: Option[Color]
@@ -17,7 +17,7 @@ type
 
 method render(self: RectangleElem): Option[Primitive] =
   let
-    props = self.rectProps
+    props = self.rectangleProps
     bounds = self.bounds.get()
     width = bounds.width()
     height = bounds.height()
@@ -40,9 +40,9 @@ method render(self: RectangleElem): Option[Primitive] =
     )
   )
 
-proc createRectangle*(props: (RectProps, ElementProps), children: seq[Element] = @[]): RectangleElem =
-  let (rectProps, elemProps) = props
+proc createRectangle*(props: (ElementProps, RectangleProps), children: seq[Element] = @[]): RectangleElem =
+  let (elemProps, rectProps) = props
   result = RectangleElem(
-    rectProps: rectProps
+    rectangleProps: rectProps
   )
   initElement(result, elemProps, children)
