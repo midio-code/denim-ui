@@ -8,12 +8,12 @@ import macros
 
 #let test = Rectangle(color = "red")
   #Rectangle(color = "blue")
-#expandMacros:
-component Stack, Foo():
-  let foo = "bar"
-  discard "foo"
+component Stack, Foo(test: string):
+  let foo = test & " og mer"
   rectangle(color = "teal", height = 100.0, width = 100.0)
   rectangle(color = "blue", height = 50.0, width = 50.0)
+  text(text = test)
+  text(text = foo)
   onClicked(
     proc(e: Element, args: PointerArgs): void =
       echo "On clicked clicked"

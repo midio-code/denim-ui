@@ -76,7 +76,7 @@ method arrangeOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[fl
   availableSize
 
 
-proc htmlTextInput*(props: ElemProps, textInputProps: TextInputProps): HtmlTextInput =
+proc htmlTextInput*(props: ElementProps, textInputProps: TextInputProps): HtmlTextInput =
   let domElement = createHtmlTextInput(textInputProps)
   result = HtmlTextInput(
     textInputProps: textInputProps,

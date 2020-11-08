@@ -8,11 +8,11 @@ import ../vec
 when defined(js):
   import primitives/html_elements
 
-  proc createTextInput*(props: ElemProps, textInputProps: TextInputProps): Element =
+  proc createTextInput*(props: ElementProps, textInputProps: TextInputProps): Element =
     htmlTextInput(props, textInputProps)
 
 else:
-  proc createTextInput*(props: ElemProps, textInputProps: TextInputProps): Element =
+  proc createTextInput*(props: ElementProps, textInputProps: TextInputProps): Element =
     createText(
       TextProps(
         text: props.text,

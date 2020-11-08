@@ -359,10 +359,10 @@ template element_type(identifier: untyped, propTypes: untyped, constructor: unty
       attributesAndChildren,
     )
 
-element_type(rectangle, (RectProps, ElemProps), createRectangle)
-element_type(path, (PathProps, ElemProps), createPath)
-element_type(stack, (StackProps, ElemProps), createStack)
-element_type(scrollView, (ScrollViewProps, ElemProps), createScrollView)
+element_type(rectangle, (RectProps, ElementProps), createRectangle)
+element_type(path, (PathProps, ElementProps), createPath)
+element_type(stack, (StackProps, ElementProps), createStack)
+element_type(scrollView, (ScrollViewProps, ElementProps), createScrollView)
 
 type
   PanelElem* = ref object of Element
@@ -370,11 +370,11 @@ type
 
 proc initPanel*(self: PanelElem): void =
   discard
-proc createPanel*(props: (ElemProps, PanelProps), children: seq[Element]): PanelElem =
+proc createPanel*(props: (ElementProps, PanelProps), children: seq[Element]): PanelElem =
   result = PanelElem()
   initElement(result, props[0], children)
 
-element_type(panel, (PanelProps, ElemProps), createPanel)
+element_type(panel, (PanelProps, ElementProps), createPanel)
 
 ## An element with a docking layout::
 ##
@@ -385,7 +385,7 @@ element_type(panel, (PanelProps, ElemProps), createPanel)
 ##       rectangle(color = "blue", height = 50.0)
 ##     rectangle(color = "green")
 ##
-element_type(dock, (DockProps, ElemProps), createDock)
+element_type(dock, (DockProps, ElementProps), createDock)
 
 template docking*(dir: DockDirection, element: Element): untyped =
   block:
@@ -394,22 +394,29 @@ template docking*(dir: DockDirection, element: Element): untyped =
     elem
 
 
-proc createText(props: (TextProps, ElemProps), children: seq[Element]): Element =
+proc createText(props: (TextProps, ElementProps), children: seq[Element]): Element =
   createText(props[0], props[1])
 
-element_type(text, (TextProps, ElemProps), createText)
+element_type(text, (TextProps, ElementProps), createText)
 
-element_type(circle, (CircleProps, ElemProps), createCircle)
+element_type(circle, (CircleProps, ElementProps), createCircle)
 
-proc createTextInput(props: (TextInputProps, ElemProps), children: seq[Element]): Element =
+proc createTextInput(props: (TextInputProps, ElementProps), children: seq[Element]): Element =
   createTextInput(props[1], props[0])
 
-element_type(textInput, (TextInputProps, ElemProps), createTextInput)
+element_type(textInput, (TextInputProps, ElementProps), createTextInput)
 
 # TODO: Make binding syntax (foo <- observable), work for components
 # One currently has to make the prop an observable and bind inside the component for this to work.
 # This might be an ok solution for now though
-macro component*(parentType: untyped, head: untyped, body: untyped): untyped =
+macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: untyped, body: untyped): untyped =
+  echo "ARGS: ", args.treerepr
+  let (parentType, head, body) =
+    if args.len == 3:
+      (args[0], args[1], args[2])
+    else:
+      (Ident"Element", args[0], args[1])
+
   var name: NimNode
   var props: seq[NimNode] = @[]
   case head.kind:
@@ -435,17 +442,21 @@ macro component*(parentType: untyped, head: untyped, body: untyped): untyped =
 
   let createCompIdent = Ident("create" & nameStrUpperFirst)
 
+  let compPropsIdent = Ident("compProps")
+
   # Let bindings for the props so that they can be used in the body
   var typeBody = nnkRecList.newTree()
   var expandedProps =
     if props.len() > 0:
       let section =  LetSection()
       for prop in props:
-        section.add(IdentDefs(prop[0], Empty(), DotExpr(Ident("props"), prop[0])))
+        section.add(IdentDefs(prop[0], Empty(), DotExpr(compPropsIdent, prop[0])))
         typeBody.add(IdentDefs(PostFix(Ident("*"), prop[0]), prop[1], Empty()))
       section
     else:
       Empty()
+
+  echo "Expanded props: ", expandedProps.repr
 
   let propsArgIdent = Ident("props")
 
@@ -457,7 +468,6 @@ macro component*(parentType: untyped, head: untyped, body: untyped): untyped =
   let parentInitProc = Ident("init" & parentType.strval)
 
   let initCompSym = Ident("init" & nameStrUpperFirst)
-  let compPropsSym = genSym(nskLet, "compProps")
 
   result = quote do:
     `typeDef`
@@ -523,23 +533,22 @@ macro component*(parentType: untyped, head: untyped, body: untyped): untyped =
     proc `initCompSym`*(self: `compName`, props: `propsTypeIdent`): void =
       self.`propsFieldIdent` = props
 
-    # NOTE: Not sure why the tuple here needs to be reversed (with ElemProps first instead of last),
+    # NOTE: Not sure why the tuple here needs to be reversed (with ElementProps first instead of last),
     # but just gonna leave it here for now, as it is not exposed to the user.
-    proc `createCompIdent`*(props: (ElemProps, `parentPropsType`, `propsTypeIdent`), children: seq[Element]): `compName` =
+    proc `createCompIdent`*(props: (ElementProps, `parentPropsType`, `propsTypeIdent`), children: seq[Element]): `compName` =
       echo "Creating comp: "
       let
         elemProps = props[0]
         parentProps = props[1]
-        `compPropsSym` = props[2]
+        `compPropsIdent` = props[2]
       `expandedProps`
       let content = block:
         compileComponentBody(`body`)
       let (children, behaviors) = content
-      let ret = `compName`(
-        `propsFieldIdent`: `compPropsSym`,
-      )
+      let ret = `compName`()
       initElement(ret, elemProps, children)
       initStack(ret, parentProps)
+      `initCompSym`(ret, `compPropsIdent`)
       for b in behaviors:
         ret.addBehavior(b)
       echo "Ret: "
@@ -550,10 +559,11 @@ macro component*(parentType: untyped, head: untyped, body: untyped): untyped =
     template `compConstructorName`*(attributesAndChildren: varargs[untyped]): untyped =
       echo "Constructing comp"
       expandSyntax(
-        (`propsTypeIdent`, `parentPropsType`, ElemProps),
+        (`propsTypeIdent`, `parentPropsType`, ElementProps),
         `createCompIdent`,
         attributesAndChildren,
       )
+  echo "Component result: ", result.repr()
 
 # TODO: parse body so that we can have multiple children and specify a root type in the "constructor"
 

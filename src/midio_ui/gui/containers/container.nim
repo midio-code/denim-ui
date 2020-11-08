@@ -22,6 +22,6 @@ method arrangeOverride(self: Container, availableSize: Vec2[float]): Vec2[float]
     child.arrange(rect(vec2(child.props.x.get(0.0), child.props.y.get(0.0)), child.desiredSize.get(vec2(0.0, 0.0))))
   self.desiredSize.get()
 
-proc container*(props: ElemProps = ElemProps(), children: seq[Element] = @[]): Element =
+proc container*(props: ElementProps = ElementProps(), children: seq[Element] = @[]): Element =
   result = Container()
   initElement(result, props, children)

@@ -151,7 +151,7 @@ type
   Visibility* {.pure.} = enum
     Visible, Collapsed, Hidden
 
-  ElemProps* = ref object
+  ElementProps* = ref object
     width*: Option[float]
     height*: Option[float]
     maxWidth*: Option[float]
@@ -194,7 +194,7 @@ type
   Element* = ref object of RootObj
     id*: Guid
     children*: seq[Element]
-    props*: ElemProps
+    props*: ElementProps
     parent*: Option[Element]
     desiredSize*: Option[Vec2[float]]
     bounds*: Option[Rect[float]]

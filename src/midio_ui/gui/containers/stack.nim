@@ -55,7 +55,7 @@ method arrangeOverride(self: Stack, availableSize: Vec2[float]): Vec2[float] =
 proc initStack*(self: Stack, props: StackProps): void =
   self.stackProps = props
 
-proc createStack*(props: (ElemProps, StackProps), children: seq[Element] = @[]): Stack =
+proc createStack*(props: (ElementProps, StackProps), children: seq[Element] = @[]): Stack =
   result = Stack()
   initElement(result, props[0], children)
   initStack(result, props[1])
