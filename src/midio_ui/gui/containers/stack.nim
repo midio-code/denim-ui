@@ -55,19 +55,7 @@ method arrangeOverride(self: Stack, availableSize: Vec2[float]): Vec2[float] =
 proc initStack*(self: Stack, props: StackProps): void =
   self.stackProps = props
 
-proc createStack*(stackProps: StackProps, props: ElemProps = ElemProps(), children: seq[Element] = @[]): Stack =
+proc createStack*(props: (ElemProps, StackProps), children: seq[Element] = @[]): Stack =
   result = Stack()
-  initStack(result, stackProps)
-  initElement(result, props, children)
-
-# proc createStack*(props: ElemProps = ElemProps(), children: varargs[Element] = @[]): Element =
-#   createStack(props, @children)
-
-# proc createStack*(margin: Thickness[float], children: seq[Element] = @[]): Element =
-#   createStack(props = ElemProps(margin: margin), children = children)
-
-# proc createStack*(margin: Thickness[float], children: varargs[Element] = @[]): Element =
-#   createStack(margin, children = @children)
-
-# proc createStack*(pos: Vec2[float], children: varargs[Element] = @[]): Element =
-#   createStack(props = ElemProps(x: pos.x, y: pos.y), children = @children)
+  initElement(result, props[0], children)
+  initStack(result, props[1])

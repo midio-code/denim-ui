@@ -361,30 +361,18 @@ macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChild
     childCollections
   )
 
-template element_type(attributesAndChildren: untyped, propTypes: untyped, constructor: untyped): untyped =
-  discard
+template element_type(identifier: untyped, propTypes: untyped, constructor: untyped): untyped =
+  template `identifier`*(attributesAndChildren: varargs[untyped]): untyped =
+    expandSyntax(
+      propTypes,
+      constructor,
+      attributesAndChildren,
+    )
 
-  #echo "Element_type result: ", result.repr()
-
-template rectangle*(attributesAndChildren: varargs[untyped]): untyped =
-  expandSyntax(
-    (RectProps, ElemProps),
-    createRectangle,
-    attributesAndChildren,
-  )
-
-macro path*(`attributesAndChildren`: varargs[untyped]): untyped =
-  quote do:
-    element_type(`attributesAndChildren`, (PathProps, ElemProps), createPath)
-
-macro stack*(attributesAndChildren: varargs[untyped]): untyped =
-  quote do:
-    element_type(`attributesAndChildren`, (StackProps, ElemProps), createStack)
-
-macro scrollView*(attributesAndChildren: varargs[untyped]): untyped =
-  quote do:
-    element_type(`attributesAndChildren`, (ScrollViewProps, ElemProps), createScrollView)
-
+element_type(rectangle, (RectProps, ElemProps), createRectangle)
+element_type(path, (PathProps, ElemProps), createPath)
+element_type(stack, (StackProps, ElemProps), createStack)
+element_type(scrollView, (ScrollViewProps, ElemProps), createScrollView)
 
 type
   PanelElem* = ref object of Element
@@ -396,28 +384,18 @@ proc createPanel*(props: (ElemProps, PanelProps), children: seq[Element]): Panel
   result = PanelElem()
   initElement(result, props[0], children)
 
-template panel*(attributesAndChildren: varargs[untyped]): untyped =
-  expandSyntax(
-    (PanelProps, ElemProps),
-    createPanel,
-    attributesAndChildren,
-  )
+element_type(panel, (PanelProps, ElemProps), createPanel)
 
-proc createDock(props: NoProps, elemProps: ElemProps, children: seq[Element]): Element =
-  createDock(elemProps, children)
-
-macro dock*(attributesAndChildren: varargs[untyped]): untyped =
-  ## An element with a docking layout::
-  ##
-  ##   dock:
-  ##     docking(DockDirection.Right):
-  ##       rectangle(color = "red", width = 50.0)
-  ##     docking(DockDirection.Top):
-  ##       rectangle(color = "blue", height = 50.0)
-  ##     rectangle(color = "green")
-  ##
-  quote do:
-    element_type(`attributesAndChildren`, (ElemProps), createDock)
+## An element with a docking layout::
+##
+##   dock:
+##     docking(DockDirection.Right):
+##       rectangle(color = "red", width = 50.0)
+##     docking(DockDirection.Top):
+##       rectangle(color = "blue", height = 50.0)
+##     rectangle(color = "green")
+##
+element_type(dock, (DockProps, ElemProps), createDock)
 
 template docking*(dir: DockDirection, element: Element): untyped =
   block:
@@ -426,27 +404,17 @@ template docking*(dir: DockDirection, element: Element): untyped =
     elem
 
 
-proc createText(props: TextProps = TextProps(), elemProps: ElemProps = ElemProps(), children: seq[Element]): Element =
-  createText(props, elemProps)
+proc createText(props: (TextProps, ElemProps), children: seq[Element]): Element =
+  createText(props[0], props[1])
 
-macro text*(attributesAndChildren: varargs[untyped]): untyped =
-  quote do:
-    element_type(`attributesAndChildren`, (TextProps, ElemProps), createText)
+element_type(text, (TextProps, ElemProps), createText)
 
-# macro container*(attributesAndChildren: varargs[untyped]): untyped =
-#   quote do:
-#     element_type(attributesAndChildren, (ElemProps), container)
+element_type(circle, (CircleProps, ElemProps), createCircle)
 
-macro circle*(attributesAndChildren: varargs[untyped]): untyped =
-  quote do:
-    element_type(`attributesAndChildren`, (CircleProps, ElemProps), createCircle)
+proc createTextInput(props: (TextInputProps, ElemProps), children: seq[Element]): Element =
+  createTextInput(props[1], props[0])
 
-proc createTextInput(props: TextInputProps, elemProps: ElemProps, children: seq[Element]): Element =
-  createTextInput(elemProps, props)
-
-macro textInput*(attributesAndChildren: varargs[untyped]): untyped =
-  quote do:
-    element_type(`attributesAndChildren`, (TextInputProps, ElemProps), createTextInput)
+element_type(textInput, (TextInputProps, ElemProps), createTextInput)
 
 # TODO: Make binding syntax (foo <- observable), work for components
 # One currently has to make the prop an observable and bind inside the component for this to work.
