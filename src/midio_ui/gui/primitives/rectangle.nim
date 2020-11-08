@@ -6,7 +6,7 @@ import ../../vec
 import ../../rect
 
 type
-  Rectangle* = ref object of Element
+  RectangleElem* = ref object of Element
     rectProps*: RectProps
 
   RectProps* = ref object
@@ -15,7 +15,7 @@ type
     stroke*: Option[Color]
     strokeWidth*: Option[float]
 
-method render(self: Rectangle): Option[Primitive] =
+method render(self: RectangleElem): Option[Primitive] =
   let
     props = self.rectProps
     bounds = self.bounds.get()
@@ -40,8 +40,9 @@ method render(self: Rectangle): Option[Primitive] =
     )
   )
 
-proc createRectangle*(props: RectProps = RectProps(), elemProps: ElemProps = ElemProps(), children: seq[Element] = @[]): Rectangle =
-  result = Rectangle(
-    rectProps: props
+proc createRectangle*(props: (RectProps, ElemProps), children: seq[Element] = @[]): RectangleElem =
+  let (rectProps, elemProps) = props
+  result = RectangleElem(
+    rectProps: rectProps
   )
   initElement(result, elemProps, children)

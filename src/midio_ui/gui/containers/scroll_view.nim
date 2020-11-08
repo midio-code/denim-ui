@@ -1,12 +1,11 @@
 import options
 import strformat
-import ../dsl/dsl
+import rx_nim
+import ../types
+import ../element
 import ../element_observables
 import ../../vec
 import ../../rect
-import dock
-import ../primitives/rectangle
-import ../behaviors/onDrag
 
 type
   ScrollViewProps* = ref object

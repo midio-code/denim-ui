@@ -52,10 +52,12 @@ method arrangeOverride(self: Stack, availableSize: Vec2[float]): Vec2[float] =
       echo "WARN: Child of stack did not have a desired size"
   self.desiredSize.get()
 
+proc initStack*(self: Stack, props: StackProps): void =
+  self.stackProps = props
+
 proc createStack*(stackProps: StackProps, props: ElemProps = ElemProps(), children: seq[Element] = @[]): Stack =
-  result = Stack(
-    stackProps: stackProps
-  )
+  result = Stack()
+  initStack(result, stackProps)
   initElement(result, props, children)
 
 # proc createStack*(props: ElemProps = ElemProps(), children: varargs[Element] = @[]): Element =
