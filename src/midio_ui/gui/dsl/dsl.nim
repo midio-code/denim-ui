@@ -258,25 +258,42 @@ macro extractChildren*(childrenOrBehaviors: typed, childrenIdent: untyped, behav
       `childrenIdent`: seq[Element] = @`children`
       `behaviorsIdent`: seq[Behavior] = @`behaviors`
 
-macro typedPass*(
-  propTypes: typed,
-  constructor: typed,
-  attributes: typed,
-  bindingsTuples: typed,
-  childrenAndBehaviors: typed,
-  restStatements: typed,
-  childCollections: typed
-): untyped =
+# TODO: Find a non-dirty way to do this
+# This is just a helper template to make it faster to implement all
+# the GUI primitives
+macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChildren: varargs[untyped]): untyped =
+  let expanded = expandNiceAttributeSyntax(attributesAndChildren)
+  let attributes = expanded.attributes.toNimNode()
+  let bindingsTuples = expanded.bindings.toNimNode()
+  let childrenAndBehaviors = expanded.children.toNimNode()
+  let restStatements = expanded.restStatements
+
+
+  # A collection of child lists that have been applied with the `...` operator (spread operator)
+  # Each child in each of these lists should be added to the children list of this element
+  let childCollections = expanded.childCollections.toNimNode()
+  echo "\n\n\n======================"
+  echo "\n\n\n\nEXPANDED: ", expanded.childCollections.repr
+  echo "EXPANDED AGAIN: ", childCollections.treerepr
+  echo "RESTSTATEMENTS: ", restStatements.repr
+  echo "BINDINgTUPLES: ", bindingsTuples.treerepr
   let
-    childrenSym = genSym(nskVar, "children")
+    childrenSym = Ident"children" # genSym(nskVar, "children")
     behaviorsSym = genSym(nskVar, "behaviors")
 
-  proc genCollectionBindings(elemSym: NimNode): NimNode =
+  echo "ATTR: ", attributes.treerepr
+  echo "Bindingsand tuples: ", bindingsTuples.treerepr
+  echo "CHILDRENANDBEH: ", childrenAndBehaviors.treerepr
+  echo "REST STATEMENTS: ", restStatements.treerepr
+  echo "CHILD COLLECITONS: ", childCollections.treerepr
+
+  var elementSym = genSym(nskLet, "this")
+  proc genCollectionBindings(): NimNode =
     let collectionBindings = StmtList()
     for collection in childCollections:
         # We expect any type that is spread using ... to have this method implemented for it
         # (var seq[Element], T) -> void
-      let bindCall = newCall(Ident "bindChildCollection", elemSym, collection)
+      let bindCall = newCall(Ident "bindChildCollection", elementSym, collection)
       collectionBindings.add(bindCall)
     collectionBindings
 
@@ -285,7 +302,9 @@ macro typedPass*(
   # let collectionBindings = genCollectionBindings()
   # echo "COLLECTION_BINDINGS: ", collectionBindings.treerepr()
 
-  var elementSym = genSym(nskLet, "this")
+  let childCollectionBindings = genCollectionBindings()
+  echo "CHILD COLLECTION BINDINGS: ", childCollectionBindings.repr()
+
   result = BlockStmt(
     StmtList(
       LetSection(
@@ -313,45 +332,23 @@ macro typedPass*(
           )
         )
       ),
-      # Call(
-      #   Ident "extractBindings",
-      #   elementSym,
-      #   propTypes,
-      #   bindingsTuples
-      # ),
-      # ForStmt(
-      #   [Ident "behavior"],
-      #   behaviorsSym,
-      #   Call(DotExpr(elementSym, Ident "addBehavior"), Ident "behavior")
-      # ),
-      genCollectionBindings(elementSym),
+      Call(
+        Ident "extractBindings",
+        elementSym,
+        propTypes,
+        bindingsTuples
+      ),
+      ForStmt(
+        [Ident "behavior"],
+        behaviorsSym,
+        Call(DotExpr(elementSym, Ident "addBehavior"), Ident "behavior")
+      ),
+      childCollectionBindings,
       elementSym
     )
   )
-
-# TODO: Find a non-dirty way to do this
-# This is just a helper template to make it faster to implement all
-# the GUI primitives
-macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChildren: varargs[untyped]): untyped =
-  let expanded = expandNiceAttributeSyntax(attributesAndChildren)
-  let attributes = expanded.attributes.toNimNode()
-  let bindingsTuples = expanded.bindings.toNimNode()
-  let childrenAndBehaviors = expanded.children.toNimNode()
-  let restStatements = expanded.restStatements
-
-  # A collection of child lists that have been applied with the `...` operator (spread operator)
-  # Each child in each of these lists should be added to the children list of this element
-  let childCollections = expanded.childCollections.toNimNode()
-  result = Call(
-    Ident"typedPass",
-    propTypes,
-    constructor,
-    attributes,
-    bindingsTuples,
-    childrenAndBehaviors,
-    restStatements,
-    childCollections
-  )
+  echo "\nRESULT IS: ", result.repr
+  echo "\n"
   # echo "\n\nRESULT OF EXPANDED: \n", result.repr()
   # echo "\n"
 
@@ -547,6 +544,15 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
 
     proc `initCompSym`*(self: `compName`, props: `propsTypeIdent`): void =
       self.`propsFieldIdent` = props
+
+    converter toElementOption*(self: Option[`compName`]): Option[Element] =
+      self.map((x: `compName`) => x.Element)
+
+    converter toObservableElementOption*(self: Observable[Option[`compName`]]): Observable[Option[Element]] =
+      self.map(toElementOption)
+
+    converter toSubjectElementOption*(self: Subject[Option[`compName`]]): Observable[Option[Element]] =
+      self.map(toElementOption)
 
     template `compConstructorName`*(attributesAndChildren: varargs[untyped]): untyped =
       expandSyntax(

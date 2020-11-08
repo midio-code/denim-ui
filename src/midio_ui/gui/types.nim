@@ -41,6 +41,7 @@ type
     placeholderColor*: Option[string]
     onChange*: Option[TextChanged]
 
+
 type
 
   Transform* {.requiresInit.} = ref object
@@ -230,3 +231,7 @@ proc actualWorldPosition*(self: Element): Vec2[float] =
 
 proc invalidateWorldPositionsCache*(): void =
   worldPositions.clear()
+
+type
+  TextInput* = ref object of Element
+    textInputProps*: TextInputProps

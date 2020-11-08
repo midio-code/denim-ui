@@ -8,12 +8,12 @@ import ../vec
 when defined(js):
   import primitives/html_elements
 
-  proc createTextInput*(props: (ElementProps, TextInputProps), children: seq[Element] = @[]): Element =
+  proc createTextInput*(props: (ElementProps, TextInputProps), children: seq[Element] = @[]): TextInput =
     let (elemProps, textInputProps) = props
     htmlTextInput(elemProps, textInputProps)
 
 else:
-  proc createTextInput*(props: (ElementProps, TextInputProps), children: seq[Element] = @[]): Element =
+  proc createTextInput*(props: (ElementProps, TextInputProps), children: seq[Element] = @[]): TextInput =
     let (elemProps, textProps) = props
     createText(
       (

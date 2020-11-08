@@ -19,8 +19,7 @@ let nativeContainer = getElementById("nativeContainer")
 let hardCodedScale = 2.0
 
 type
-  HtmlTextInput* = ref object of element.Element
-    textInputProps*: TextInputProps
+  HtmlTextInput* = ref object of TextInput
     domElement*: dom.Element
 
 proc updateTextProps(self: HtmlTextInput): void =
