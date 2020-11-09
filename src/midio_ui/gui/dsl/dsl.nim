@@ -195,6 +195,7 @@ proc expandNiceAttributeSyntax*(attributesAndChildren: NimNode): ExpandedNiceSyn
   # All statements in body which are not children, behaviors or attributes
   var restStatementList = StmtList()
   #echo "ATTRIBUTES-AND-CHILDREN: ", attributesAndChildren.treerepr()
+  #echo "ATTRIBUTES: ", attributesAndChildren.repr
   for attr in attributesAndChildren:
     case attr.kind:
       of nnkInfix:
@@ -223,12 +224,10 @@ proc expandNiceAttributeSyntax*(attributesAndChildren: NimNode): ExpandedNiceSyn
               # We do typechecking later in a later pass
               # since we do not yet have type information here
               childrenAndBehaviors.add(child)
-      of nnkIdent:
-        # TODO: When just given a single identifier, use it as the name to bind the current instance to.
-        error("Name binding is currently wip")
+      of nnkCall:
+          childrenAndBehaviors.add(attr)
       else:
-        # TODO: Support spread operator (...) on expressions, like:
-        # ...foo.map(x => ....
+        echo "ITEM: ", attr.repr
         error(&"Item of kind <{attr.kind}>, is not supported")
   ExpandedNiceSyntax(
     attributes: attributes,
@@ -294,6 +293,8 @@ macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChild
 
   let childCollectionBindings = genCollectionBindings()
 
+  echo "\n\nEXPANDING SYNTAX FOR : ", propTypes.repr
+
   result = BlockStmt(
     StmtList(
       LetSection(
@@ -336,7 +337,7 @@ macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChild
       elementSym
     )
   )
-  echo "CALL: ", result.repr
+  echo "EXPANDED SYNTAX: ", result.repr
 
 template element_type(identifier: untyped, propTypes: untyped, constructor: untyped): untyped =
   template `identifier`*(attributesAndChildren: varargs[untyped]): untyped =
@@ -412,8 +413,8 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
   var nameStrLowerFirst = name.strVal
   nameStrLowerFirst[0] = name.strVal[0].toLowerAscii()
 
-  let compName = Ident(nameStrUpperFirst & "Comp")
-  let compConstructorName = Ident(nameStrUpperFirst)
+  let compName = Ident(nameStrUpperFirst)
+  let compConstructorName = Ident(name.strVal.withLowerCaseFirst)
   let propsTypeIdent = Ident(nameStrUpperFirst & "Props")
 
   let createCompIdent = Ident("create" & nameStrUpperFirst)
@@ -451,7 +452,6 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
         propsTypeIdent
       )
 
-  echo "FOO", Ident(parentType.strVal.withLowerCaseFirst & "Props")
   let compPropsIdent = Ident(propsTypeIdent.strVal.withLowerCaseFirst)
   let parentPropsIdent = Ident(parentType.strVal.withLowerCaseFirst & "Props")
   let elemPropsIdent = Ident("elementProps")
@@ -515,10 +515,10 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
 
     type
       `compName`* = ref object of `parentType`
-        `propsTypeIdent`*: `propsTypeIdent`
+        `compPropsIdent`*: `propsTypeIdent`
 
     proc `initCompSym`*(self: `compName`, props: `propsTypeIdent`): void =
-      self.`propsTypeIdent` = props
+      self.`compPropsIdent` = props
 
     converter toElementOption*(self: Option[`compName`]): Option[Element] =
       self.map((x: `compName`) => x.Element)
@@ -539,7 +539,6 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
     proc `createCompIdent`*(`propsIdent`: `propsTypeTuple`): `compName` =
       `createCompProcBody`
 
-  echo "COMPONENT: ", result.repr
 
 # TODO: parse body so that we can have multiple children and specify a root type in the "constructor"
 
@@ -601,7 +600,6 @@ macro binding[T](elem: untyped, prop: untyped, observable: Observable[T]): untyp
         `prop` = newVal
         `elem`.invalidateLayout()
     )
-  echo "BINDING: ", result.repr
 
 proc createBinding(attrib: NimNode, sourceObservable: NimNode): NimNode =
   let elemIdent = Ident"ret"
@@ -611,7 +609,6 @@ proc createBinding(attrib: NimNode, sourceObservable: NimNode): NimNode =
 macro compileComponentBody*(propTypes: typed, componentProps: untyped, compPropsIdent: untyped, body: untyped): untyped =
   let content = StmtList()
   var children: seq[(NimNode, NimNode)] = @[]
-
 
   var expandedProps =
     block:
@@ -653,12 +650,11 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
           section.add(setter)
       section
 
-  #echo "EXPANDED_PROPS: ", expandedProps.repr
-
   for item in body:
+    echo "ITEM KIND: ", item.kind
+    echo "ITEM IS: ", item.repr
     case item.kind:
-      of nnkCall:
-        echo "CHILD IS: ", item.repr()
+      of nnkCall, nnkIdent:
         children.add((genSym(nskLet, "child"), item))
       of nnkInfix:
         let operator = item[0].strVal
@@ -687,4 +683,3 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
     childrenDefinitions,
     Call(Ident"sortChildren", childrenTuple)
   )
-  #echo "COMPONENT BODY: ", result.repr

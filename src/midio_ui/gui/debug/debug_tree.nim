@@ -85,9 +85,9 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
         stack(margin = thickness(10.0, 0.0), alignment = Alignment.Left):
           panel:
             rectangle(stroke = "red", strokeWidth <- highlightStrokeWidth)
-            DebugElem(label = x.t, elem = x.c)
+            debugElem(label = x.t, elem = x.c)
           panel(visibility <- visibility):
-            DebugTreeImpl(tree = x.c, filterText = filterText)
+            debugTreeImpl(tree = x.c, filterText = filterText)
   )
   stack(alignment = TopLeft):
     ...elems
@@ -106,7 +106,7 @@ component DebugTree(tree: Element):
   proc textChangedHandler(newText: string): void {.closure.} =
     searchBoxText.next(newText)
 
-  var content = behaviorSubject[Element](DebugTreeImpl(tree = tree, filterText = searchBoxText))
+  var content = behaviorSubject[Element](debugTreeImpl(tree = tree, filterText = searchBoxText))
 
   let thumbPos = behaviorSubject(0.0)
 
@@ -149,7 +149,7 @@ component DebugTree(tree: Element):
       clamp(val, 0.0, maxOffset)
   )
 
-  CollapsablePanel:
+  collapsablePanel:
     dock(margin = thickness(5.0)):
       #docking(DockDirection.Top):
         # textInput(
