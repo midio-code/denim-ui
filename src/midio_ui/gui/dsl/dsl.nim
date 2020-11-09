@@ -296,7 +296,6 @@ macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChild
           )
         )
       ),
-      # TODO: Readd rest statements
       restStatements,
       Call(Ident"extractChildren", childrenAndBehaviors, childrenSym, behaviorsSym),
       LetSection(
@@ -372,9 +371,6 @@ element_type(text, (ElementProps, TextProps), createText)
 element_type(circle, (ElementProps, CircleProps), createCircle)
 element_type(textInput, (ElementProps, TextInputProps), createTextInput)
 
-# TODO: Make binding syntax (foo <- observable), work for components
-# One currently has to make the prop an observable and bind inside the component for this to work.
-# This might be an ok solution for now though
 macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: untyped, body: untyped): untyped =
   let (head, body) =
     if args.len == 3:
@@ -496,7 +492,6 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
     Ident"ret"
   )
 
-
   result = quote do:
     `typeDef`
 
@@ -525,9 +520,6 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
 
     proc `createCompIdent`*(`propsIdent`: `propsTypeTuple`): `compName` =
       `createCompProcBody`
-
-
-# TODO: parse body so that we can have multiple children and specify a root type in the "constructor"
 
 
 macro sortChildren*(childrenTuple: untyped): untyped =
@@ -560,7 +552,7 @@ type
   PropsType = tuple
     propType: NimNode
     attributeIdentifier: NimNode
-# TODO: Split into multiple procs
+
 proc getPropsTypeForIdentifier(propTypes: NimNode, identifier: NimNode): Option[PropsType] =
   propTypes.expectKind(nnkTupleConstr)
   identifier.expectKind(nnkIdent)
