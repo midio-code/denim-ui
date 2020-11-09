@@ -650,41 +650,53 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
     else:
       Empty()
 
+  # TODO: Try making this recursive to see if we can actually resolve identifiers
+  # nested deeper in the ast.
+  proc compileAssignment(propTypes: NimNode, left: NimNode, right: NimNode): (NimNode, NimNode) =
+    echo "Props type: ", propTypes.treerepr
+    var
+      leftHand = left
+      rightHand = right
+    if leftHand.kind == nnkIdent:
+      let ownerPropLeft = getPropsTypeForIdentifier(propTypes, leftHand)
+      if ownerPropLeft.isSome():
+        let (pt, attrib) = ownerPropLeft.get()
+        leftHand = propTypeAndAttribToNimNode(pt, attrib)
+
+    if rightHand.kind == nnkIdent:
+      let ownerPropRight = getPropsTypeForIdentifier(propTypes, rightHand)
+      if ownerPropRight.isSome():
+        let (pt, attrib) = ownerPropRight.get()
+        rightHand = propTypeAndAttribToNimNode(pt, attrib)
+
+    echo "Owner left: ", leftHand.repr()
+    echo "Owner right: ", rightHand.repr()
+
+    (leftHand, rightHand)
+
   for item in body:
     case item.kind:
       of nnkCall:
         children.add((genSym(nskLet, "child"), item))
-      of nnkLetSection, nnkVarSection, nnkDiscardStmt, nnkProcDef, nnkBlockStmt:
+      of nnkDiscardStmt, nnkProcDef, nnkBlockStmt:
         content.add(item)
+      of nnkLetSection, nnkVarSection:
+        let section = newTree(item.kind)
+        for identDef in item:
+          let (l, r) = compileAssignment(propTypes, identDef[0], identDef[2])
+          section.add(IdentDefs(l, identDef[1], r))
+        content.add(section)
       of nnkAsgn:
-        var leftHand = item[0]
-        if leftHand.kind == nnkIdent:
-          let ownerPropLeft = getPropsTypeForIdentifier(propTypes, leftHand)
-          if ownerPropLeft.isSome():
-            let (pt, attrib) = ownerPropLeft.get()
-            leftHand = propTypeAndAttribToNimNode(pt, attrib)
-
-        var rightHand = item[1]
-        if rightHand.kind == nnkIdent:
-          let ownerPropRight = getPropsTypeForIdentifier(propTypes, rightHand)
-          if ownerPropRight.isSome():
-            let (pt, attrib) = ownerPropRight.get()
-            rightHand = propTypeAndAttribToNimNode(pt, attrib)
-
-        echo "Owner left: ", leftHand.repr()
-        echo "Owner right: ", rightHand.repr()
-
-        Next up we need to make sure assignment works for let and var
-        in body position, and that one can assign them to attributes from props
-
-        content.add(Asgn(leftHand, rightHand))
+        let (l, r) = compileAssignment(propTypes, item[0], item[1])
+        content.add(Asgn(l, r))
       of nnkInfix:
         let operator = item[0].strVal
         let leftHand = item[1]
         let rightHand = item[2]
         case operator:
           of "<-":
-            error("<- not yet suported")
+            discard
+            #error("<- not yet suported")
             #compPropsBindings.add(Par(leftHand, rightHand))
           else:
             content.add(item)
@@ -703,6 +715,7 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
 
   result = StmtList(
     content,
+    expandedProps,
     childrenDefinitions,
     Call(Ident"sortChildren", childrenTuple)
   )
