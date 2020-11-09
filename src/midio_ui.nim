@@ -13,4 +13,3 @@ export text
 
 export measureText
 export guid
-export debug_tree

@@ -445,9 +445,39 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
       typeBody.add(IdentDefs(PostFix(Ident("*"), prop[0]), prop[1], Empty()))
 
 
-  let typeDef = TypeSection(
+  let componentPropsTypeDef = TypeSection(
     TypeDef(
       PostFix(Ident("*"), propsTypeIdent), Empty(), RefTy(ObjectTy(Empty(), Empty(), typeBody))
+    )
+  )
+
+  let componentFields = RecList(
+    IdentDefs(Postfix("*", compPropsIdent), propsTypeIdent, Empty())
+  )
+  for item in body:
+    if item.kind == nnkCommand:
+      if item[0].strVal == "field":
+        item[1].expectKind(nnkIdent)
+        item[2].expectKind(nnkStmtList)
+        let ident = item[1]
+        let assign = item[2][0]
+        assign.expectKind(nnkAsgn)
+        componentFields.add(
+          IdentDefs(Postfix("*", ident), assign[0], Empty())
+        )
+        # TODO: Make a variable for Ident"ret"
+
+  let componentTypeDef = TypeSection(
+    TypeDef(
+      PostFix(Ident("*"), compName),
+      Empty(),
+      RefTy(
+        ObjectTy(
+          Empty(),
+          OfInherit(parentType),
+          componentFields
+        )
+      )
     )
   )
 
@@ -492,12 +522,11 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
     Ident"ret"
   )
 
-  result = quote do:
-    `typeDef`
 
-    type
-      `compName`* = ref object of `parentType`
-        `compPropsIdent`*: `propsTypeIdent`
+  result = quote do:
+    `componentPropsTypeDef`
+
+    `componentTypeDef`
 
     proc `initCompSym`*(self: `compName`, props: `propsTypeIdent`): void =
       self.`compPropsIdent` = props
@@ -520,6 +549,7 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
 
     proc `createCompIdent`*(`propsIdent`: `propsTypeTuple`): `compName` =
       `createCompProcBody`
+  echo "COMPONENT: ", result.repr
 
 
 macro sortChildren*(childrenTuple: untyped): untyped =
@@ -589,6 +619,8 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
   let content = StmtList()
   var children: seq[(NimNode, NimNode)] = @[]
 
+  echo "GOT BODY: ", body.repr
+
   var expandedProps =
     block:
       let section =  StmtList()
@@ -629,8 +661,21 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
           section.add(setter)
       section
 
+
+  let assignFieldsToComponent = StmtList()
+
   for item in body:
+    echo "ITEM: ", item.treerepr
     case item.kind:
+      of nnkCommand:
+        if item[0].strVal == "field":
+          item[1].expectKind(nnkIdent)
+          item[2].expectKind(nnkStmtList)
+          let ident = item[1]
+          let assign = item[2][0]
+          assign.expectKind(nnkAsgn)
+          content.add(VarSection(IdentDefs(ident, assign[0], assign[1])))
+          assignFieldsToComponent.add(Asgn(DotExpr(Ident"ret", ident), ident))
       of nnkCall, nnkIdent:
         children.add((genSym(nskLet, "child"), item))
       of nnkInfix:
@@ -658,5 +703,7 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
     expandedProps,
     content,
     childrenDefinitions,
+    assignFieldsToComponent,
     Call(Ident"sortChildren", childrenTuple)
   )
+  echo "BODY RESULT: ", result.repr

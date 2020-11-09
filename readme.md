@@ -190,6 +190,25 @@ panel:
 
 NOTE: Components should be named with an upper case first letter, but are instantiated with lower case.
 
+### Component fields
+
+One can add fields to a component using the field keyword:
+
+```nim
+component Foo():
+  field myField: float
+  ...
+```
+
+This field can the be accessed from the instantiating scope:
+
+```nim
+let f = Foo()
+echo foo.myField
+```
+
+This is useful if one wants to expose certain parts of a component to the outside.
+
 ### NOTE: Databinding doesn't work for component properties
 
 Since the properties are just passed by value as parameters to the component body,
