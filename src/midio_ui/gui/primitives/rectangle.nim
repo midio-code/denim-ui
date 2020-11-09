@@ -40,9 +40,9 @@ method render(self: RectangleElem): Option[Primitive] =
     )
   )
 
-proc createRectangle*(props: (ElementProps, RectangleProps), children: seq[Element] = @[]): RectangleElem =
+proc createRectangle*(props: (ElementProps, RectangleProps)): RectangleElem =
   let (elemProps, rectProps) = props
   result = RectangleElem(
     rectangleProps: rectProps
   )
-  initElement(result, elemProps, children)
+  initElement(result, elemProps)

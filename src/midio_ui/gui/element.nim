@@ -178,24 +178,16 @@ proc removeChild*(self: Element, child: Element): void =
     self.invalidateLayout()
     child.detachFromParent()
 
-# TODO: Hide the children field or make this easier to discover
-proc setChildren*(self: Element, value: seq[Element]): void =
-  for child in self.children:
-    child.detachFromParent()
-  self.children = @[]
-  for child in value:
-    self.addChild(child)
-
 proc initElement*(
   self: Element,
   props: ElementProps = ElementProps(),
-  children: seq[Element] = @[]
 ): void =
   self.id = genGuid()
   self.props = props
-  self.children = children
+
+proc addChildren*(self: Element, children: seq[Element]): void =
   for child in children:
-    child.parent = self
+    self.addChild(child)
 
 type
   MinMax = object

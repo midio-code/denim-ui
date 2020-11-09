@@ -40,8 +40,8 @@ method arrangeOverride(self: ScrollView, availableSize: Vec2[float]): Vec2[float
 
 proc initScrollView*(self: ScrollView, props: ScrollViewProps): void =
   self.scrollViewProps = props
-proc createScrollView*(props: (ElementProps, ScrollViewProps), children: seq[Element] = @[]): ScrollView =
+proc createScrollView*(props: (ElementProps, ScrollViewProps)): ScrollView =
   let (elemProps, scrollViewProps) = props
   result = ScrollView()
-  initElement(result, elemProps, children)
+  initElement(result, elemProps)
   initScrollView(result, scrollViewProps)

@@ -150,9 +150,9 @@ method arrangeOverride(self: Dock, arrangeSize: Vec2[float]): Vec2[float] =
 ## available space that is used to place the next child.
 ## Note that the last child can be made to fill the remaining space
 ## by not assigning it a dock value.
-proc createDock*(props: (ElementProps, DockProps), children: seq[Element]): Dock =
+proc createDock*(props: (ElementProps, DockProps)): Dock =
   result = Dock()
-  initElement(result, props[0], children)
+  initElement(result, props[0])
 
 # proc createDock*(dockings: seq[Docking], elemProps: ElementProps = ElementProps()): Dock =
 #   let children = dockings.map((c) => c.elem)

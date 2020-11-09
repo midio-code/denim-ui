@@ -63,8 +63,8 @@ method isPointInside(self: Path, point: Point): bool =
 
 proc initPath*(self: Path, props: PathProps): void =
   self.pathProps = props
-proc createPath*(props: (ElementProps, PathProps), children: seq[Element] = @[]): Path =
+proc createPath*(props: (ElementProps, PathProps)): Path =
   let (elemProps, pathProps) = props
   result = Path()
-  initElement(result, elemProps, children)
+  initElement(result, elemProps)
   initPath(result, pathProps)

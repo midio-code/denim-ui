@@ -32,8 +32,8 @@ method measureOverride*(self: Circle, availableSize: Vec2[float]): Vec2[float] =
   let diameter = props.radius * 2.0
   vec2(max(diameter, self.props.width.get(0.0)), max(diameter, self.props.height.get(0.0)))
 
-proc createCircle*(props: (ElementProps, CircleProps), children: seq[Element] = @[]): Circle =
+proc createCircle*(props: (ElementProps, CircleProps)): Circle =
   result = Circle(
     circleProps: props[1]
   )
-  initElement(result, props[0], children)
+  initElement(result, props[0])

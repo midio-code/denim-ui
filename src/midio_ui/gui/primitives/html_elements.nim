@@ -81,4 +81,4 @@ proc htmlTextInput*(props: ElementProps, textInputProps: TextInputProps): HtmlTe
     textInputProps: textInputProps,
     domElement: domElement
   )
-  initElement(result, props, @[])
+  initElement(result, props)

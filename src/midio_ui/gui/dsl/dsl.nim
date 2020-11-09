@@ -316,11 +316,11 @@ macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChild
           Empty(),
           Call(
             constructor,
-            Ident"props",
-            childrenSym
+            Ident"props"
           )
         )
       ),
+      Call("addChildren", elementSym, childrenSym),
       Call(
         Ident "extractBindings",
         elementSym,
@@ -356,9 +356,9 @@ type
 
 proc initPanel*(self: PanelElem): void =
   discard
-proc createPanel*(props: (ElementProps, PanelProps), children: seq[Element]): PanelElem =
+proc createPanel*(props: (ElementProps, PanelProps)): PanelElem =
   result = PanelElem()
-  initElement(result, props[0], children)
+  initElement(result, props[0])
 
 element_type(panel, (ElementProps, PanelProps), createPanel)
 
@@ -497,19 +497,20 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
     LetSection(
       IdentDefs("ret", Empty(), Call(compName))
     ),
+    Call("initElement", Ident"ret", elemPropsIdent),
     LetSection(
       IdentDefs(contentSym, Empty(), BlockStmt(Call(Ident"compileComponentBody", propsTypeTuple, props, compPropsIdent, body)))
     ),
     nnkLetSection.newTree(
       nnkVarTuple.newTree(Ident"children", Ident"behaviors", Empty(), contentSym)
     ),
-    Call("initElement", Ident"ret", elemPropsIdent, Ident"children"),
     if args.len == 3:
       Call(parentInitProc, Ident"ret", Ident"parentProps")
     else:
       Empty()
     ,
     Call(initCompSym, Ident"ret", compPropsIdent),
+    Call("addChildren", Ident"ret", Ident"children"),
     ForStmt(
       [Ident"b"],
       Ident"behaviors",
@@ -545,9 +546,7 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
         attributesAndChildren,
       )
 
-    # NOTE: Not sure why the tuple here needs to be reversed (with ElementProps first instead of last),
-    # but just gonna leave it here for now, as it is not exposed to the user.
-    proc `createCompIdent`*(`propsIdent`: `propsTypeTuple`, children: seq[Element]): `compName` =
+    proc `createCompIdent`*(`propsIdent`: `propsTypeTuple`): `compName` =
       `createCompProcBody`
   echo "COMP: ", result.repr
 
