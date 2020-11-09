@@ -44,8 +44,6 @@ proc extractMembersFromPropsTypes(propTypes: NimNode): PropsMembers =
     let propName = propType.strVal
 
     let objType = propType.getTypeImpl()[0].getTypeImpl()[2]
-    #objType.expectKind(nnkObjectTy)
-    #echo "Obj Ty: ", objType.treeRepr()
     var members = initHashSet[string]()
     for member in objType:
       members.incl(member[0].strVal)
@@ -69,7 +67,6 @@ macro extractProps*(propTypes: typed, attributes: typed): untyped =
           let nodeType = node.getTypeInst()
           let fieldInitializer = ExprColonExpr(Ident(fieldName), node)
           for propType in propTypes:
-            #echo "PropType: ", propType.treeRepr()
             let propName = propType.strVal
             if propTypeMembers[propName].contains(fieldName):
               propObjects[propName].add(fieldInitializer)
@@ -192,14 +189,11 @@ proc expandNiceAttributeSyntax*(attributesAndChildren: NimNode): ExpandedNiceSyn
   var childrenAndBehaviors: seq[ChildOrBehavior] = @[]
   var spreadChildListsAndObservables: seq[NimNode] = @[]
   var bindings: seq[Binding] = @[]
-  # All statements in body which are not children, behaviors or attributes
+  # NOTE: `restStatementList` contains all statements in body which are not children, behaviors or attributes
   var restStatementList = StmtList()
-  #echo "ATTRIBUTES-AND-CHILDREN: ", attributesAndChildren.treerepr()
-  #echo "ATTRIBUTES: ", attributesAndChildren.repr
   for attr in attributesAndChildren:
     case attr.kind:
       of nnkInfix:
-        #echo "Infix: ", attr.treeRepr()
         let operator = attr[0].strVal
         let leftHand = attr[1]
         let rightHand = attr[2]
@@ -227,7 +221,6 @@ proc expandNiceAttributeSyntax*(attributesAndChildren: NimNode): ExpandedNiceSyn
       of nnkCall:
           childrenAndBehaviors.add(attr)
       else:
-        echo "ITEM: ", attr.repr
         error(&"Item of kind <{attr.kind}>, is not supported")
   ExpandedNiceSyntax(
     attributes: attributes,
@@ -263,9 +256,6 @@ macro extractChildren*(childrenOrBehaviors: typed, childrenIdent: untyped, behav
       `childrenIdent`: seq[Element] = @`children`
       `behaviorsIdent`: seq[Behavior] = @`behaviors`
 
-# TODO: Find a non-dirty way to do this
-# This is just a helper template to make it faster to implement all
-# the GUI primitives
 macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChildren: varargs[untyped]): untyped =
   let expanded = expandNiceAttributeSyntax(attributesAndChildren)
   let attributes = expanded.attributes.toNimNode()
@@ -292,8 +282,6 @@ macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChild
     collectionBindings
 
   let childCollectionBindings = genCollectionBindings()
-
-  echo "\n\nEXPANDING SYNTAX FOR : ", propTypes.repr
 
   result = BlockStmt(
     StmtList(
@@ -337,7 +325,6 @@ macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChild
       elementSym
     )
   )
-  echo "EXPANDED SYNTAX: ", result.repr
 
 template element_type(identifier: untyped, propTypes: untyped, constructor: untyped): untyped =
   template `identifier`*(attributesAndChildren: varargs[untyped]): untyped =
@@ -651,8 +638,6 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
       section
 
   for item in body:
-    echo "ITEM KIND: ", item.kind
-    echo "ITEM IS: ", item.repr
     case item.kind:
       of nnkCall, nnkIdent:
         children.add((genSym(nskLet, "child"), item))
