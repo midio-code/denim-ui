@@ -109,21 +109,6 @@ proc createBinding(element: NimNode, targetProp: NimNode, attrib: NimNode, sourc
   quote do:
     bindPropWithInvalidation(`element`, `tp`, `attrib`, `sourceObservable`)
 
-proc createBinding(targetProp: NimNode, attrib: NimNode, sourceObservable: NimNode): NimNode =
-  # HACK: To allow the ElementProps field on Element to be named props instaed of elementProps.
-  let elemIdent = Ident"ret"
-  let tp =
-    if targetProp.strVal == "elementProps":
-      Ident("props")
-    else:
-      targetProp
-  quote do:
-    discard `sourceObservable`.subscribe(
-      proc(newVal: T): void =
-        `tp`.`attrib` = newVal
-        `elemIdent`.invalidateLayout()
-    )
-
 macro extractBindings*(element: untyped, propTypes: typed, attributes: typed): untyped =
   let (propObjects, propTypeMembers) = extractMembersFromPropsTypes(propTypes)
   let bindings = StmtList()
@@ -152,32 +137,6 @@ macro extractBindings*(element: untyped, propTypes: typed, attributes: typed): u
   result = bindings
 
 
-macro extractBindings*(propTypes: typed, attributes: typed): untyped =
-  let (propObjects, propTypeMembers) = extractMembersFromPropsTypes(propTypes)
-  let bindings = StmtList()
-  for attr in attributes:
-    block attributesBlock:
-      case attr.kind:
-        of nnkTupleConstr:
-          let fieldName = attr[0].strVal
-          let node = attr[1]
-          for propType in propTypes:
-            let propName = propType.strVal
-            if propTypeMembers[propName].contains(fieldName):
-              var propNameWithLowerFirst = propName
-              propNameWithLowerFirst[0] = propNameWithLowerFirst[0].toLowerAscii
-              let propsFieldIdent = Ident(propNameWithLowerFirst)
-              bindings.add(createBinding(propsFieldIdent, Ident(fieldName), node))
-              break attributesBlock
-          var propNamesList = ""
-          for pt in propTypes:
-            propNamesList = propNamesList & " " & pt.name.strVal
-          error(&"Field '{fieldName}' not found on any of the possible props types <{propNamesList}>")
-        of nnkEmpty: discard
-        else:
-          echo "Attr repr: ", attr.treeRepr()
-          error(&"Attribute error for '{attr.repr()}' type of <{attr.getType().repr()}> not supported")
-  result = bindings
 
 type
   Binding = tuple
@@ -519,7 +478,6 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
     )
   )
 
-
   let initCompSym = Ident("init" & nameStrUpperFirst)
 
   let propsIdent = Ident"props"
@@ -624,8 +582,12 @@ macro sortChildren*(childrenTuple: untyped): untyped =
   )
   echo "\nSORT CHILDREN: ", result.repr
 
+type
+  PropsType = tuple
+    propType: NimNode
+    attributeIdentifier: NimNode
 # TODO: Split into multiple procs
-proc getPropsTypeForIdentifier(propTypes: NimNode, identifier: NimNode): Option[(NimNode, NimNode)] =
+proc getPropsTypeForIdentifier(propTypes: NimNode, identifier: NimNode): Option[PropsType] =
   propTypes.expectKind(nnkTupleConstr)
   identifier.expectKind(nnkIdent)
   for propType in propTypes:
@@ -636,6 +598,23 @@ proc getPropsTypeForIdentifier(propTypes: NimNode, identifier: NimNode): Option[
 
 proc propTypeAndAttribToNimNode(propType: NimNode, attr: NimNode): NimNode =
   DotExpr(Ident(propType.strVal.withLowerCaseFirst), attr)
+
+macro binding[T](elem: untyped, prop: untyped, observable: Observable[T]): untyped =
+  # TODO: Handle disposing of subscription
+  result = quote do:
+    discard `observable`.subscribe(
+      proc(newVal: T): void =
+        `elem`.`prop` = newVal
+        `elem`.invalidateLayout()
+    )
+  echo "BINDING RES: ", result.repr
+
+
+proc createBinding(targetProp: NimNode, attrib: NimNode, sourceObservable: NimNode): NimNode =
+  # HACK: To allow the ElementProps field on Element to be named props instaed of elementProps.
+  let elemIdent = Ident"ret"
+  quote do:
+    bindPropWithInvalidation(`elemIdent`, `targetProp`, `attrib`, `sourceObservable`)
 
 macro compileComponentBody*(propTypes: typed, componentProps: untyped, compPropsIdent: untyped, body: untyped): untyped =
   let content = StmtList()
@@ -674,6 +653,7 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
 
     (leftHand, rightHand)
 
+
   for item in body:
     case item.kind:
       of nnkCall:
@@ -695,9 +675,11 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
         let rightHand = item[2]
         case operator:
           of "<-":
-            discard
-            #error("<- not yet suported")
-            #compPropsBindings.add(Par(leftHand, rightHand))
+            let l = getPropsTypeForIdentifier(propTypes, leftHand)
+            if l.isNone:
+              error("Expected left hand side of <- operator to be a component property")
+            let (pt, attrib) = l.get()
+            content.add(createBinding(Ident(pt.strVal.withLowerCaseFirst), attrib, rightHand))
           else:
             content.add(item)
       else:

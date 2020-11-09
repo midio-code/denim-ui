@@ -212,6 +212,9 @@ type
 proc hash*(element: Element): Hash =
   element.id.hash()
 
+proc `elementProps`*(self: Element): ElementProps =
+  self.props
+
 # TODO: This is probably not a robust way to cache this, and is just a
 # proof of concept for caching values that depends on layout calculations
 var worldPositions = initTable[Element, Vec2[float]]()
