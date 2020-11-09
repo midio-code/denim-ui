@@ -336,6 +336,7 @@ macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChild
       elementSym
     )
   )
+  echo "CALL: ", result.repr
 
 template element_type(identifier: untyped, propTypes: untyped, constructor: untyped): untyped =
   template `identifier`*(attributesAndChildren: varargs[untyped]): untyped =
@@ -373,7 +374,7 @@ element_type(panel, (ElementProps, PanelProps), createPanel)
 ##
 element_type(dock, (ElementProps, DockProps), createDock)
 
-template docking*(dir: DockDirection, element: Element): untyped =
+template docking*(dir: DockDirection, element: Element): Element =
   block:
     let elem = element
     setDocking(elem, dir)
@@ -414,7 +415,6 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
   let compName = Ident(nameStrUpperFirst & "Comp")
   let compConstructorName = Ident(nameStrUpperFirst)
   let propsTypeIdent = Ident(nameStrUpperFirst & "Props")
-  let propsFieldIdent = Ident(nameStrLowerFirst& "Props")
 
   let createCompIdent = Ident("create" & nameStrUpperFirst)
 
@@ -451,20 +451,10 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
         propsTypeIdent
       )
 
-  let (compPropsIdent, parentPropsIdent, elemPropsIdent) =
-    if args.len == 3:
-      (
-        Ident(propsTypeIdent.strVal.withLowerCaseFirst),
-        Ident(parentType.strVal.withLowerCaseFirst),
-        Ident("elementProps"),
-      )
-    else:
-      (
-        Ident(propsTypeIdent.strVal.withLowerCaseFirst),
-        Ident("NO_PARENT_TYPE"),
-        Ident("elementProps"),
-      )
-
+  echo "FOO", Ident(parentType.strVal.withLowerCaseFirst & "Props")
+  let compPropsIdent = Ident(propsTypeIdent.strVal.withLowerCaseFirst)
+  let parentPropsIdent = Ident(parentType.strVal.withLowerCaseFirst & "Props")
+  let elemPropsIdent = Ident("elementProps")
 
   var typeBody = nnkRecList.newTree()
   if props.len() > 0:
@@ -505,7 +495,7 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
       nnkVarTuple.newTree(Ident"children", Ident"behaviors", Empty(), contentSym)
     ),
     if args.len == 3:
-      Call(parentInitProc, Ident"ret", Ident"parentProps")
+      Call(parentInitProc, Ident"ret", parentPropsIdent)
     else:
       Empty()
     ,
@@ -525,10 +515,10 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
 
     type
       `compName`* = ref object of `parentType`
-        `propsFieldIdent`*: `propsTypeIdent`
+        `propsTypeIdent`*: `propsTypeIdent`
 
     proc `initCompSym`*(self: `compName`, props: `propsTypeIdent`): void =
-      self.`propsFieldIdent` = props
+      self.`propsTypeIdent` = props
 
     converter toElementOption*(self: Option[`compName`]): Option[Element] =
       self.map((x: `compName`) => x.Element)
@@ -549,6 +539,7 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
     proc `createCompIdent`*(`propsIdent`: `propsTypeTuple`): `compName` =
       `createCompProcBody`
 
+  echo "COMPONENT: ", result.repr
 
 # TODO: parse body so that we can have multiple children and specify a root type in the "constructor"
 
@@ -610,6 +601,7 @@ macro binding[T](elem: untyped, prop: untyped, observable: Observable[T]): untyp
         `prop` = newVal
         `elem`.invalidateLayout()
     )
+  echo "BINDING: ", result.repr
 
 proc createBinding(attrib: NimNode, sourceObservable: NimNode): NimNode =
   let elemIdent = Ident"ret"
@@ -622,13 +614,12 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
 
 
   var expandedProps =
-    if componentProps.len() > 0:
+    block:
       let section =  StmtList()
       for propType in propTypes:
         let propsMembers = getMembersOfPropsType(propType)
         var propIdent = Ident propType.strVal.withLowerCaseFirst
         for prop in propsMembers:
-          # TODO: Change to template instead of proc
           let getter = TemplateDef(
             Ident(&"{prop[0].strVal}"),
             Empty(),
@@ -639,56 +630,35 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
             Empty(),
             StmtList(
               DotExpr(propIdent, prop[0])
-            ) # the meat of the proc
+            )
           )
-          # TODO: Change to template instead of proc
           let setter = TemplateDef(
             Ident(&"`{prop[0].strVal}=`"),
             Empty(),
             Empty(),
             FormalParams(
-              Ident("void"), # the first FormalParam is the return type. nnkEmpty() if there is none
+              Ident("void"),
               IdentDefs(
                 Ident("val"),
-                prop[1], # type type (required for procs, not for templates)
+                prop[1],
                 Empty()
               ),
             ),
             Empty(),
             StmtList(
               Asgn(DotExpr(propIdent, prop[0]), Ident"val")
-            ) # the meat of the proc
+            )
           )
           section.add(getter)
           section.add(setter)
       section
-    else:
-      Empty()
 
-  # TODO: Try making this recursive to see if we can actually resolve identifiers
-  # nested deeper in the ast.
-  # proc compileAssignment(propTypes: NimNode, left: NimNode, right: NimNode): (NimNode, NimNode) =
-  #   var
-  #     leftHand = left
-  #     rightHand = right
-  #   if leftHand.kind == nnkIdent:
-  #     let ownerPropLeft = getPropsTypeForIdentifier(propTypes, leftHand)
-  #     if ownerPropLeft.isSome():
-  #       let (pt, attrib) = ownerPropLeft.get()
-  #       leftHand = propTypeAndAttribToNimNode(pt, attrib)
-
-  #   if rightHand.kind == nnkIdent:
-  #     let ownerPropRight = getPropsTypeForIdentifier(propTypes, rightHand)
-  #     if ownerPropRight.isSome():
-  #       let (pt, attrib) = ownerPropRight.get()
-  #       rightHand = propTypeAndAttribToNimNode(pt, attrib)
-
-  #   (leftHand, rightHand)
-
+  #echo "EXPANDED_PROPS: ", expandedProps.repr
 
   for item in body:
     case item.kind:
       of nnkCall:
+        echo "CHILD IS: ", item.repr()
         children.add((genSym(nskLet, "child"), item))
       of nnkInfix:
         let operator = item[0].strVal
@@ -696,10 +666,6 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
         let rightHand = item[2]
         case operator:
           of "<-":
-            #let l = getPropsTypeForIdentifier(propTypes, leftHand)
-            # if l.isNone:
-            #   error("Expected left hand side of <- operator to be a component property")
-            # let (pt, attrib) = l.get()
             content.add(createBinding(leftHand, rightHand))
           else:
             content.add(item)
@@ -721,3 +687,4 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
     childrenDefinitions,
     Call(Ident"sortChildren", childrenTuple)
   )
+  #echo "COMPONENT BODY: ", result.repr
