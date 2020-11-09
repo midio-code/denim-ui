@@ -23,30 +23,32 @@ The basic type is the Element type, which is what the entire GUI is created from
 ## Attributes available to all element types:
 
 ```nim
-  HorizontalAlignment* {.pure.} = enum
-    Stretch, Center, Left, Right
-
-  VerticalAlignment* {.pure.} = enum
-    Stretch, Center, Top, Bottom
+  Alignment* {.pure.} = enum
+    Stretch, Left, TopLeft, Top, TopRight, Right,
+    BottomRight, Bottom, BottomLeft, Center,
+    CenterLeft, CenterRight, TopCenter, BottomCenter,
+    HorizontalCenter, VerticalCenter
 
   Visibility* {.pure.} = enum
     Visible, Collapsed, Hidden
 ```
 ```nim
-  width*: Option[float]
-  height*: Option[float]
-  maxWidth*: Option[float]
-  minWidth*: Option[float]
-  maxHeight*: Option[float]
-  minHeight*: Option[float]
-  x*: Option[float]
-  y*: Option[float]
-  xOffset*: Option[float]
-  yOffset*: Option[float]
-  margin*: Option[Thickness[float]]
-  horizontalAlignment*: Option[HorizontalAlignment]
-  verticalAlignment*: Option[VerticalAlignment]
-  visibility*: Option[Visibility]
+width*: Option[float]
+height*: Option[float]
+maxWidth*: Option[float]
+minWidth*: Option[float]
+maxHeight*: Option[float]
+minHeight*: Option[float]
+x*: Option[float]
+y*: Option[float]
+xOffset*: Option[float]
+yOffset*: Option[float]
+margin*: Option[Thickness[float]]
+alignment*: Option[Alignment]
+visibility*: Option[Visibility]
+clipToBounds*: Option[bool]
+# TODO: Implement all transforms for all rendering backends
+transform*: Option[Transform]
 ```
 
 ## Layout primitives
@@ -177,19 +179,21 @@ component ComponentName(prop1: AttrType1, prop2: AttrType2):
     text(text = foo)
 ```
 
-Component bodies can contain whatever code you want, as long as it return an element.
+Component bodies can contain whatever code (almost) you want, as long as it return an element.
 
 The component can then be used with the DSL syntax like any other element:
 
 ```nim
 panel:
-  ComponentName(prop1 = ....
+  componentName(prop1 = ....
 ```
+
+NOTE: Components should be named with an upper case first letter, but are instantiated with lower case.
 
 ### NOTE: Databinding doesn't work for component properties
 
 Since the properties are just passed by value as parameters to the component body,
-if you want property values to be changed dynamically, they need to be passed as Observables:
+if you want property values of component children to be changed dynamically, they need to be passed as Observables:
 
 ```nim
 component MyDynamicComp(val1: Observabie[float]):
