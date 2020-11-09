@@ -33,8 +33,11 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
 
   measureText(text, fontSize, font, baseline)
 
-proc createText*(props: TextProps = TextProps(), elemProps: ElemProps = ElemProps()): Text =
-  result = Text(
-    textProps: props
-  )
+proc initText*(self: Text, props: TextProps): void =
+  self.textProps = props
+
+proc createText*(props: (ElementProps, TextProps), children: seq[Element] = @[]): Text =
+  let (elemProps, textProps) = props
+  result = Text()
   initElement(result, elemProps)
+  initText(result, textProps)

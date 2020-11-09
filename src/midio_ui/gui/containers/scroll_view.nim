@@ -1,12 +1,11 @@
 import options
 import strformat
-import ../dsl/dsl
+import rx_nim
+import ../types
+import ../element
 import ../element_observables
 import ../../vec
 import ../../rect
-import dock
-import ../primitives/rectangle
-import ../behaviors/onDrag
 
 type
   ScrollViewProps* = ref object
@@ -39,8 +38,10 @@ method arrangeOverride(self: ScrollView, availableSize: Vec2[float]): Vec2[float
     child.arrange(rect(-progress.x * childSizeOverBounds.x, -progress.y * childSizeOverBounds.y, availableSize.x, availableSize.y))
   self.desiredSize.get()
 
-proc createScrollView*(scrollViewProps: ScrollViewProps, props: ElemProps = ElemProps(), children: seq[Element] = @[]): ScrollView =
-  result = ScrollView(
-    scrollViewProps: scrollViewProps
-  )
-  initElement(result, props, children)
+proc initScrollView*(self: ScrollView, props: ScrollViewProps): void =
+  self.scrollViewProps = props
+proc createScrollView*(props: (ElementProps, ScrollViewProps)): ScrollView =
+  let (elemProps, scrollViewProps) = props
+  result = ScrollView()
+  initElement(result, elemProps)
+  initScrollView(result, scrollViewProps)

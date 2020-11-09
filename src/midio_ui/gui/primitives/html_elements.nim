@@ -19,8 +19,7 @@ let nativeContainer = getElementById("nativeContainer")
 let hardCodedScale = 2.0
 
 type
-  HtmlTextInput* = ref object of element.Element
-    textInputProps*: TextInputProps
+  HtmlTextInput* = ref object of TextInput
     domElement*: dom.Element
 
 proc updateTextProps(self: HtmlTextInput): void =
@@ -76,10 +75,10 @@ method arrangeOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[fl
   availableSize
 
 
-proc htmlTextInput*(props: ElemProps, textInputProps: TextInputProps): HtmlTextInput =
+proc htmlTextInput*(props: ElementProps, textInputProps: TextInputProps): HtmlTextInput =
   let domElement = createHtmlTextInput(textInputProps)
   result = HtmlTextInput(
     textInputProps: textInputProps,
     domElement: domElement
   )
-  initElement(result, props, @[])
+  initElement(result, props)

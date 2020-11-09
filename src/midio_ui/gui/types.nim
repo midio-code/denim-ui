@@ -41,6 +41,7 @@ type
     placeholderColor*: Option[string]
     onChange*: Option[TextChanged]
 
+
 type
 
   Transform* {.requiresInit.} = ref object
@@ -151,7 +152,7 @@ type
   Visibility* {.pure.} = enum
     Visible, Collapsed, Hidden
 
-  ElemProps* = ref object
+  ElementProps* = ref object
     width*: Option[float]
     height*: Option[float]
     maxWidth*: Option[float]
@@ -194,7 +195,7 @@ type
   Element* = ref object of RootObj
     id*: Guid
     children*: seq[Element]
-    props*: ElemProps
+    props*: ElementProps
     parent*: Option[Element]
     desiredSize*: Option[Vec2[float]]
     bounds*: Option[Rect[float]]
@@ -210,6 +211,9 @@ type
 
 proc hash*(element: Element): Hash =
   element.id.hash()
+
+proc `elementProps`*(self: Element): ElementProps =
+  self.props
 
 # TODO: This is probably not a robust way to cache this, and is just a
 # proof of concept for caching values that depends on layout calculations
@@ -230,3 +234,7 @@ proc actualWorldPosition*(self: Element): Vec2[float] =
 
 proc invalidateWorldPositionsCache*(): void =
   worldPositions.clear()
+
+type
+  TextInput* = ref object of Element
+    textInputProps*: TextInputProps

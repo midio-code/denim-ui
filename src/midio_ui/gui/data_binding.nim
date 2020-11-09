@@ -16,7 +16,7 @@ template bindCollection*[T](prop: seq[T], collection: ObservableCollection[T]): 
       prop.delete(prop.find(removedVal))
   )
 
-## Binds an element layout variable (the options are the same as the fields in ElemProps)
+## Binds an element layout variable (the options are the same as the fields in ElementProps)
 ## to an observable.
 template bindLayoutProp*[T](element: Element, prop: untyped, observable: Observable[T]): untyped =
   # TODO: Handle disposing of subscription

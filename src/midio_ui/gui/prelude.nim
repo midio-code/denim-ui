@@ -3,7 +3,7 @@ import ../vec
 import ../rect
 import ../thickness
 import types, element, ../events
-import containers/dock, containers/stack, containers/container, containers/scroll_view
+import containers/dock, containers/stack, containers/scroll_view
 import primitives/text, primitives/circle, primitives/rectangle, primitives/path
 import behaviors, tag
 import data_binding, element_events, layout_observables
@@ -15,7 +15,7 @@ import element_observables
 import rx_nim
 
 export options, vec, rect
-export types, element, events, dock, stack, rectangle, path, text, container, scroll_view
+export types, element, events, dock, stack, rectangle, path, text, scroll_view
 export circle, behaviors, tag, data_binding, element_events
 export onClicked, onHover, onDrag, onPointer
 export rx_nim

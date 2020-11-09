@@ -109,24 +109,24 @@ proc invalidateLayout*(self: Element): void =
 # NOTE: Atm we have the LayoutManager implementation in the same file so that we avoid
 # the need for circular dependencies. Will figure this out later
 
-proc size*(props: ElemProps): Option[Vec2[float]] =
+proc size*(props: ElementProps): Option[Vec2[float]] =
   if props.width.isSome() and props.height.isSome():
     some(vec2(props.width.get, props.height.get))
   else:
     none[Vec2[float]]()
 
-proc `size=`*(props: ElemProps, value: Vec2[float]): void =
+proc `size=`*(props: ElementProps, value: Vec2[float]): void =
   props.width = some(value.x)
   props.height = some(value.y)
 
 
-proc pos*(props: ElemProps): Option[Vec2[float]] =
+proc pos*(props: ElementProps): Option[Vec2[float]] =
   if props.width.isSome() and props.height.isSome():
     some(vec2(props.x.get, props.y.get))
   else:
     none[Vec2[float]]()
 
-proc `pos=`*(props: ElemProps, value: Vec2[float]): void =
+proc `pos=`*(props: ElementProps, value: Vec2[float]): void =
   props.x = some(value.x)
   props.y = some(value.y)
 
@@ -178,24 +178,16 @@ proc removeChild*(self: Element, child: Element): void =
     self.invalidateLayout()
     child.detachFromParent()
 
-# TODO: Hide the children field or make this easier to discover
-proc setChildren*(self: Element, value: seq[Element]): void =
-  for child in self.children:
-    child.detachFromParent()
-  self.children = @[]
-  for child in value:
-    self.addChild(child)
-
 proc initElement*(
   self: Element,
-  props: ElemProps = ElemProps(),
-  children: seq[Element] = @[]
+  props: ElementProps = ElementProps(),
 ): void =
   self.id = genGuid()
   self.props = props
-  self.children = children
+
+proc addChildren*(self: Element, children: seq[Element]): void =
   for child in children:
-    child.parent = self
+    self.addChild(child)
 
 type
   MinMax = object

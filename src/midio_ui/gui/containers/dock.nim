@@ -9,7 +9,10 @@ import ../../thickness
 import ../../rect
 
 type
-  Dock = ref object of Element
+  DockProps* = ref object
+
+  Dock* = ref object of Element
+    dockProps*: DockProps
 
   DockDirection* {.pure.} = enum
     Default, Left, Top, Right, Bottom
@@ -145,37 +148,15 @@ method arrangeOverride(self: Dock, arrangeSize: Vec2[float]): Vec2[float] =
     vec2(accumulatedRight, accumulatedBottom)
   )
 
+proc initDock*(self: Dock, props: DockProps): void =
+  self.dockProps = props
+
 ## Basic sock panel where one can dock elements to each side, gradually shrinking the
 ## available space that is used to place the next child.
 ## Note that the last child can be made to fill the remaining space
 ## by not assigning it a dock value.
-proc createDock*(props: ElemProps, children: seq[Element]): Dock =
+proc createDock*(props: (ElementProps, DockProps)): Dock =
+  let (elemProps, dockProps) = props
   result = Dock()
-  initElement(result, props, children)
-
-proc createDock*(dockings: seq[Docking], elemProps: ElemProps = ElemProps()): Dock =
-  let children = dockings.map((c) => c.elem)
-  for x in dockings:
-    setDocking(x.elem, x.dir)
-  createDock(elemProps, children)
-
-# proc createDock*(children: varargs[Docking] = @[]):  Dock =
-#   createDock(@children)
-
-# proc createDock*(margin: Thickness[float], children: varargs[Docking] = @[]): Dock =
-#   createDock(@children, elemProps = ElemProps(margin: some(margin)))
-
-# proc createDock*(elemProps: ElemProps, children: varargs[Docking] = @[]): Dock =
-#   createDock(@children, elemProps = elemProps)
-
-proc left*(element: Element): Docking =
-  (element, DockDirection.Left)
-
-proc top*(element: Element): Docking =
-  (element, DockDirection.Top)
-
-proc right*(element: Element): Docking =
-  (element, DockDirection.Right)
-
-proc bottom*(element: Element): Docking =
-  (element, DockDirection.Bottom)
+  initElement(result, elemProps)
+  initDock(result, dockProps)
