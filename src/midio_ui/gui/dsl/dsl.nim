@@ -595,6 +595,12 @@ proc getPropsTypeForIdentifier(propTypes: NimNode, identifier: NimNode): Option[
       if member[0].strVal == identifier.strVal:
         return some((propType, member[0]))
 
+proc getMembersOfPropsType(propType: NimNode): seq[NimNode] =
+  let objType = propType.getTypeImpl()[0].getTypeImpl()[2]
+  result = @[]
+  for member in objType:
+    result.add member
+
 proc propTypeAndAttribToNimNode(propType: NimNode, attr: NimNode): NimNode =
   DotExpr(Ident(propType.strVal.withLowerCaseFirst), attr)
 
@@ -602,88 +608,110 @@ macro binding[T](elem: untyped, prop: untyped, observable: Observable[T]): untyp
   # TODO: Handle disposing of subscription
   result = quote do:
     discard `observable`.subscribe(
-      proc(newVal: T): void =
-        `elem`.`prop` = newVal
+      proc(newVal: auto): void =
+        `prop` = newVal
         `elem`.invalidateLayout()
     )
   echo "BINDING RES: ", result.repr
 
-
-proc createBinding(targetProp: NimNode, attrib: NimNode, sourceObservable: NimNode): NimNode =
-  # HACK: To allow the ElementProps field on Element to be named props instaed of elementProps.
+proc createBinding(attrib: NimNode, sourceObservable: NimNode): NimNode =
   let elemIdent = Ident"ret"
-  quote do:
-    bindPropWithInvalidation(`elemIdent`, `targetProp`, `attrib`, `sourceObservable`)
+  echo "CREATING BINDING: "
+  echo "   attrib: ", attrib.repr
+  echo "   sourceObservable: ", sourceObservable.repr
+  result = quote do:
+    binding(`elemIdent`, `attrib`, `sourceObservable`)
+  echo "CREATE_BINDING: ", result.repr
 
 macro compileComponentBody*(propTypes: typed, componentProps: untyped, compPropsIdent: untyped, body: untyped): untyped =
   let content = StmtList()
   var children: seq[(NimNode, NimNode)] = @[]
 
+
   var expandedProps =
     if componentProps.len() > 0:
-      let section =  LetSection()
-      for prop in componentProps:
-        section.add(IdentDefs(prop[0], Empty(), DotExpr(compPropsIdent, prop[0])))
+      let section =  StmtList()
+      for propType in propTypes:
+        let propsMembers = getMembersOfPropsType(propType)
+        var propIdent = Ident propType.strVal.withLowerCaseFirst
+        for prop in propsMembers:
+          # TODO: Change to template instead of proc
+          let getter = TemplateDef(
+            Ident(&"{prop[0].strVal}"),
+            Empty(),
+            Empty(),
+            FormalParams(
+              prop[1]
+            ),
+            Empty(),
+            StmtList(
+              DotExpr(propIdent, prop[0])
+            ) # the meat of the proc
+          )
+          # TODO: Change to template instead of proc
+          let setter = TemplateDef(
+            Ident(&"`{prop[0].strVal}=`"),
+            Empty(),
+            Empty(),
+            FormalParams(
+              Ident("void"), # the first FormalParam is the return type. nnkEmpty() if there is none
+              IdentDefs(
+                Ident("val"),
+                prop[1], # type type (required for procs, not for templates)
+                Empty()
+              ),
+            ),
+            Empty(),
+            StmtList(
+              Asgn(DotExpr(propIdent, prop[0]), Ident"val")
+            ) # the meat of the proc
+          )
+          section.add(getter)
+          section.add(setter)
       section
     else:
       Empty()
 
   # TODO: Try making this recursive to see if we can actually resolve identifiers
   # nested deeper in the ast.
-  proc compileAssignment(propTypes: NimNode, left: NimNode, right: NimNode): (NimNode, NimNode) =
-    echo "Props type: ", propTypes.treerepr
-    var
-      leftHand = left
-      rightHand = right
-    if leftHand.kind == nnkIdent:
-      let ownerPropLeft = getPropsTypeForIdentifier(propTypes, leftHand)
-      if ownerPropLeft.isSome():
-        let (pt, attrib) = ownerPropLeft.get()
-        leftHand = propTypeAndAttribToNimNode(pt, attrib)
+  # proc compileAssignment(propTypes: NimNode, left: NimNode, right: NimNode): (NimNode, NimNode) =
+  #   var
+  #     leftHand = left
+  #     rightHand = right
+  #   if leftHand.kind == nnkIdent:
+  #     let ownerPropLeft = getPropsTypeForIdentifier(propTypes, leftHand)
+  #     if ownerPropLeft.isSome():
+  #       let (pt, attrib) = ownerPropLeft.get()
+  #       leftHand = propTypeAndAttribToNimNode(pt, attrib)
 
-    if rightHand.kind == nnkIdent:
-      let ownerPropRight = getPropsTypeForIdentifier(propTypes, rightHand)
-      if ownerPropRight.isSome():
-        let (pt, attrib) = ownerPropRight.get()
-        rightHand = propTypeAndAttribToNimNode(pt, attrib)
+  #   if rightHand.kind == nnkIdent:
+  #     let ownerPropRight = getPropsTypeForIdentifier(propTypes, rightHand)
+  #     if ownerPropRight.isSome():
+  #       let (pt, attrib) = ownerPropRight.get()
+  #       rightHand = propTypeAndAttribToNimNode(pt, attrib)
 
-    echo "Owner left: ", leftHand.repr()
-    echo "Owner right: ", rightHand.repr()
-
-    (leftHand, rightHand)
+  #   (leftHand, rightHand)
 
 
   for item in body:
     case item.kind:
       of nnkCall:
         children.add((genSym(nskLet, "child"), item))
-      of nnkDiscardStmt, nnkProcDef, nnkBlockStmt:
-        content.add(item)
-      of nnkLetSection, nnkVarSection:
-        let section = newTree(item.kind)
-        for identDef in item:
-          let (l, r) = compileAssignment(propTypes, identDef[0], identDef[2])
-          section.add(IdentDefs(l, identDef[1], r))
-        content.add(section)
-      of nnkAsgn:
-        let (l, r) = compileAssignment(propTypes, item[0], item[1])
-        content.add(Asgn(l, r))
       of nnkInfix:
         let operator = item[0].strVal
         let leftHand = item[1]
         let rightHand = item[2]
         case operator:
           of "<-":
-            let l = getPropsTypeForIdentifier(propTypes, leftHand)
-            if l.isNone:
-              error("Expected left hand side of <- operator to be a component property")
-            let (pt, attrib) = l.get()
-            content.add(createBinding(Ident(pt.strVal.withLowerCaseFirst), attrib, rightHand))
+            #let l = getPropsTypeForIdentifier(propTypes, leftHand)
+            # if l.isNone:
+            #   error("Expected left hand side of <- operator to be a component property")
+            # let (pt, attrib) = l.get()
+            content.add(createBinding(leftHand, rightHand))
           else:
             content.add(item)
       else:
-        let ik = $item.kind
-        error("Node of kind <" & ik & "> is not allowed in component bodies.")
+        content.add(item)
 
   let childrenDefinitions = LetSection()
   for c in children:
@@ -695,8 +723,8 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
     childrenTuple.add(sym)
 
   result = StmtList(
-    content,
     expandedProps,
+    content,
     childrenDefinitions,
     Call(Ident"sortChildren", childrenTuple)
   )
