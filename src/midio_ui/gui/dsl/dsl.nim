@@ -548,7 +548,6 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
 
     proc `createCompIdent`*(`propsIdent`: `propsTypeTuple`): `compName` =
       `createCompProcBody`
-  echo "COMP: ", result.repr
 
 
 # TODO: parse body so that we can have multiple children and specify a root type in the "constructor"
@@ -579,7 +578,6 @@ macro sortChildren*(childrenTuple: untyped): untyped =
     ),
     Par(Ident"children", Ident"behaviors")
   )
-  echo "\nSORT CHILDREN: ", result.repr
 
 type
   PropsType = tuple
@@ -612,16 +610,11 @@ macro binding[T](elem: untyped, prop: untyped, observable: Observable[T]): untyp
         `prop` = newVal
         `elem`.invalidateLayout()
     )
-  echo "BINDING RES: ", result.repr
 
 proc createBinding(attrib: NimNode, sourceObservable: NimNode): NimNode =
   let elemIdent = Ident"ret"
-  echo "CREATING BINDING: "
-  echo "   attrib: ", attrib.repr
-  echo "   sourceObservable: ", sourceObservable.repr
-  result = quote do:
+  quote do:
     binding(`elemIdent`, `attrib`, `sourceObservable`)
-  echo "CREATE_BINDING: ", result.repr
 
 macro compileComponentBody*(propTypes: typed, componentProps: untyped, compPropsIdent: untyped, body: untyped): untyped =
   let content = StmtList()
@@ -728,4 +721,3 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
     childrenDefinitions,
     Call(Ident"sortChildren", childrenTuple)
   )
-  echo "\nCOMPILE_COMPONENT_BODY: ", result.repr
