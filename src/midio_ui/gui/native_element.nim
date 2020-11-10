@@ -15,7 +15,7 @@ when defined(js):
 else:
   proc createTextInput*(props: (ElementProps, TextInputProps), children: seq[Element] = @[]): TextInput =
     let (elemProps, textProps) = props
-    createText(
+    cast[TextInput](createText(
       (
         elemProps,
         TextProps(
@@ -24,4 +24,4 @@ else:
           color: textProps.color,
         )
       )
-    )
+    ))
