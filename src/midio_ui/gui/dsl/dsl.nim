@@ -549,7 +549,6 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
 
     proc `createCompIdent`*(`propsIdent`: `propsTypeTuple`): `compName` =
       `createCompProcBody`
-  echo "COMPONENT: ", result.repr
 
 
 macro sortChildren*(childrenTuple: untyped): untyped =
@@ -619,8 +618,6 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
   let content = StmtList()
   var children: seq[(NimNode, NimNode)] = @[]
 
-  echo "GOT BODY: ", body.repr
-
   var expandedProps =
     block:
       let section =  StmtList()
@@ -665,7 +662,6 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
   let assignFieldsToComponent = StmtList()
 
   for item in body:
-    echo "ITEM: ", item.treerepr
     case item.kind:
       of nnkCommand:
         if item[0].strVal == "field":
@@ -676,6 +672,8 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
           assign.expectKind(nnkAsgn)
           content.add(VarSection(IdentDefs(ident, assign[0], assign[1])))
           assignFieldsToComponent.add(Asgn(DotExpr(Ident"ret", ident), ident))
+        else:
+          content.add(item)
       of nnkCall, nnkIdent:
         children.add((genSym(nskLet, "child"), item))
       of nnkInfix:
@@ -706,4 +704,3 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
     assignFieldsToComponent,
     Call(Ident"sortChildren", childrenTuple)
   )
-  echo "BODY RESULT: ", result.repr
