@@ -74,9 +74,7 @@ macro extractProps*(propTypes: typed, attributes: typed): untyped =
 
           # NOTE: If we tried all the prop types but none matched
           # then this Element type doesn't support the supplied attribute.
-          var propNamesList = ""
-          for pt in propTypes:
-            propNamesList = propNamesList & " " & pt.name.strVal
+          var propNamesList = propTypes.repr
           error(&"Field '{fieldName}' not found on any of the possible types: <{propNamesList}>")
         of nnkEmpty: discard
         else:
