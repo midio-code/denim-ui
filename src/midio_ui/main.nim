@@ -14,6 +14,7 @@ type
     dispatchPointerMove*: (x: float, y: float) -> void
     dispatchPointerDown*: (x: float, y: float, pointerIndex: PointerIndex) -> void
     dispatchPointerUp*: (x: float, y: float, pointerIndex: PointerIndex) -> void
+    dispatchWheel*: (deltaX: float, deltaY: float, deltaZ: float, unit: WheelDeltaUnit) -> void
     dispatchKeyDown*: (code: int, key: string) -> void
     dispatchWindowSizeChanged*: (newSize: Vec2[float]) -> void
     dispatchUpdate*: (float) -> void
@@ -32,6 +33,9 @@ var lastPointerIndex: PointerIndex
 
 var pointerPressedLastFrame = false
 var pointerPressedThisFrame = false
+
+
+var wheelEventsLastFrame: seq[WheelArgs] = @[]
 
 var windowSize: Vec2[float]
 
@@ -60,6 +64,11 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   if pointerPressedLastFrame == true and pointerPressedThisFrame == false:
     discard ctx.rootElement.dispatchPointerUp(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos), lastPointerIndex))
     pointerPressedLastFrame = false
+
+  if wheelEventsLastFrame.len > 0:
+    for arg in wheelEventsLastFrame:
+      ctx.rootElement.dispatchWheel(arg)
+    wheelEventsLastFrame = @[]
 
   update_manager.dispatchUpdate(dt)
   performOutstandingLayoutsAndMeasures(availableRect)
@@ -95,6 +104,14 @@ proc dispatchPointerRelease*(x: float, y: float, pointerIndex: PointerIndex): vo
   # TODO: This does not work if both press and release happens on the same frame
   pointerPressedThisFrame = false
 
+proc dispatchWheel*(deltaX: float, deltaY: float, deltaZ: float, unit: WheelDeltaUnit): void {.exportc.} =
+  wheelEventsLastFrame.add(WheelArgs(
+    deltaX: deltaX,
+    deltaY: deltaY,
+    deltaZ: deltaZ,
+    unit: unit
+  ))
+
 proc dispatchKeyDown*(keyCode: int, key: string): void {.exportc.} =
   keyDownEmitter.emit(
     KeyArgs(
@@ -125,6 +142,7 @@ proc init*(
     dispatchPointerMove: dispatchPointerMove,
     dispatchPointerDown: dispatchPointerPress,
     dispatchPointerUp: dispatchPointerRelease,
+    dispatchWheel: dispatchWheel,
     dispatchKeyDown: dispatchKeyDown,
     dispatchWindowSizeChanged: dispatchWindowSizeChanged,
     scale: scale,

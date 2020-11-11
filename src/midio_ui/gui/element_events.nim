@@ -176,3 +176,8 @@ proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
     let capturedElem = pointerCapturedTo.get()
     if not elementsHandledPointerMoveThisUpdate.contains(capturedElem):
       discard capturedElem.dispatchPointerMoveImpl(arg)
+
+var wheelEmitter = emitter[WheelArgs]()
+
+proc dispatchWheel*(self: Element, args: WheelArgs): void =
+  wheelEmitter.emit(args)
