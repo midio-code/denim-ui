@@ -4,8 +4,11 @@ import hashes
 import options
 import ../guid
 import ../vec
+import ../transform
 import ../thickness
 import ../rect
+
+export transform
 
 type
   PointerIndex* = enum
@@ -44,11 +47,6 @@ type
 
 
 type
-
-  Transform* {.requiresInit.} = ref object
-    scale*: Vec2[float]
-    translation*: Vec2[float]
-    rotation*: float
 
   PathSegmentKind* {.pure.} = enum
     MoveTo, LineTo, QuadraticCurveTo, BezierCurveTo, Close
@@ -170,6 +168,8 @@ type
     clipToBounds*: Option[bool]
     # TODO: Implement all transforms for all rendering backends
     transform*: Option[Transform]
+    # NOTE: Only for debugging
+    debugName*: Option[string]
 
 proc translation*(trans: Vec2[float]): Transform =
   Transform(scale: vec2(1.0), rotation: 0.0, translation: trans)

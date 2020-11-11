@@ -1,10 +1,11 @@
-import sugar, tables, options, sets
+import sugar, tables, options, sets, strformat
 import types
 import element
 import rx_nim
 import ../events
 import ../utils
 import ../vec
+import ../transform
 
 type
   EventResult* = object
@@ -49,6 +50,21 @@ type
     deltaZ*: float
     unit*: WheelDeltaUnit
 
+proc transformed(args: PointerArgs, elem: Element): PointerArgs =
+  PointerArgs(
+    sender: args.sender,
+    pointerIndex: args.pointerIndex,
+    pos: args.pos.transform(elem)
+  )
+
+proc transformed(args: WheelArgs, elem: Element): WheelArgs =
+  WheelArgs(
+    deltaX: args.deltaX,
+    deltaY: args.deltaY,
+    deltaZ: args.deltaZ,
+    unit: args.unit,
+    pos: args.pos.transform(elem)
+  )
 
 createElementEvent(pointerEntered, PointerArgs, void)
 createElementEvent(pointerExited, PointerArgs, void)
@@ -98,17 +114,19 @@ var elementsHandledPointerDownThisUpdate = initHashSet[Element]()
 proc dispatchPointerDownImpl*(self: Element, arg: PointerArgs): EventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
-  if not self.isPointInside(arg.pos):
+
+  let transformedArg = arg.transformed(self)
+  if not self.isPointInside(transformedArg.pos):
     return
 
   for child in self.children.reverse():
-    let result = child.dispatchPointerDownImpl(arg)
+    let result = child.dispatchPointerDownImpl(transformedArg)
     if result.handled:
        return result
-  if self.isPointInside(arg.pos):
+  if self.isPointInside(transformedArg.pos):
     elementsHandledPointerDownThisUpdate.incl(self)
     for handler in self.pointerPressedHandlers:
-      let res = handler(arg.withElem(self))
+      let res = handler(transformedArg.withElem(self))
       if res.handled:
         return res
 
@@ -116,17 +134,19 @@ var elementsHandledPointerUpThisUpdate = initHashSet[Element]()
 proc dispatchPointerUpImpl*(self: Element, arg: PointerArgs): EventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
-  if not self.isPointInside(arg.pos) and not self.hasPointerCapture:
+
+  let transformedArg = arg.transformed(self)
+  if not self.isPointInside(transformedArg.pos) and not self.hasPointerCapture:
     return
 
   for child in self.children.reverse():
-    let result = child.dispatchPointerUpImpl(arg)
+    let result = child.dispatchPointerUpImpl(transformedArg)
     if result.handled:
       return result
-  if (self.isPointInside(arg.pos) or self.pointerCaptured()):
+  if (self.isPointInside(transformedArg.pos) or self.pointerCaptured()):
     elementsHandledPointerUpThisUpdate.incl(self)
     for handler in self.pointerReleasedHandlers:
-      let res = handler(arg.withElem(self))
+      let res = handler(transformedArg.withElem(self))
       if res.handled:
         return res
 
@@ -142,7 +162,8 @@ proc pointerExited(self: Element, arg: PointerArgs): void =
     handler(arg.withElem(self))
   for child in self.children:
     if child.pointerInsideLastUpdate:
-      child.pointerExited(arg)
+      let transformedArg = arg.transformed(child).withElem(child)
+      child.pointerExited(transformedArg)
 
 
 var elementsHandledPointerMoveThisUpdate = initHashSet[Element]()
@@ -150,22 +171,26 @@ proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs): EventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
 
-  let pointInside = self.isPointInside(arg.pos)
+  let transformedArg = arg.transformed(self)
+  let pointInside = self.isPointInside(transformedArg.pos)
+
+  # let defaultName = self.props.debugName.get("noName")
+  # echo &"Is point inside: {defaultName}? {transformedArg.pos} - {pointInside}"
 
   if pointInside or self.hasPointerCapture:
     if self.pointerInsideLastUpdate == false:
-      self.pointerEntered(arg)
+      self.pointerEntered(transformedArg)
     elementsHandledPointerMoveThisUpdate.incl(self)
     for handler in self.pointerMovedHandlers:
-      let res = handler(arg.withElem(self))
+      let res = handler(transformedArg.withElem(self))
       if res.handled:
         return res
     for child in self.children.reverse():
-      result = child.dispatchPointerMoveImpl(arg)
+      result = child.dispatchPointerMoveImpl(transformedArg)
       if result.handled:
         return result
   elif self.pointerInsideLastUpdate:
-    self.pointerExited(arg)
+    self.pointerExited(transformedArg)
     return
 
 proc dispatchPointerDown*(self: Element, arg: PointerArgs): EventResult =
@@ -194,13 +219,14 @@ createElementEvent(wheel, WheelArgs, EventResult)
 proc dispatchWheel*(self: Element, args: WheelArgs): EventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
-  if not self.isPointInside(args.pos):
+  let transformedArg = args.transformed(self)
+  if not self.isPointInside(transformedArg.pos):
     return
   for child in self.children.reverse():
-    let res = child.dispatchWheel(args)
+    let res = child.dispatchWheel(transformedArg)
     if res.handled:
       return res
   for handler in self.wheelHandlers:
-    let res = handler(args)
+    let res = handler(transformedArg)
     if res.handled:
       return res

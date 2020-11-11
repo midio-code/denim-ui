@@ -421,3 +421,8 @@ method render*(self: Element): Option[Primitive] {.base.} =
       .map((x: Element) => x.render())
       .filter((x: Option[Primitive]) => x.isSome())
       .map((x: Option[Primitive]) => x.get())
+
+proc transform*(point: Vec2[float], elem: Element): Vec2[float] =
+  let relativePoint = point.relativeTo(elem)
+  let diff = point - relativePoint
+  relativePoint.transform(elem.props.transform) + diff
