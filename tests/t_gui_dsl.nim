@@ -220,7 +220,7 @@ suite "DSL name binding":
   #   let p = root:
   #     panel(width = 100.0, height = 100.0):
   #       panel():
-  #         proc theHandler(e: Element): PointerEventResult =
+  #         proc theHandler(e: Element): EventResult =
   #           checker = true
   #         onPressed(theHandler)
   #   p.invalidateLayout()

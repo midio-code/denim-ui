@@ -8,15 +8,6 @@ import ../thickness
 import ../rect
 
 type
-  WheelDeltaUnit* = enum
-    Pixel, Line, Page
-
-  WheelArgs* = object
-    deltaX*: float
-    deltaY*: float
-    deltaZ*: float
-    unit*: WheelDeltaUnit
-
   PointerIndex* = enum
     Primary = 0, Middle = 1, Secondary = 2
 

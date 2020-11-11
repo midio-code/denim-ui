@@ -7,12 +7,12 @@ import ../utils
 import ../vec
 
 type
-  PointerEventResult* = object
+  EventResult* = object
     handled: bool
-proc handled*(): PointerEventResult =
-  PointerEventResult(handled: true)
-proc unhandled*(): PointerEventResult =
-  PointerEventResult(handled: false)
+proc handled*(): EventResult =
+  EventResult(handled: true)
+proc unhandled*(): EventResult =
+  EventResult(handled: false)
 
 
 template createElementEvent*(name: untyped, T: typedesc, TRes: typedesc): untyped =
@@ -34,16 +34,28 @@ type
     keyCode*: int
 
   PointerArgs* = ref object
+    # TODO: Remove sender from pointer args?
     sender*: Element
     pos*: Vec2[float]
     pointerIndex*: PointerIndex
 
+  WheelDeltaUnit* = enum
+    Pixel, Line, Page
+
+  WheelArgs* = object
+    pos*: Vec2[float]
+    deltaX*: float
+    deltaY*: float
+    deltaZ*: float
+    unit*: WheelDeltaUnit
+
+
 createElementEvent(pointerEntered, PointerArgs, void)
 createElementEvent(pointerExited, PointerArgs, void)
-createElementEvent(pointerMoved, PointerArgs, PointerEventResult)
-createElementEvent(pointerClicked, PointerArgs, PointerEventResult)
-createElementEvent(pointerPressed, PointerArgs, PointerEventResult)
-createElementEvent(pointerReleased, PointerArgs, PointerEventResult)
+createElementEvent(pointerMoved, PointerArgs, EventResult)
+createElementEvent(pointerClicked, PointerArgs, EventResult)
+createElementEvent(pointerPressed, PointerArgs, EventResult)
+createElementEvent(pointerReleased, PointerArgs, EventResult)
 
 var pointerCapturedEmitter* = emitter[Element]()
 var pointerCaptureReleasedEmitter* = emitter[Element]()
@@ -83,7 +95,7 @@ proc withElem(self: PointerArgs, elem: Element): PointerArgs =
 
 
 var elementsHandledPointerDownThisUpdate = initHashSet[Element]()
-proc dispatchPointerDownImpl*(self: Element, arg: PointerArgs): PointerEventResult =
+proc dispatchPointerDownImpl*(self: Element, arg: PointerArgs): EventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
   if not self.isPointInside(arg.pos):
@@ -101,7 +113,7 @@ proc dispatchPointerDownImpl*(self: Element, arg: PointerArgs): PointerEventResu
         return res
 
 var elementsHandledPointerUpThisUpdate = initHashSet[Element]()
-proc dispatchPointerUpImpl*(self: Element, arg: PointerArgs): PointerEventResult =
+proc dispatchPointerUpImpl*(self: Element, arg: PointerArgs): EventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
   if not self.isPointInside(arg.pos) and not self.hasPointerCapture:
@@ -134,7 +146,7 @@ proc pointerExited(self: Element, arg: PointerArgs): void =
 
 
 var elementsHandledPointerMoveThisUpdate = initHashSet[Element]()
-proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs): PointerEventResult =
+proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs): EventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
 
@@ -156,11 +168,11 @@ proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs): PointerEventResul
     self.pointerExited(arg)
     return
 
-proc dispatchPointerDown*(self: Element, arg: PointerArgs): PointerEventResult =
+proc dispatchPointerDown*(self: Element, arg: PointerArgs): EventResult =
   elementsHandledPointerDownThisUpdate.clear()
   self.dispatchPointerDownImpl(arg)
 
-proc dispatchPointerUp*(self: Element, arg: PointerArgs): PointerEventResult =
+proc dispatchPointerUp*(self: Element, arg: PointerArgs): EventResult =
   elementsHandledPointerUpThisUpdate.clear()
   result = self.dispatchPointerUpImpl(arg)
   if pointerCapturedTo.isSome():
@@ -169,7 +181,7 @@ proc dispatchPointerUp*(self: Element, arg: PointerArgs): PointerEventResult =
       discard capturedElem.dispatchPointerUpImpl(arg)
 
 
-proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
+proc dispatchPointerMove*(self: Element, arg: PointerArgs): EventResult =
   elementsHandledPointerMoveThisUpdate.clear()
   result = self.dispatchPointerMoveImpl(arg)
   if pointerCapturedTo.isSome():
@@ -177,7 +189,18 @@ proc dispatchPointerMove*(self: Element, arg: PointerArgs): PointerEventResult =
     if not elementsHandledPointerMoveThisUpdate.contains(capturedElem):
       discard capturedElem.dispatchPointerMoveImpl(arg)
 
-var wheelEmitter = emitter[WheelArgs]()
+createElementEvent(wheel, WheelArgs, EventResult)
 
-proc dispatchWheel*(self: Element, args: WheelArgs): void =
-  wheelEmitter.emit(args)
+proc dispatchWheel*(self: Element, args: WheelArgs): EventResult =
+  if self.props.visibility == Visibility.Collapsed:
+    return
+  if not self.isPointInside(args.pos):
+    return
+  for child in self.children.reverse():
+    let res = child.dispatchWheel(args)
+    if res.handled:
+      return res
+  for handler in self.wheelHandlers:
+    let res = handler(args)
+    if res.handled:
+      return res

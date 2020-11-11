@@ -14,7 +14,7 @@ type
     dispatchPointerMove*: (x: float, y: float) -> void
     dispatchPointerDown*: (x: float, y: float, pointerIndex: PointerIndex) -> void
     dispatchPointerUp*: (x: float, y: float, pointerIndex: PointerIndex) -> void
-    dispatchWheel*: (deltaX: float, deltaY: float, deltaZ: float, unit: WheelDeltaUnit) -> void
+    dispatchWheel*: (x: float, y: float, deltaX: float, deltaY: float, deltaZ: float, unit: WheelDeltaUnit) -> void
     dispatchKeyDown*: (code: int, key: string) -> void
     dispatchWindowSizeChanged*: (newSize: Vec2[float]) -> void
     dispatchUpdate*: (float) -> void
@@ -54,20 +54,26 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   invalidateWorldPositionsCache()
 
   if pointerPosChangedThisFrame:
+    # TODO: Handle the case where multiple events happen per frame (as we do for wheelEvents)
     discard ctx.rootElement.dispatchPointerMove(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos), lastPointerIndex))
     pointerPosChangedThisFrame = false
 
   if pointerPressedLastFrame == false and pointerPressedThisFrame == true:
+    # TODO: Handle the case where multiple events happen per frame (as we do for wheelEvents)
     discard ctx.rootElement.dispatchPointerDown(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos), lastPointerIndex))
     pointerPressedLastFrame = true
 
   if pointerPressedLastFrame == true and pointerPressedThisFrame == false:
+    # TODO: Handle the case where multiple events happen per frame (as we do for wheelEvents)
     discard ctx.rootElement.dispatchPointerUp(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos), lastPointerIndex))
     pointerPressedLastFrame = false
 
   if wheelEventsLastFrame.len > 0:
     for arg in wheelEventsLastFrame:
-      ctx.rootElement.dispatchWheel(arg)
+      # TODO: Clean up
+      var a = arg
+      a.pos = a.pos / ctx.scale
+      discard ctx.rootElement.dispatchWheel(a)
     wheelEventsLastFrame = @[]
 
   update_manager.dispatchUpdate(dt)
@@ -104,8 +110,9 @@ proc dispatchPointerRelease*(x: float, y: float, pointerIndex: PointerIndex): vo
   # TODO: This does not work if both press and release happens on the same frame
   pointerPressedThisFrame = false
 
-proc dispatchWheel*(deltaX: float, deltaY: float, deltaZ: float, unit: WheelDeltaUnit): void {.exportc.} =
+proc dispatchWheel*(x: float, y: float, deltaX: float, deltaY: float, deltaZ: float, unit: WheelDeltaUnit): void {.exportc.} =
   wheelEventsLastFrame.add(WheelArgs(
+    pos: vec2(x, y),
     deltaX: deltaX,
     deltaY: deltaY,
     deltaZ: deltaZ,

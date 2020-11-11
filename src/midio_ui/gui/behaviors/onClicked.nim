@@ -11,11 +11,11 @@ proc onClicked*(handler: (elem: Element, args: PointerArgs) -> void): Behavior =
     added: some(
       proc(element: Element): void =
         element.onPointerPressed(
-          proc(arg: PointerArgs): PointerEventResult =
+          proc(arg: PointerArgs): EventResult =
             pressed = true
         )
         element.onPointerReleased(
-          proc(args: PointerArgs): PointerEventResult =
+          proc(args: PointerArgs): EventResult =
             if pressed:
               handler(element, args)
             pressed = false

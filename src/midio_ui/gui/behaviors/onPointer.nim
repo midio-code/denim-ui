@@ -5,38 +5,38 @@ import ../../events
 import ../element
 import ../element_events
 
-proc onPressed*(handler: (elem: Element, args: PointerArgs) -> PointerEventResult): Behavior =
+proc onPressed*(handler: (elem: Element, args: PointerArgs) -> EventResult): Behavior =
   # TODO: Remove behavior when unrooted
   Behavior(
     added: some(
       proc(elem: Element):void =
         elem.onPointerPressed(
-          proc(arg: PointerArgs): PointerEventResult =
+          proc(arg: PointerArgs): EventResult =
             handler(elem, arg)
         )
     )
   )
 
-proc onReleased*(handler: (elem: Element, args: PointerArgs) -> PointerEventResult): Behavior =
+proc onReleased*(handler: (elem: Element, args: PointerArgs) -> EventResult): Behavior =
   # TODO: Remove behavior when unrooted
   Behavior(
     added: some(
       proc(elem: Element): void =
         elem.onPointerReleased(
-          proc(arg: PointerArgs): PointerEventResult =
+          proc(arg: PointerArgs): EventResult =
             handler(elem, arg)
         )
     )
   )
 
 
-proc onPointerMoved*(handler: (elem: Element, args: PointerArgs) -> PointerEventResult): Behavior =
+proc onPointerMoved*(handler: (elem: Element, args: PointerArgs) -> EventResult): Behavior =
   # TODO: Remove behavior when unrooted
   Behavior(
     added: some(
       proc(elem: Element):void =
         elem.onPointerMoved(
-          proc(arg: PointerArgs): PointerEventResult =
+          proc(arg: PointerArgs): EventResult =
             handler(elem, arg)
         )
     )
