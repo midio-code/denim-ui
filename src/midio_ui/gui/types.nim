@@ -21,6 +21,7 @@ proc isMiddle*(pi: PointerIndex): bool =
 type
   Color* = string
   Point* = Vec2[float]
+  Size* = Vec2[float]
   Points* = seq[Point]
   Bounds* = Rect[float]
 
