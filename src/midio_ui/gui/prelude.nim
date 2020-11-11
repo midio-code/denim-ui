@@ -6,7 +6,7 @@ import types, element, ../events
 import containers/dock, containers/stack, containers/scroll_view
 import primitives/text, primitives/circle, primitives/rectangle, primitives/path
 import behaviors, tag
-import data_binding, element_events, layout_observables
+import data_binding, element_events
 import ./behaviors/[onClicked,onHover,onDrag,onPointer]
 import animation/animation
 import ../utils
@@ -23,7 +23,6 @@ export animation
 export utils
 export thickness
 export element_observables
-export layout_observables
 
 import dsl/dsl
 export dsl
