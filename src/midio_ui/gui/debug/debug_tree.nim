@@ -58,8 +58,8 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
       let arrowRotation = toggledByUser
         .choose(PI / 2.0, 0.0)
         .animate(
-          proc(a: float, b: float, t: float): Transform =
-            rotation(lerp(a,b,t)),
+          proc(a: float, b: float, t: float): seq[Transform] =
+            @[rotation(lerp(a,b,t))],
           200.0
         )
       let highlightStrokeWidth = filterText.map(

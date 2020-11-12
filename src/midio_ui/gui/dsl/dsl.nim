@@ -373,8 +373,10 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
   let (head, body) =
     if args.len == 3:
       (args[1], args[2])
-    else:
+    elif args.len == 2:
       (args[0], args[1])
+    else:
+      (args[0], Empty())
 
   var name: NimNode
   var props = nnkTupleConstr.newTree()

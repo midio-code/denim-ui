@@ -104,7 +104,7 @@ type
     strokeInfo*: Option[StrokeInfo]
     clipToBounds*: bool
     bounds*: Bounds
-    transform*: Option[Transform]
+    transform*: seq[Transform]
     children*: seq[Primitive]
     case kind*: PrimitiveKind
     of Container: # Just a container for other primitives
@@ -167,18 +167,9 @@ type
     visibility*: Option[Visibility]
     clipToBounds*: Option[bool]
     # TODO: Implement all transforms for all rendering backends
-    transform*: Option[Transform]
+    transform*: seq[Transform]
     # NOTE: Only for debugging
     debugName*: Option[string]
-
-proc translation*(trans: Vec2[float]): Transform =
-  Transform(scale: vec2(1.0), rotation: 0.0, translation: trans)
-
-proc scale*(scale: Vec2[float]): Transform =
-  Transform(scale: scale, rotation: 0.0, translation: vec2(0.0))
-
-proc rotation*(rot: float): Transform =
-  Transform(scale: vec2(1.0), rotation: rot, translation: vec2(0.0))
 
 type
   Layout* = ref object

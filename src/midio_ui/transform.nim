@@ -4,28 +4,43 @@ import rect
 import math
 
 type
+  TransformKind* = enum
+    Scaling, Translation, Rotation
   Transform* {.requiresInit.} = ref object
-    scale*: Vec2[float]
-    translation*: Vec2[float]
-    rotation*: float
+    case kind*: TransformKind
+    of Scaling:
+      scale*: Vec2[float]
+    of Translation:
+      translation*: Vec2[float]
+    of Rotation:
+      rotation*: float
 
-proc transform*(point: Vec2[float], transform: Option[Transform]): Vec2[float] =
-  if transform.isNone:
-    return point
-  let t = transform.get()
-  var ret = (point / t.scale) - t.translation
-  # TODO: Handle rotation
-  # let ca = transform.rotation.cos()
-  # let sa = transform.rotation.sin()
-  # ret.x = ca * ret.x - sa * ret.y
-  # ret.y = sa * ret.x + ca * ret.y
-  ret
+proc transform*(point: Vec2[float], trans: Transform): Vec2[float] =
+  case trans.kind:
+    of Scaling:
+      result = point / trans.scale
+    of Translation:
+      result = point - trans.translation
+    of Rotation:
+      result = point.copy
+      let ca = trans.rotation.cos()
+      let sa = trans.rotation.sin()
+      result.x = ca * result.x - sa * result.y
+      result.y = sa * result.x + ca * result.y
 
-proc transform*(rect: Rect[float], trans: Option[Transform]): Rect[float] =
-  if trans.isNone:
-    return rect
-  let t = trans.get()
-  Rect[float](
-    pos: rect.pos + t.translation,
-    size: rect.size * t.scale
-  )
+proc transform*(point: Vec2[float], transforms: seq[Transform]): Vec2[float] =
+  result = point
+  for trans in transforms:
+    result = result.transform(trans)
+
+proc translation*(trans: Vec2[float]): Transform =
+  Transform(kind: Translation, translation: trans)
+
+proc scale*(scale: Vec2[float]): Transform =
+  Transform(kind: Scaling, scale: scale)
+
+proc scale*(scale: float): Transform =
+  scale(vec2(scale))
+
+proc rotation*(rot: float): Transform =
+  Transform(kind: Rotation, rotation: rot)

@@ -11,6 +11,9 @@ type
 proc `$`*[T:Number](self: Vec2[T]): string =
   &"vec({self.x}, {self.y})"
 
+proc copy*[T:Number](self: Vec2[T]): Vec2[T] =
+  Vec2[T](x: self.x, y: self.y)
+
 proc vec2*[T:Number](x: T, y: T): Vec2[T] =
   Vec2[T](x: x, y: y)
 
