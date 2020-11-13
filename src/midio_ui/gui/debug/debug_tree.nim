@@ -89,7 +89,7 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
           panel(visibility <- visibility):
             debugTreeImpl(tree = x.c, filterText = filterText)
   )
-  stack(alignment = TopLeft):
+  stack(alignment = Alignment.TopLeft):
     ...elems
 
 component DebugTree(tree: Element):
