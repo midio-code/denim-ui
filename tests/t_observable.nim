@@ -178,7 +178,6 @@ suite "observable collection tests":
     var b = 0
     let mappedCollection = collection.map(
       proc(x: int): int =
-        echo "Mapping"
         total += 1
         x
     )
