@@ -205,6 +205,11 @@ proc dispatchPointerUp*(self: Element, arg: PointerArgs): EventResult =
     if not elementsHandledPointerUpThisUpdate.contains(capturedElem):
       discard capturedElem.dispatchPointerUpImpl(arg)
 
+proc transformArgFromRootElem(self: Element, arg: PointerArgs): PointerArgs =
+  var a = arg
+  if self.parent.isSome():
+    a = self.parent.get().transformArgFromRootElem(arg)
+  a.transformed(self)
 
 proc dispatchPointerMove*(self: Element, arg: PointerArgs): EventResult =
   elementsHandledPointerMoveThisUpdate.clear()
@@ -212,7 +217,8 @@ proc dispatchPointerMove*(self: Element, arg: PointerArgs): EventResult =
   if pointerCapturedTo.isSome():
     let capturedElem = pointerCapturedTo.get()
     if not elementsHandledPointerMoveThisUpdate.contains(capturedElem):
-      discard capturedElem.dispatchPointerMoveImpl(arg)
+      var transformedArg = capturedElem.transformArgFromRootElem(arg)
+      discard capturedElem.dispatchPointerMoveImpl(transformedArg)
 
 createElementEvent(wheel, WheelArgs, EventResult)
 
