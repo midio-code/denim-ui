@@ -62,6 +62,9 @@ proc sub*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
 template `-`*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
   self.sub(other)
 
+proc `-`*[T:Number](self: Vec2[T], other: T): Vec2[T] =
+  vec2(self.x - other, self.y - other)
+
 proc angle*[T:Number](self: Vec2[T]): T =
   arctan2(self.y, self.x)
 
@@ -90,7 +93,10 @@ proc mul*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
 proc mul*[T:Number](self: Vec2[T], otherX: T, otherY: T): Vec2[T] =
   vec2(self.x * otherX, self.y * otherY)
 
-proc `*`*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
+template `*`*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
+  self.mul(other)
+
+template `*`*[T:Number](self: Vec2[T], other: T): Vec2[T] =
   self.mul(other)
 
 proc rotate*[T:Number](self: Vec2[T], rad: Number): Vec2[T] =
