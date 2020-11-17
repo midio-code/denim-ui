@@ -5,6 +5,7 @@ import ../drawing_primitives
 import ../../thickness
 import ../../vec
 import ../../utils
+import defaults
 
 type
   Text* = ref object of Element
@@ -19,7 +20,7 @@ method render*(self: Text): Option[Primitive] =
     props.text,
     props.color.get("white"),
     props.fontSize.get(12.0),
-    props.font.get("system-ui"))
+    props.font.get(defaults.font))
   )
 
 method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
@@ -27,7 +28,7 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
     text = self.textProps.text
     # TODO: Put the default text props somewhere
     fontSize = self.textProps.fontSize.get(12.0)
-    font = self.textProps.font.get("system-ui")
+    font = self.textProps.font.get(defaults.font)
     # TODO: Adde baseline to TextProps?
     baseline = "top"
 

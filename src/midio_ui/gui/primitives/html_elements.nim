@@ -5,6 +5,7 @@ import ../drawing_primitives
 import ../types
 import ../../vec
 import ../../rect
+import defaults
 
 # this.pointerPressed.add((sender, arg) => {
 #   if (!this.pointerManager.pointerCaptured) {
@@ -42,7 +43,7 @@ method measureOverride(self: HtmlTextInput): Vec2[float] =
     else:
       props.text
 
-  let measured = measureText(actualText, props.fontSize.get(12.0), props.font.get("system-ui"), "top")
+  let measured = measureText(actualText, props.fontSize.get(12.0), props.font.get(defaults.font), "top")
   measured / vec2(2.0, 1.0)
 
 # TODO: We are kind of misusing render here. Create a way to react to layouts instead of using render.

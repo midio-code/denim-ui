@@ -4,13 +4,14 @@ import types
 import ../vec
 import ../rect
 import ../utils
+import ./primitives/defaults
 
 proc createTextPrimitive*(
   self: Element,
   text: string,
   color: string = "white",
   fontSize: float = 12.0,
-  font: string = "system-ui",
+  font: string = defaults.font,
   textBaseline: string = "top",
   alignment: string = "left"
 ): Primitive =
