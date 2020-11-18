@@ -204,6 +204,9 @@ type
 proc hash*(element: Element): Hash =
   element.id.hash()
 
+proc `$`*(element: Element): string =
+  &"Element({element.id})"
+
 proc `elementProps`*(self: Element): ElementProps =
   self.props
 
