@@ -31,6 +31,8 @@ method measureOverride(self: Stack, availableSize: Vec2[float]): Vec2[float] =
 
   choose(isVertical, vec2(width, accumulatedHeight), vec2(accumulatedHeight, width))
 
+# TODO: There is something wrong with default alignment for stacks.
+# The stack is placed with a horizontal offset when its alignment is set to default.
 method arrangeOverride(self: Stack, availableSize: Vec2[float]): Vec2[float] =
   let props = self.stackProps
   var nextPos = vec2(0.0, 0.0)
