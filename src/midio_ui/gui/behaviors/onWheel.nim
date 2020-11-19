@@ -13,7 +13,6 @@ proc onWheel*(handler: (elem: Element, args: WheelArgs) -> EventResult): Behavio
       proc(elem: Element):void =
         elem.onWheel(
           proc(arg: WheelArgs): EventResult =
-            echo "WHEEL: ", arg.repr
             handler(elem, arg)
         )
     )
