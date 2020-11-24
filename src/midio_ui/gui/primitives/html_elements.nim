@@ -6,6 +6,7 @@ import ../types
 import ../../vec
 import ../../rect
 import defaults
+import colors
 
 # this.pointerPressed.add((sender, arg) => {
 #   if (!this.pointerManager.pointerCaptured) {
@@ -24,7 +25,7 @@ type
     domElement*: dom.Element
 
 proc updateTextProps(self: HtmlTextInput): void =
-  self.domElement.style.color = self.textInputProps.color.get("black")
+  self.domElement.style.color = $self.textInputProps.color.get("black".parseColor())
   self.domElement.style.fontSize = $self.textInputProps.fontSize.get(12.0) & "pt"
 
 proc createHtmlTextInput(props: TextInputProps): dom.Element =

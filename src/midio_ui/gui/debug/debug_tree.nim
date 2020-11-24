@@ -1,4 +1,5 @@
 import sequtils, sugar, options, strformat, math, strutils
+import ../types
 import ../prelude
 import ../drawing_primitives
 import ../debug_draw
@@ -19,17 +20,17 @@ component Dock, CollapsablePanel():
       onDrag(
         (delta: Vec2[float]) => position.next(position.value + delta)
       )
-      rectangle(radius = (5.0,5.0,0.0,0.0), color = "#3C3C3C")
+      rectangle(radius = (5.0,5.0,0.0,0.0), color = some("#3C3C3C"))
       dock:
         docking(DockDirection.Right):
-          panel(alignment = CenterRight):
-            circle(color = "#FE5D55", radius = 5.0, margin = thickness(5.0))
+          panel(alignment = Alignment.CenterRight):
+            circle(color = "#FE5D55".parseColor, radius = 5.0, margin = thickness(5.0))
             onClicked(
               (e: Element, args: PointerArgs) => isCollapsed.next(not isCollapsed.value)
             )
-        text(text = "Debug", alignment = CenterLeft, margin = thickness(5.0))
+        text(text = "Debug", alignment = Alignment.CenterLeft, margin = thickness(5.0))
   panel(minHeight = 5.0):
-    rectangle(color = "#252526", radius = (0.0, 0.0, 5.0, 5.0))
+    rectangle(color = "#252526".parseColor, radius = (0.0, 0.0, 5.0, 5.0))
     panel(visibility <- isCollapsed.map((x: bool) => choose(x, Visibility.Collapsed, Visibility.Visible))):
       ...children
 
@@ -39,7 +40,7 @@ proc descriptor(self: Element): string =
 component DebugElem(label: string, elem: Element):
   let hovering = behaviorSubject(false)
 
-  text(text = label, color <- hovering.map((h: bool) => choose(h, "black", "white")))
+  text(text = label, color <- hovering.map((h: bool) => choose(h, "black".parseColor, "white".parseColor)))
   onHover(
     (e: Element) => debugDrawRect(elem.bounds.get().withPos(elem.actualWorldPosition)),
   )
@@ -68,14 +69,14 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
       ).animate(lerp, 200.0)
       dock:
         docking(DockDirection.Left):
-          panel(alignment = Alignment.Top, visibility = choose(x.c.children.len() > 0, Visible, Hidden)):
+          panel(alignment = Alignment.Top, visibility = choose(x.c.children.len() > 0, Visibility.Visible, Visibility.Hidden)):
             path(
               data = @[moveTo(0.0, 10.0), lineTo(10.0, 5.0), lineTo(0.0, 0.0), lineTo(0.0, 10.0)],
               width = 10.0,
               height = 10.0,
-              fill = "red",
+              fill = "red".parseColor,
               strokeWidth = 1.0,
-              stroke = "black",
+              stroke = "black".parseColor,
               transform <- arrowRotation
             )
             onClicked(
@@ -84,7 +85,7 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
             )
         stack(margin = thickness(10.0, 0.0), alignment = Alignment.Left):
           panel:
-            rectangle(stroke = "red", strokeWidth <- highlightStrokeWidth)
+            rectangle(stroke = "red".parseColor, strokeWidth <- highlightStrokeWidth)
             debugElem(label = x.t, elem = x.c)
           panel(visibility <- visibility):
             debugTreeImpl(tree = x.c, filterText = filterText)
@@ -160,9 +161,9 @@ component DebugTree(tree: Element):
       dock:
         docking(DockDirection.Right):
           panel(width = 8.0):
-            rectangle(color = "red")
+            rectangle(color = "red".parseColor)
             rectangle(
-              color = "yellow",
+              color = "yellow".parseColor,
               height <- thumbHeight,
               alignment = Alignment.Top,
               y <- actualThumbPos

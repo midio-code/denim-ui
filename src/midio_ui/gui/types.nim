@@ -7,8 +7,17 @@ import ../vec
 import ../transform
 import ../thickness
 import ../rect
+import colors
 
 export transform
+export colors
+
+converter toColor*(self: string): Color =
+  self.parseColor()
+converter toColorOption*(self: string): Option[Color] =
+  some(self.parseColor())
+converter toColor*(self: Option[string]): Option[Color] =
+  self.map(x => x.parseColor())
 
 type
   PointerIndex* = enum
@@ -22,7 +31,6 @@ proc isMiddle*(pi: PointerIndex): bool =
   pi == PointerIndex.Middle
 
 type
-  Color* = string
   Point* = Vec2[float]
   Size* = Vec2[float]
   Points* = seq[Point]
@@ -32,7 +40,7 @@ type
     text*: string
     fontSize*: Option[float]
     font*: Option[string]
-    color*: Option[string]
+    color*: Option[Color]
 
   TextChanged* = (string) -> void
 
@@ -41,8 +49,8 @@ type
     font*: Option[string]
     placeholder*: Option[string]
     fontSize*: Option[float]
-    color*: Option[string]
-    placeholderColor*: Option[string]
+    color*: Option[Color]
+    placeholderColor*: Option[Color]
     onChange*: Option[TextChanged]
 
 
@@ -69,8 +77,8 @@ type
       discard
 
   ColorInfo* = ref object
-    stroke*: Option[string]
-    fill*: Option[string]
+    stroke*: Option[Color]
+    fill*: Option[Color]
 
   StrokeInfo* = ref object
     width*: float

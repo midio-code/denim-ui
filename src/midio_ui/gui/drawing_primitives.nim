@@ -9,7 +9,7 @@ import ./primitives/defaults
 proc createTextPrimitive*(
   self: Element,
   text: string,
-  color: string = "white",
+  color: Color = "white",
   fontSize: float = 12.0,
   font: string = defaults.font,
   textBaseline: string = "top",
