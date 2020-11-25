@@ -12,12 +12,6 @@ import colors
 export transform
 export colors
 
-converter toColor*(self: string): Color =
-  self.parseColor()
-converter toColorOption*(self: string): Option[Color] =
-  some(self.parseColor())
-converter toColor*(self: Option[string]): Option[Color] =
-  self.map(x => x.parseColor())
 
 type
   PointerIndex* = enum

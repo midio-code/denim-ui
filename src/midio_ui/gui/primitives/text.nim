@@ -18,7 +18,7 @@ method render*(self: Text): Option[Primitive] =
   let props = self.textProps
   some(self.createTextPrimitive(
     props.text,
-    props.color.get("white"),
+    props.color.get(colWhite),
     props.fontSize.get(12.0),
     props.font.get(defaults.font))
   )
