@@ -22,11 +22,17 @@ proc rect*[T:Number](l: T, t: T, r: T, b: T): Rect[T] =
 proc rect*[T:Number](val: T): Rect[T] =
   rect(val, val, val, val)
 
+proc copy*[T:Number](self: Rect[T]): Rect[T] =
+  rect(
+    self.pos.copy(),
+    self.size.copy()
+  )
+
 proc rectFromPoints*[T:Number](p1: Vec2[T], p2: Vec2[T]): Rect[T] =
   rect(min(p1.x, p2.x), min(p1.y, p2.y), max(p1.x, p2.x), max(p1.y, p2.y))
 
 proc translate*[T:Number](self: Rect[T], trans: Vec2[T]): Rect[T] =
-  rect(self.pos.add(trans), self.size)
+  rect(self.pos.add(trans), self.size.copy)
 
 proc x*[T:Number](self: Rect[T]): Number =
   result = self.pos.x

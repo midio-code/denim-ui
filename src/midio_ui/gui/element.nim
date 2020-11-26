@@ -426,7 +426,7 @@ proc transformOnlyBy*(point: Vec2[float], elem: Element): Vec2[float] =
   ## Transforms point by the transform of the given element
   let relativePoint = point.relativeTo(elem)
   let diff = point - relativePoint
-  relativePoint.transform(elem.props.transform) + diff
+  relativePoint.transformInv(elem.props.transform) + diff
 
 
 proc transformFromRootElem*(self: Point, elem: Element): Point =
@@ -435,4 +435,24 @@ proc transformFromRootElem*(self: Point, elem: Element): Point =
   var a = self
   if elem.parent.isSome():
     a = self.transformFromRootElem(elem.parent.get())
-  a.transform(elem.props.transform)
+  a.transformInv(elem.props.transform)
+
+proc worldBoundsExpensive*(elem: Element): Bounds =
+  var bounds = elem.bounds.get
+  var currentElem = elem
+  var ancestors: seq[Element] = @[currentElem]
+  while currentElem.parent.isSome():
+    currentElem = currentElem.parent.get()
+    ancestors = currentElem & ancestors
+  for e in ancestors:
+    let b = e.bounds.get()
+    let t = e.props.transform.get(@[])
+    let tb = b.transform(t)
+    let newSize = bounds.withPos(zero()).transform(t.filter((t: Transform) => t.kind == TransformKind.Scaling))
+    bounds = bounds.withPos(
+      bounds.pos + tb.pos
+    ).withSize(
+      newSize.size
+    )
+
+  result = bounds

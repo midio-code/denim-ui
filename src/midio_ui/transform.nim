@@ -15,7 +15,7 @@ type
     of Rotation:
       rotation*: float
 
-proc transform*(point: Vec2[float], trans: Transform): Vec2[float] =
+proc transformInv*(point: Vec2[float], trans: Transform): Vec2[float] =
   case trans.kind:
     of Scaling:
       result = point / trans.scale
@@ -23,13 +23,31 @@ proc transform*(point: Vec2[float], trans: Transform): Vec2[float] =
       result = point - trans.translation
     of Rotation:
       result = point.copy
-      let ca = trans.rotation.cos()
-      let sa = trans.rotation.sin()
+      let ca = -trans.rotation.cos()
+      let sa = -trans.rotation.sin()
       result.x = ca * result.x - sa * result.y
       result.y = sa * result.x + ca * result.y
 
-proc transform*(point: Vec2[float], transforms: seq[Transform]): Vec2[float] =
+proc transform*(r: Rect[float], trans: Transform): Rect[float] =
+  case trans.kind:
+    of Scaling:
+      result = rect(
+        r.pos.copy * trans.scale,
+        r.size.copy * trans.scale,
+      )
+    of Translation:
+      result = r.withPos(r.pos + trans.translation)
+    of Rotation:
+      raise newException(Exception, "Rotation is currently not supported for Rect")
+
+proc transformInv*(point: Vec2[float], transforms: seq[Transform]): Vec2[float] =
   result = point
+  for trans in transforms:
+    result = result.transformInv(trans)
+
+
+proc transform*(rect: Rect[float], transforms: seq[Transform]): Rect[float] =
+  result = rect.copy
   for trans in transforms:
     result = result.transform(trans)
 

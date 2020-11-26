@@ -50,14 +50,14 @@ method measureOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[fl
 method render(self: HtmlTextInput): Option[Primitive] =
   let props = self.textInputProps
   let positionScale = vec2(2.0, 2.0) # TODO: Get correct scaling
-  let worldPos = self.actualWorldPosition()
-  let viewportPos = worldPos.mul(positionScale)
+  let bounds = self.worldBoundsExpensive()
   let fontSize = props.fontSize.get(12.0) * 2.0
-  self.domElement.style.transform = &"translate({viewportPos.x}px,{viewportPos.y}px)"
+  let pos = bounds.pos * positionScale
+  self.domElement.style.transform = &"translate({pos.x}px,{pos.y}px)"
   self.domElement.style.background = "none"
   self.domElement.style.border = "none"
-  self.domElement.style.width = &"{self.bounds.get().width * 2.0}px"
-  self.domElement.style.height = &"{self.bounds.get().height * 2.0}px"
+  self.domElement.style.width = &"{bounds.width * 2.0}px"
+  self.domElement.style.height = &"{bounds.height * 2.0}px"
   self.domElement.style.setProperty("font-size", &"{fontSize}px")
   self.updateTextProps()
   if props.text != self.domElement.innerHtml:
