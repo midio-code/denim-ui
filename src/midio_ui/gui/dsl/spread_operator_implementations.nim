@@ -79,6 +79,7 @@ proc bindChildCollection*(self: Element, obs: Observable[seq[Element]]): void =
   ## any more.
   ## The problem is that the child collection also has children that are not 'managed' by this observable
   ## and so, we need to not interfer with them!
+  raise newException(Exception, "This path is causing too much trouble in its currently unsolved state, so making it raise an exception until we fix it!")
   let subj = behaviorSubject(obs)
   self.bindChildCollection(subj)
 
