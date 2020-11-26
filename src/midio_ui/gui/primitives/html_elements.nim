@@ -26,7 +26,7 @@ type
 
 proc updateTextProps(self: HtmlTextInput): void =
   self.domElement.style.color = $self.textInputProps.color.get("black".parseColor())
-  self.domElement.style.fontSize = $self.textInputProps.fontSize.get(12.0) & "pt"
+  self.domElement.style.fontSize = $self.textInputProps.fontSize.get(12.0) & "px"
 
 proc createHtmlTextInput(props: TextInputProps): dom.Element =
   result = document.createElement("INPUT")
@@ -36,7 +36,7 @@ proc createHtmlTextInput(props: TextInputProps): dom.Element =
     result.setAttribute("placeholder", props.placeholder.get())
   result.value = props.text
 
-method measureOverride(self: HtmlTextInput): Vec2[float] =
+method measureOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[float] =
   let props = self.textInputProps
   let actualText =
     if props.text == "":
@@ -44,17 +44,16 @@ method measureOverride(self: HtmlTextInput): Vec2[float] =
     else:
       props.text
 
-  let measured = measureText(actualText, props.fontSize.get(12.0), props.font.get(defaults.font), "top")
-  measured / vec2(2.0, 1.0)
+  measureText(actualText, props.fontSize.get(12.0), props.font.get(defaults.font), "top")
 
 # TODO: We are kind of misusing render here. Create a way to react to layouts instead of using render.
 method render(self: HtmlTextInput): Option[Primitive] =
   let props = self.textInputProps
-  let scale = vec2(1.0, 1.0)
   let positionScale = vec2(2.0, 2.0) # TODO: Get correct scaling
-  let worldPos = self.actualWorldPosition().mul(positionScale)
+  let worldPos = self.actualWorldPosition()
+  let viewportPos = worldPos.mul(positionScale)
   let fontSize = props.fontSize.get(12.0) * 2.0
-  self.domElement.style.transform = &"translate({worldPos.x}px,{worldPos.y}px) scale({scale.x}, {scale.y})"
+  self.domElement.style.transform = &"translate({viewportPos.x}px,{viewportPos.y}px)"
   self.domElement.style.background = "none"
   self.domElement.style.border = "none"
   self.domElement.style.width = &"{self.bounds.get().width * 2.0}px"
@@ -68,13 +67,11 @@ method render(self: HtmlTextInput): Option[Primitive] =
 method onRooted(self: HtmlTextInput): void =
   nativeContainer.appendChild(self.domElement)
 
-proc unrootHtmlTextInput(self: HtmlTextInput): void =
+method onUnrooted(self: HtmlTextInput): void =
   nativeContainer.removeChild(self.domElement)
 
-method arrangeOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[float] =
-  # self.style.width = &"{availableSize.x}pt"
-  # self.style.height = &"{availableSize.y}pt"
-  availableSize
+# method arrangeOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[float] =
+#   availableSize
 
 
 proc htmlTextInput*(props: ElementProps, textInputProps: TextInputProps): HtmlTextInput =
