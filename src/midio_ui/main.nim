@@ -72,7 +72,7 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
     for arg in wheelEventsLastFrame:
       # TODO: Clean up
       var a = arg
-      a.pos = a.pos / ctx.scale
+      a.actualPos = a.actualPos / ctx.scale
       discard ctx.rootElement.dispatchWheel(a)
     wheelEventsLastFrame = @[]
 
@@ -112,7 +112,8 @@ proc dispatchPointerRelease*(x: float, y: float, pointerIndex: PointerIndex): vo
 
 proc dispatchWheel*(x: float, y: float, deltaX: float, deltaY: float, deltaZ: float, unit: WheelDeltaUnit): void {.exportc.} =
   wheelEventsLastFrame.add(WheelArgs(
-    pos: vec2(x, y),
+    actualPos: vec2(x, y),
+    viewportPos: vec2(x, y),
     deltaX: deltaX,
     deltaY: deltaY,
     deltaZ: deltaZ,

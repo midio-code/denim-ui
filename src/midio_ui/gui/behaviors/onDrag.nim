@@ -15,15 +15,15 @@ proc onDrag*(moved: (Vec2[float] -> void), pointerIndex: PointerIndex = PointerI
         element.onPointerMoved(
           proc(arg: PointerArgs): EventResult =
             if element.hasPointerCapture():
-              let diff = arg.pos.sub(pastPos)
+              let diff = arg.actualPos.sub(pastPos)
               moved(diff)
-              pastPos = arg.pos
+              pastPos = arg.actualPos
         )
         element.onPointerPressed(
           proc(arg: PointerArgs): EventResult =
             if arg.pointerIndex == pointerIndex:
               element.capturePointer()
-              pastPos = arg.pos
+              pastPos = arg.actualPos
               return handled()
         )
 

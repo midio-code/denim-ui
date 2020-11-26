@@ -37,14 +37,18 @@ type
   PointerArgs* = ref object
     # TODO: Remove sender from pointer args?
     sender*: Element
-    pos*: Vec2[float]
+    ## The original position of the pointer in the viewport
+    viewportPos*: Point
+    ## The actual position of the pointer transformed to the context of the currently visited element
+    actualPos*: Point # TODO: Might move this somewhere else as it is only meaningful in the context of "visiting an element" (as we do in out pointer events for example)
     pointerIndex*: PointerIndex
 
   WheelDeltaUnit* = enum
     Pixel, Line, Page
 
   WheelArgs* = object
-    pos*: Vec2[float]
+    actualPos*: Point
+    viewportPos*: Point
     deltaX*: float
     deltaY*: float
     deltaZ*: float
@@ -54,7 +58,8 @@ proc transformed(args: PointerArgs, elem: Element): PointerArgs =
   PointerArgs(
     sender: args.sender,
     pointerIndex: args.pointerIndex,
-    pos: args.pos.transform(elem)
+    actualPos: args.actualPos.transform(elem),
+    viewportPos: args.viewportPos
   )
 
 proc transformed(args: WheelArgs, elem: Element): WheelArgs =
@@ -63,7 +68,8 @@ proc transformed(args: WheelArgs, elem: Element): WheelArgs =
     deltaY: args.deltaY,
     deltaZ: args.deltaZ,
     unit: args.unit,
-    pos: args.pos.transform(elem)
+    actualPos: args.actualPos.transform(elem),
+    viewportPos: args.viewportPos
   )
 
 createElementEvent(pointerEntered, PointerArgs, void)
@@ -101,13 +107,13 @@ proc capturePointer*(self: Element): void =
   pointerCapturedEmitter.emit(self)
 
 proc pointerArgs*(element: Element, pos: Vec2[float], pointerIndex: PointerIndex): PointerArgs =
-  PointerArgs(sender: element, pos: pos, pointerIndex: pointerIndex)
+  PointerArgs(sender: element, actualPos: pos, viewportPos: pos, pointerIndex: pointerIndex)
 
 proc pointerArgs*(element: Element, x, y: float, pointerIndex: PointerIndex): PointerArgs =
-  PointerArgs(sender: element, pos: vec2(x,y), pointerIndex: pointerIndex)
+  PointerArgs(sender: element, actualPos: vec2(x,y), viewportPos: vec2(x,y), pointerIndex: pointerIndex)
 
 proc withElem(self: PointerArgs, elem: Element): PointerArgs =
-  PointerArgs(sender: elem, pos: self.pos, pointerIndex: self.pointerIndex)
+  PointerArgs(sender: elem, actualPos: self.actualPos, viewportPos: self.viewportPos, pointerIndex: self.pointerIndex)
 
 
 var elementsHandledPointerDownThisUpdate = initHashSet[Element]()
@@ -116,14 +122,14 @@ proc dispatchPointerDownImpl*(self: Element, arg: PointerArgs): EventResult =
     return
 
   let transformedArg = arg.transformed(self)
-  if not self.isPointInside(transformedArg.pos):
+  if not self.isPointInside(transformedArg.actualPos):
     return
 
   for child in self.children.reverse():
     let result = child.dispatchPointerDownImpl(transformedArg)
     if result.handled:
        return result
-  if self.isPointInside(transformedArg.pos):
+  if self.isPointInside(transformedArg.actualPos):
     elementsHandledPointerDownThisUpdate.incl(self)
     for handler in self.pointerPressedHandlers:
       let res = handler(transformedArg.withElem(self))
@@ -136,14 +142,14 @@ proc dispatchPointerUpImpl*(self: Element, arg: PointerArgs): EventResult =
     return
 
   let transformedArg = arg.transformed(self)
-  if not self.isPointInside(transformedArg.pos) and not self.hasPointerCapture:
+  if not self.isPointInside(transformedArg.actualPos) and not self.hasPointerCapture:
     return
 
   for child in self.children.reverse():
     let result = child.dispatchPointerUpImpl(transformedArg)
     if result.handled:
       return result
-  if (self.isPointInside(transformedArg.pos) or self.pointerCaptured()):
+  if (self.isPointInside(transformedArg.actualPos) or self.pointerCaptured()):
     elementsHandledPointerUpThisUpdate.incl(self)
     for handler in self.pointerReleasedHandlers:
       let res = handler(transformedArg.withElem(self))
@@ -172,7 +178,7 @@ proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs): EventResult =
     return
 
   let transformedArg = arg.transformed(self)
-  let pointInside = self.isPointInside(transformedArg.pos)
+  let pointInside = self.isPointInside(transformedArg.actualPos)
 
   # let defaultName = self.props.debugName.get("noName")
   # echo &"Is point inside: {defaultName}? {transformedArg.pos} - {pointInside}"
@@ -226,7 +232,7 @@ proc dispatchWheel*(self: Element, args: WheelArgs): EventResult =
   if self.props.visibility == Visibility.Collapsed:
     return
   let transformedArg = args.transformed(self)
-  if not self.isPointInside(transformedArg.pos):
+  if not self.isPointInside(transformedArg.actualPos):
     return
   for child in self.children.reverse():
     let res = child.dispatchWheel(transformedArg)
