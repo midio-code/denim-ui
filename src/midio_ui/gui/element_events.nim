@@ -58,7 +58,7 @@ proc transformed(args: PointerArgs, elem: Element): PointerArgs =
   PointerArgs(
     sender: args.sender,
     pointerIndex: args.pointerIndex,
-    actualPos: args.actualPos.transform(elem),
+    actualPos: args.actualPos.transformOnlyBy(elem),
     viewportPos: args.viewportPos
   )
 
@@ -68,7 +68,7 @@ proc transformed(args: WheelArgs, elem: Element): WheelArgs =
     deltaY: args.deltaY,
     deltaZ: args.deltaZ,
     unit: args.unit,
-    actualPos: args.actualPos.transform(elem),
+    actualPos: args.actualPos.transformOnlyBy(elem),
     viewportPos: args.viewportPos
   )
 

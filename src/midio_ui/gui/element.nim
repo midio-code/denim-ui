@@ -422,7 +422,17 @@ method render*(self: Element): Option[Primitive] {.base.} =
       .filter((x: Option[Primitive]) => x.isSome())
       .map((x: Option[Primitive]) => x.get())
 
-proc transform*(point: Vec2[float], elem: Element): Vec2[float] =
+proc transformOnlyBy*(point: Vec2[float], elem: Element): Vec2[float] =
+  ## Transforms point by the transform of the given element
   let relativePoint = point.relativeTo(elem)
   let diff = point - relativePoint
   relativePoint.transform(elem.props.transform) + diff
+
+
+proc transformFromRootElem*(self: Point, elem: Element): Point =
+  ## Transforms a point by all transforms given by the ancestorys of Element,
+  ## taking it from the root space to the local space of the given element.
+  var a = self
+  if elem.parent.isSome():
+    a = self.transformFromRootElem(elem.parent.get())
+  a.transform(elem.props.transform)
