@@ -76,6 +76,12 @@ method onUnrooted(self: HtmlTextInput): void =
 
 proc htmlTextInput*(props: ElementProps, textInputProps: TextInputProps): HtmlTextInput =
   let domElement = createHtmlTextInput(textInputProps)
+  domElement.addEventListener(
+    "input",
+    proc(ev: dom.Event): void =
+      if textInputProps.onChange.isSome():
+        textInputProps.onChange.get()($ev.target.value)
+  )
   result = HtmlTextInput(
     textInputProps: textInputProps,
     domElement: domElement
