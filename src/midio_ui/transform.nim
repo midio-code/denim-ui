@@ -1,6 +1,7 @@
 import options
 import vec
 import rect
+import mat
 import math
 
 type
@@ -28,11 +29,12 @@ proc transformInv*(point: Vec2[float], trans: Transform): Vec2[float] =
       result.x = ca * result.x - sa * result.y
       result.y = sa * result.x + ca * result.y
 
+
 proc transform*(r: Rect[float], trans: Transform): Rect[float] =
   case trans.kind:
     of Scaling:
       result = rect(
-        r.pos.copy * trans.scale,
+        r.pos.copy,
         r.size.copy * trans.scale,
       )
     of Translation:
@@ -62,3 +64,12 @@ proc scale*(scale: float): Transform =
 
 proc rotation*(rot: float): Transform =
   Transform(kind: Rotation, rotation: rot)
+
+proc toMatrix*(self: Transform): Mat3 =
+  case self.kind:
+    of TransformKind.Scaling:
+      mat.scaling(self.scale)
+    of TransformKind.Translation:
+      mat.translation(self.translation)
+    of TransformKind.Rotation:
+      mat.rotation(self.rotation)

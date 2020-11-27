@@ -1,6 +1,8 @@
 import sugar, tables, strformat, options, macros, strutils, sets, sequtils
 import ../vec
 import ../rect
+import ../mat
+import ../transform
 import ../thickness
 import ../utils
 import ../guid
@@ -437,22 +439,23 @@ proc transformFromRootElem*(self: Point, elem: Element): Point =
     a = self.transformFromRootElem(elem.parent.get())
   a.transformInv(elem.props.transform)
 
+
 proc worldBoundsExpensive*(elem: Element): Bounds =
-  var bounds = elem.bounds.get
   var currentElem = elem
-  var ancestors: seq[Element] = @[currentElem]
+  var transforms: seq[Transform] = transform.translation(currentElem.bounds.get().pos) & currentElem.props.transform.get(@[])
+
   while currentElem.parent.isSome():
     currentElem = currentElem.parent.get()
-    ancestors = currentElem & ancestors
-  for e in ancestors:
-    let b = e.bounds.get()
-    let t = e.props.transform.get(@[])
-    let tb = b.transform(t)
-    let newSize = bounds.withPos(zero()).transform(t.filter((t: Transform) => t.kind == TransformKind.Scaling))
-    bounds = bounds.withPos(
-      bounds.pos + tb.pos
-    ).withSize(
-      newSize.size
-    )
+    transforms = transform.translation(currentElem.bounds.get().pos) & currentElem.props.transform.get(@[]) & transforms
 
-  result = bounds
+
+  var transformMatrix = mat.identity()
+  for t in transforms:
+    transformMatrix = transformMatrix * t.toMatrix()
+  var b = elem.bounds.get
+  let tl = transformMatrix * vec2(b.left, b.top)
+  let br = transformMatrix * vec2(b.right, b.bottom)
+  result = rectFromPoints(
+    tl,
+    br,
+  )

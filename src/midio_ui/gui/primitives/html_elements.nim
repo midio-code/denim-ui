@@ -8,15 +8,10 @@ import ../../rect
 import defaults
 import colors
 
-# this.pointerPressed.add((sender, arg) => {
-#   if (!this.pointerManager.pointerCaptured) {
-#     this.capturePointer()
-#     setTimeout(() => elem.focus(), 0)
-#     } else if (!this.isPointInside(new Vec2(arg.x, arg.y))) {
-#       this.releaseCapture()
-#     }
-# })
+# TODO: Move all this stuff to the canvas renderer
+
 let nativeContainer = getElementById("nativeContainer")
+
 # TODO: Get the correct scaling here
 let hardCodedScale = 2.0
 
@@ -49,15 +44,17 @@ method measureOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[fl
 # TODO: We are kind of misusing render here. Create a way to react to layouts instead of using render.
 method render(self: HtmlTextInput): Option[Primitive] =
   let props = self.textInputProps
-  let positionScale = vec2(2.0, 2.0) # TODO: Get correct scaling
+  let positionScale = vec2(hardCodedScale) # TODO: Get correct scaling
   let bounds = self.worldBoundsExpensive()
   let fontSize = props.fontSize.get(12.0) * 2.0
   let pos = bounds.pos * positionScale
   self.domElement.style.transform = &"translate({pos.x}px,{pos.y}px)"
   self.domElement.style.background = "none"
-  self.domElement.style.border = "none"
-  self.domElement.style.width = &"{bounds.width * 2.0}px"
-  self.domElement.style.height = &"{bounds.height * 2.0}px"
+  self.domElement.style.border = "2px solid red"
+  self.domElement.style.width = &"{bounds.width * hardCodedScale}px"
+  self.domElement.style.height = &"{bounds.height * hardCodedScale}px"
+  self.domElement.style.padding = &"0 0 0 0"
+  self.domElement.style.margin = &"0 0 0 0"
   self.domElement.style.setProperty("font-size", &"{fontSize}px")
   self.updateTextProps()
   if props.text != self.domElement.innerHtml:
