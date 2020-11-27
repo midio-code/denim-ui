@@ -50,7 +50,6 @@ method render(self: HtmlTextInput): Option[Primitive] =
   let pos = bounds.pos * positionScale
   self.domElement.style.transform = &"translate({pos.x}px,{pos.y}px)"
   self.domElement.style.background = "none"
-  self.domElement.style.border = "2px solid red"
   self.domElement.style.width = &"{bounds.width * hardCodedScale}px"
   self.domElement.style.height = &"{bounds.height * hardCodedScale}px"
   self.domElement.style.padding = &"0 0 0 0"
