@@ -242,3 +242,12 @@ proc dispatchWheel*(self: Element, args: WheelArgs): EventResult =
     let res = handler(transformedArg)
     if res.handled:
       return res
+
+
+proc observePointerPos*(self: Element): Observable[PointerArgs] =
+  let ret = subject[PointerArgs]()
+  self.onPointerMoved(
+    proc(arg: PointerArgs): EventResult =
+      ret <- arg
+  )
+  ret.source
