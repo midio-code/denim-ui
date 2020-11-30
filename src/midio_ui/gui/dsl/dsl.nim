@@ -685,6 +685,16 @@ macro compileComponentBody*(propTypes: typed, componentProps: untyped, compProps
             content.add(createBinding(leftHand, rightHand))
           else:
             content.add(item)
+      of nnkPrefix:
+        let operator = item[0].strVal
+        case operator:
+          of "...":
+            let collection = item[1]
+            # TODO: Ident"red" should be formalized (it is the identifier of the current element being constructed,
+            # but its very hard to know this by just looking at the code)
+            content.add newCall(Ident "bindChildCollection", Ident"ret", collection)
+          else:
+            content.add(item)
       else:
         content.add(item)
 

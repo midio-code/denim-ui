@@ -32,6 +32,13 @@ template choose*(cond: bool, a, b: untyped): untyped =
   else:
     b
 
+
+template choose*(cond: bool, a, b: untyped): untyped =
+  if cond:
+    a
+  else:
+    b
+
 iterator reverse*[T](a: seq[T]): T {.inline.} =
     var i = len(a) - 1
     while i > -1:

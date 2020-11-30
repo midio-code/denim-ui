@@ -95,16 +95,5 @@ proc bindChildCollection*(self: Element, obs: ObservableCollection[Element]): vo
         self.addChild(i)
   )
 
-proc bindChildCollection*(self: Element, subj: CollectionSubject[Element]): void =
-  for child in subj.values:
-    self.addChild(child)
-  # TODO: Handle subscriptions for bound child collections
-  discard subj.subscribe(
-    proc(added: Element): void =
-      self.addChild(added),
-    proc(removed: Element): void =
-      self.removeChild(removed),
-    proc(initial: seq[Element]): void =
-      for i in initial:
-        self.addChild(i)
-  )
+template bindChildCollection*(self: Element, subj: CollectionSubject[Element]): void =
+  self.bindChildCollection(subj.source)

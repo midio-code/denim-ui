@@ -35,3 +35,11 @@ proc add*[T:Number](self: Thickness[T], other: Thickness[T]): Thickness[T] =
     self.bottom + other.bottom
   )
 
+
+proc lerp*(self: Thickness[float], other: Thickness[float], t: float): Thickness[float] =
+  thickness(
+    self[0].lerp(other[0], t),
+    self[1].lerp(other[1], t),
+    self[2].lerp(other[2], t),
+    self[3].lerp(other[3], t),
+  )
