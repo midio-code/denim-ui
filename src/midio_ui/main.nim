@@ -16,6 +16,7 @@ type
     dispatchPointerUp*: (x: float, y: float, pointerIndex: PointerIndex) -> void
     dispatchWheel*: (x: float, y: float, deltaX: float, deltaY: float, deltaZ: float, unit: WheelDeltaUnit) -> void
     dispatchKeyDown*: (code: int, key: string) -> void
+    dispatchKeyUp*: (code: int, key: string) -> void
     dispatchWindowSizeChanged*: (newSize: Vec2[float]) -> void
     dispatchUpdate*: (float) -> void
     rootElement*: prelude.Element
@@ -128,6 +129,14 @@ proc dispatchKeyDown*(keyCode: int, key: string): void {.exportc.} =
     )
   )
 
+proc dispatchKeyUp*(keyCode: int, key: string): void {.exportc.} =
+  keyUpEmitter.emit(
+    KeyArgs(
+      key: key, # TODO: We seem to be gettin the wrong key
+      keyCode: keyCode
+    )
+  )
+
 proc init*(
   size: Vec2[float],
   scale: Vec2[float],
@@ -152,6 +161,7 @@ proc init*(
     dispatchPointerUp: dispatchPointerRelease,
     dispatchWheel: dispatchWheel,
     dispatchKeyDown: dispatchKeyDown,
+    dispatchKeyUp: dispatchKeyUp,
     dispatchWindowSizeChanged: dispatchWindowSizeChanged,
     scale: scale,
     size: size,

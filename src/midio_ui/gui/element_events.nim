@@ -82,6 +82,7 @@ createElementEvent(pointerReleased, PointerArgs, EventResult)
 var pointerCapturedEmitter* = emitter[Element]()
 var pointerCaptureReleasedEmitter* = emitter[Element]()
 var keyDownEmitter* = emitter[KeyArgs]()
+var keyUpEmitter* = emitter[KeyArgs]()
 
 var pointerCapturedTo = none[Element]()
 
