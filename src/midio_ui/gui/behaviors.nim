@@ -8,7 +8,7 @@ type
   Behavior* = ref object
     update*: Option[(elem: Element, dt: float) -> void]
     added*: Option[(elem: Element) -> void]
-    # removed*: Option[(elem: Element) -> void]
+    removed*: Option[(elem: Element) -> void]
 
 
 var behaviors_list = initTable[Element, seq[Behavior]]()
@@ -28,6 +28,17 @@ proc addBehavior*(element: Element, behavior: Behavior): void =
   behaviors_list.mgetOrPut(element, @[]).add(behavior)
   if behavior.added.isSome():
     behavior.added.get()(element)
+
+proc removeBehavior*(element: Element, behavior: Behavior): void =
+  if not behaviors_list.hasKey(element):
+    return
+  var element_behaviors = behaviors_list[element]
+  let index = element_behaviors.find(behavior)
+  if index < 0:
+    return
+  element_behaviors.delete(index)
+  if behavior.removed.isSome():
+    behavior.removed.get()(element)
 
 proc behaviors*(element: Element): seq[Behavior] =
   if not behaviors_list.hasKey(element):
