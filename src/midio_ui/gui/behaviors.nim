@@ -5,7 +5,7 @@ import options
 import ../utils
 
 type
-  Behavior* = object
+  Behavior* = ref object
     update*: Option[(elem: Element, dt: float) -> void]
     added*: Option[(elem: Element) -> void]
     # removed*: Option[(elem: Element) -> void]
