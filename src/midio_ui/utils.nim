@@ -1,5 +1,6 @@
 import options
 import sugar
+import hashes
 
 # TODO: Find a better way to expose this to the rest of the code
 converter toOption*[T](x: T): Option[T] = some[T](x)
@@ -44,3 +45,9 @@ iterator reverse*[T](a: seq[T]): T {.inline.} =
     while i > -1:
         yield a[i]
         dec(i)
+
+proc hash*[T](self: Option[T]): Hash =
+  if self.isSome:
+    self.get().hash
+  else:
+    0
