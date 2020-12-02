@@ -1,4 +1,4 @@
-import sugar, tables, strformat, options, macros, strutils, sets, sequtils
+import sugar, tables, strformat, options, macros, strutils, sets, sequtils, algorithm
 import ../vec
 import ../rect
 import ../mat
@@ -420,6 +420,7 @@ method render*(self: Element): Option[Primitive] {.base.} =
   )
   if result.isSome():
     result.get().children = self.children
+      .sorted((a, b: Element) => b.props.zIndex.get(0) - a.props.zIndex.get(0), SortOrder.Descending)
       .map((x: Element) => x.render())
       .filter((x: Option[Primitive]) => x.isSome())
       .map((x: Option[Primitive]) => x.get())

@@ -170,6 +170,7 @@ type
     clipToBounds*: Option[bool]
     # TODO: Implement all transforms for all rendering backends
     transform*: seq[Transform]
+    zIndex*: Option[int]
     # NOTE: Only for debugging
     debugName*: Option[string]
 
