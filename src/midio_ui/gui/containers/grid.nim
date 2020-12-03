@@ -17,10 +17,10 @@ type
     rows*: seq[GridSection]
     cols*: seq[GridSection]
 
-  GridSection* = object
-    extent*: float
+  GridSection* = ref object
     metric*: GridMetric
-    actualExtent: float
+    extent*: float
+    actualExtent: float # Computed during measure phase and cached here
 
   GridMetric* {.pure.} = enum Points, Proportion
 
