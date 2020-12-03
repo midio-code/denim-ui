@@ -335,6 +335,7 @@ element_type(rectangle, (ElementProps, RectangleProps), createRectangle)
 element_type(path, (ElementProps, PathProps), createPath)
 element_type(stack, (ElementProps, StackProps), createStack)
 element_type(scrollView, (ElementProps, ScrollViewProps), createScrollView)
+element_type(grid, (ElementProps, GridProps), createGrid)
 
 type
   PanelElem* = ref object of Element

@@ -5,7 +5,7 @@ import ../number
 import ../thickness
 import types, element, ../events
 
-import containers/dock, containers/stack, containers/scroll_view
+import containers/dock, containers/stack, containers/scroll_view, containers/grid
 import primitives/text, primitives/circle, primitives/rectangle, primitives/path
 
 import behaviors, tag
@@ -19,7 +19,7 @@ import element_utils
 import rx_nim
 
 export options, vec, rect, number
-export types, element, events, dock, stack, rectangle, path, text, scroll_view
+export types, element, events, dock, stack, rectangle, path, text, scroll_view, grid
 export circle, behaviors, tag, data_binding, element_events
 export onClicked, onHover, onDrag, onPointer, onWheel, onKey
 export rx_nim
