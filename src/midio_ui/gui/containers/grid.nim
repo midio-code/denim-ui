@@ -72,6 +72,9 @@ proc computeActualExtent(section: GridSection, axisMetrics: AxisMetrics, availab
 method measureOverride(self: Grid, available: Vec2[float]): Vec2[float] =
   let props = self.gridProps
 
+  if self.children.len() > props.cols.len() * props.rows.len():
+    echo "Warning: Grid currently performs incorrect layout when there are more children than defined in the rows/columns properties"
+
   let metricsX = computeAxisMetrics(props.cols)
   let metricsY = computeAxisMetrics(props.rows)
 
