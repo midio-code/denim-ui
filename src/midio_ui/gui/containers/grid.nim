@@ -28,6 +28,20 @@ type
     staticExtent: float
     sumOfProportions: float
 
+proc points*(extent: float): GridSection =
+  GridSection(
+    extent: extent,
+    actualExtent: extent,
+    metric: GridMetric.Points
+  )
+
+proc proportion*(extent: float): GridSection =
+  GridSection(
+    extent: extent,
+    actualExtent: 0.0,
+    metric: GridMetric.Proportion
+  )
+
 proc computeAxisMetrics(sections: openArray[GridSection]): AxisMetrics =
   var staticExtent = 0.0
   var sumOfProportions = 0.0
