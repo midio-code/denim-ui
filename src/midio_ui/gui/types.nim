@@ -36,7 +36,7 @@ type
     font*: Option[string]
     color*: Option[Color]
 
-  TextChanged* = (string) -> void
+  TextChanged* = string -> void
 
   TextInputProps* = ref object
     text*: string
