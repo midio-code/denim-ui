@@ -2,6 +2,7 @@ import sugar, options, strformat
 import rx_nim
 import ../update_manager
 import ../../vec
+import ../../number
 import easings
 
 type
