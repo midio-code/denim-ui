@@ -33,49 +33,49 @@ suite "Layout tests - panel":
   test "Panel alignment top left":
     var topLeft = root:
       panel(width = 500, height = 500):
-        panel(width = 50, height = 50, horizontalAlignment = HorizontalAlignment.Left, verticalAlignment = VerticalAlignment.Top)
+        panel(width = 50, height = 50, alignment = Alignment.TopLeft)
     topLeft.expectLayout(rect(0.0, 0.0, 50.0, 50.0))
 
   test "Panel alignment top right":
     var topRight = root:
       panel(width = 500, height = 500):
-        panel(width = 50, height = 50, horizontalAlignment = HorizontalAlignment.Right, verticalAlignment = VerticalAlignment.Top)
+        panel(width = 50, height = 50, alignment = Alignment.TopRight)
     topRight.expectLayout(rect(450.0, 0.0, 500.0, 50.0))
 
   test "Panel alignment bottom left":
     var bottomLeft = root:
       panel(width = 500, height = 500):
-        panel(width = 50, height = 50, horizontalAlignment = HorizontalAlignment.Left, verticalAlignment = VerticalAlignment.Bottom)
+        panel(width = 50, height = 50, alignment = Alignment.BottomLeft)
     bottomLeft.expectLayout(rect(0.0, 450.0, 50.0, 500.0))
 
   test "Panel alignment bottom right":
     var bottomRight = root:
       panel(width = 500, height = 500):
-        panel(width = 50, height = 50, horizontalAlignment = HorizontalAlignment.Right, verticalAlignment = VerticalAlignment.Bottom)
+        panel(width = 50, height = 50, alignment = Alignment.BottomRight)
     bottomRight.expectLayout(rect(450.0, 450.0, 500.0, 500.0))
 
   test "Panel alignment center left":
     var left = root:
       panel(width = 500, height = 500):
-        panel(width = 50, height = 50, horizontalAlignment = HorizontalAlignment.Left, verticalAlignment = VerticalAlignment.Center)
+        panel(width = 50, height = 50, alignment = Alignment.CenterLeft)
     left.expectLayout(rect(0.0, 225.0, 50.0, 275.0))
 
   test "Panel alignment center right":
     var right = root:
       panel(width = 500, height = 500):
-        panel(width = 50, height = 50, horizontalAlignment = HorizontalAlignment.Right, verticalAlignment = VerticalAlignment.Center)
+        panel(width = 50, height = 50, alignment = Alignment.CenterRight)
     right.expectLayout(rect(450.0, 225.0, 500.0, 275.0))
 
   test "Panel alignment bottom center":
     var right = root:
       panel(width = 500, height = 500):
-        panel(width = 50, height = 50, horizontalAlignment = HorizontalAlignment.Center, verticalAlignment = VerticalAlignment.Bottom)
+        panel(width = 50, height = 50, alignment = Alignment.BottomCenter)
     right.expectLayout(rect(225.0, 450.0, 275.0, 500.0))
 
   test "Panel alignment top center":
     var right = root:
       panel(width = 500, height = 500):
-        panel(width = 50, height = 50, horizontalAlignment = HorizontalAlignment.Center, verticalAlignment = VerticalAlignment.Top)
+        panel(width = 50, height = 50, alignment = Alignment.TopCenter)
     right.expectLayout(rect(225.0, 0.0, 275.0, 50.0))
 
 
@@ -83,10 +83,9 @@ suite "Alignment tests":
   test "Center box":
     let p = root:
       panel(width = 500, height = 500):
-        panel(horizontalAlignment = HorizontalAlignment.Center, verticalAlignment = VerticalAlignment.Center):
+        panel(alignment = Alignment.Center):
           rectangle(width = 50.0, height = 50.0)
     p.expectLayout(rect(225.0, 225.0, 275.0, 275.0))
-    p.printTree("")
 
 
 suite "Layout tests - stack":
