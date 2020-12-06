@@ -16,6 +16,6 @@ suite "Element events":
     )
     p.invalidateLayout()
     performOutstandingLayoutsAndMeasures(rect(0.0, 0.0, 500.0, 500.0))
-    discard e.dispatchPointerMove(e.pointerArgs(vec2(220.0, 220.0)))
-    discard e.dispatchPointerMove(e.pointerArgs(vec2(250.0, 250.0)))
+    discard e.dispatchPointerMove(e.pointerArgs(vec2(220.0, 220.0), PointerIndex.Primary))
+    discard e.dispatchPointerMove(e.pointerArgs(vec2(250.0, 250.0), PointerIndex.Primary))
     check(c)

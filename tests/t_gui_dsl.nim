@@ -12,11 +12,11 @@ suite "DSL tests":
   test "Support more types for attributes":
     check:
       notCompiles:
-        let testRect = rectangle_impl(("red",)) # needs a ',' to be considered a tuple with one element
+        let testRect = rectangle_impl((colRed,)) # needs a ',' to be considered a tuple with one element
   test "Test colon syntax":
     let elem = stack:
-      rectangle(width= some(100.0), height= some(200.0), color= some("red"))
-      rectangle(width= some(300.0), height= some(400.0), color= some("blue"))
+      rectangle(width= some(100.0), height= some(200.0), color= some(colRed))
+      rectangle(width= some(300.0), height= some(400.0), color= some(colBlue))
     check(elem.children.len() == 2)
     check(elem.children[0].props.width.get() == 100.0)
     check(elem.children[0].props.height.get() == 200.0)
@@ -74,22 +74,22 @@ suite "DSL tests":
 
 component MyComp(bar: Observable[float]):
   panel:
-    rectangle(width <- bar, height = 100.0, color = "red")
+    rectangle(width <- bar, height = 100.0, color = colRed)
 
 component TestComp(bar: float):
   panel:
-    rectangle(width = bar, height = 100.0, color = "red")
+    rectangle(width = bar, height = 100.0, color = colRed)
 
 suite "Component test":
   test "Simple component test":
-    let myComp = TestComp(bar = 123)
+    let myComp = testComp(bar = 123)
     check(myComp.children.len() == 1)
     check(myComp.children[0].children.len() == 0)
     check(myComp.children[0].props.width == 123)
 
   test "Component with observable arg":
     let obs = behaviorSubject(1337.0)
-    let myComp = MyComp(bar = obs)
+    let myComp = myComp(bar = obs)
     obs.next(321.0)
     check(myComp.children[0].props.width == 321.0)
 
@@ -132,12 +132,12 @@ suite "DSL: Dynamic children":
     check(foo.children.len() == 3)
 
   test " ... syntax for subject with changes":
-    let c1 = panel()
-    let c2 = panel()
-    let c3 = panel()
-    let c4 = panel()
-    let c5 = panel()
-    let c6 = panel()
+    let c1: Element = panel()
+    let c2: Element = panel()
+    let c3: Element = panel()
+    let c4: Element = panel()
+    let c5: Element = panel()
+    let c6: Element = panel()
 
     var s1 = behaviorSubject(@[c1,c2,c3])
     var s2 = behaviorSubject(@[c4,c5,c6])
@@ -168,12 +168,12 @@ suite "DSL: Dynamic children":
     check(p.children.contains(c6))
 
   test " ... syntax for CollectionSubject with changes":
-    let c1 = panel()
-    let c2 = panel()
-    let c3 = panel()
-    let c4 = panel()
-    let c5 = panel()
-    let c6 = panel()
+    let c1: Element = panel()
+    let c2: Element = panel()
+    let c3: Element = panel()
+    let c4: Element = panel()
+    let c5: Element = panel()
+    let c6: Element = panel()
 
     var s1 = observableCollection(@[c1,c2,c3])
     var s2 = observableCollection(@[c4,c5,c6])
