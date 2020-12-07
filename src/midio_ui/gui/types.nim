@@ -100,6 +100,7 @@ type
 
   Shadow* = ref object
     color*: Color
+    alpha*: float
     size*: float
     offset*: Vec2[float]
 
