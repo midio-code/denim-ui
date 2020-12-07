@@ -47,9 +47,6 @@ type
     placeholderColor*: Option[Color]
     onChange*: Option[TextChanged]
 
-
-type
-
   PathSegmentKind* {.pure.} = enum
     MoveTo, LineTo, QuadraticCurveTo, BezierCurveTo, Close
   PathSegment* = ref object
@@ -101,9 +98,15 @@ type
   RectangleInfo* = ref object
     bounds*: Rect[float]
 
+  Shadow* = ref object
+    color*: Color
+    size*: float
+    offset*: Vec2[float]
+
   Primitive* = ref object
     colorInfo*: Option[ColorInfo]
     strokeInfo*: Option[StrokeInfo]
+    shadow*: Option[Shadow]
     clipToBounds*: bool
     bounds*: Bounds
     transform*: seq[Transform]
@@ -173,8 +176,8 @@ type
     zIndex*: Option[int]
     # NOTE: Only for debugging
     debugName*: Option[string]
+    shadow*: Option[Shadow]
 
-type
   Layout* = ref object
     name*: string # TODO: Hide this in release builds?
     measure*: (Element, Vec2[float]) -> Vec2[float]
