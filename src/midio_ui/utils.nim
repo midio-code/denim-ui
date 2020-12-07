@@ -1,6 +1,4 @@
-import options
-import sugar
-import hashes
+import options, colors, sugar, hashes
 
 # TODO: Find a better way to expose this to the rest of the code
 converter toOption*[T](x: T): Option[T] = some[T](x)
@@ -51,3 +49,13 @@ proc hash*[T](self: Option[T]): Hash =
     self.get().hash
   else:
     0
+
+proc `*`*(a: Color, val: float): Color =
+  let (r,g,b) = a.extractRgb()
+  let rNew = int(float(r) * val)
+  let gNew = int(float(g) * val)
+  let bNew = int(float(b) * val)
+  rgb(rNew, gNew, bNew)
+
+proc lerp*(a: Color, b: Color, t: float): Color =
+  (a * (1.0 - t)) + (b * t)
