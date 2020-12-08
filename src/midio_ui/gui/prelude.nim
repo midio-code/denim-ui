@@ -16,6 +16,8 @@ import ../utils
 import element_observables
 import element_utils
 
+import focus_manager
+
 import rx_nim
 
 export options, vec, rect, number
@@ -28,6 +30,7 @@ export utils
 export thickness
 export element_observables
 export element_utils
+export focus_manager
 
 import dsl/dsl
 export dsl
