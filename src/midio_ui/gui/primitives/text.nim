@@ -38,7 +38,7 @@ iterator tokens(str: string): string =
 proc fontDescriptor(props: TextProps): FontDescriptor =
   FontDescriptor(
     font: props.font.get(defaults.font),
-    fontSize: props.fontSize.get(12.0)
+    fontSize: props.fontSize.get(defaults.fontSize)
   )
 
 method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
@@ -81,7 +81,7 @@ method render*(self: Text): Option[Primitive] =
   let props = self.textProps
 
   let color = props.color.get(colWhite)
-  let fontSize = props.fontSize.get(12.0)
+  let fontSize = props.fontSize.get(defaults.fontSize)
   let font = props.font.get(defaults.font)
 
   var lineY = 0.0
