@@ -17,26 +17,6 @@ type
     content: string
     size: Vec2[float]
 
-  FontDescriptor = ref object
-    font: string
-    fontSize: float # TODO: Avoid using floating point number where we need an exact match
-
-  FontMeasureCache = TableRef[string, Vec2[float]]
-
-proc hash(fd: FontDescriptor): Hash =
-  !$(hash(fd.font) !& hash(fd.fontSize))
-
-proc `==`(a: FontDescriptor, b: FontDescriptor): bool =
-  a.font == b.font and a.fontSize == b.fontSize
-
-proc fontDescriptor(props: TextProps): FontDescriptor =
-  FontDescriptor(
-    font: props.font.get(defaults.font),
-    fontSize: props.fontSize.get(defaults.fontSize)
-  )
-
-let fontMeasureCaches = newTable[FontDescriptor, FontMeasureCache]()
-
 # TODO: Remove need for this global
 var measureText*: (text: string, fontSize: float, font: string, baseline: string) -> Vec2[float]
 
@@ -46,18 +26,6 @@ proc getOrInit[K, V](table: TableRef[K, V], key: K, init: proc(): V): V =
   else:
     result = init()
     table[key] = result
-
-proc measureToken(token: string, font: FontDescriptor, cache: FontMeasureCache): Vec2[float] =
-  cache.getOrInit(
-    token,
-    proc(): Vec2[float] =
-      measureText(
-        token,
-        font.fontSize,
-        font.font,
-        baseline="top" # TODO: Add baseline to TextProps?
-      )
-  )
 
 iterator tokens(str: string): string =
   # TODO: Avoid copies by working with ranges
@@ -70,9 +38,10 @@ iterator tokens(str: string): string =
       yield token
 
 method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
-  let font = self.textProps.fontDescriptor
+  let props = self.textProps
 
-  let measureCache = fontMeasureCaches.getOrInit(font, () => newTable[string, Vec2[float]]())
+  let font = props.font.get(defaults.font)
+  let fontSize = props.fontSize.get(defaults.fontSize)
 
   var totalSize = vec2(0.0)
   var lines: seq[TextLine] = @[]
@@ -85,7 +54,7 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
     var lineString = lineTokens.join()
     let actualLineSize = vec2(
       lineSize.x,
-      max(lineSize.y, font.fontSize)
+      max(lineSize.y, fontSize)
     )
     lines.add (content: lineString, size: actualLineSize)
     totalSize.x = max(totalSize.x, lineSize.x)
@@ -100,7 +69,7 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
     lineSize.y = max(lineSize.y, tokenSize.y)
 
   for token in self.textProps.text.tokens():
-    let tokenSize = measureToken(token, font, measureCache)
+    let tokenSize = measureText(token, fontSize, font, baseline = "top")
 
     if token == "\n":
       flushLine()
