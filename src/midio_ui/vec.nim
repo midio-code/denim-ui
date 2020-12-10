@@ -137,6 +137,8 @@ proc deflate*[T:Number](self: Vec2[T], thickness: Thickness[T]): Vec2[T] =
   )
 
 proc `==`*[T:Number](self: Vec2[T], other: Vec2[T]): bool =
+  if isNil(self) or isNil(other):
+    return false
   self.x == other.x and self.y == other.y
 
 proc nonNegative*[T:Number](self: Vec2[T]): Vec2[T] =

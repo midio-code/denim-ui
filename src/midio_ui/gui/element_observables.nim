@@ -4,18 +4,6 @@ import ../vec
 import ../rect
 import rx_nim
 
-proc observeWorldPosition*(self: Element): Observable[Vec2[float]] =
-  var prevPos = self.actualWorldPosition()
-  let state = behaviorSubject[Vec2[float]](prevPos)
-  onBeforeLayout(
-    proc(newVal: Rect[float]): void =
-      let currentPos = self.actualWorldPosition()
-      if currentPos != prevPos:
-        prevPos = currentPos
-        state.next(currentPos)
-  )
-  state.source
-
 proc observeBounds*(e: Element): Observable[Rect[float]] =
   let state = behaviorSubject(e.bounds.get(rect(0.0)))
   var prevBounds = e.bounds.get(rect(0.0))

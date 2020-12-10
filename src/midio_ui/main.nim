@@ -52,7 +52,7 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   emitBoundsChangedEventsFromPreviousFrame()
 
   # NOTE: This must be called before each frame
-  invalidateWorldPositionsCache()
+  recalculateWorldPositionsCache(ctx.rootElement)
 
   if pointerPosChangedThisFrame:
     # TODO: Handle the case where multiple events happen per frame (as we do for wheelEvents)
