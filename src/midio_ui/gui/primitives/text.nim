@@ -6,16 +6,20 @@ import ../../thickness
 import ../../vec
 import ../../rect
 import ../../utils
+import ../../events
 import defaults
 
 type
   Text* = ref object of Element
     textProps*: TextProps
     lines: seq[TextLine]
+    onInvalidate: proc(args: InvalidateTextArgs): void
 
   TextLine* = tuple
     content: string
     size: Vec2[float]
+
+  InvalidateTextArgs* = object
 
 # TODO: Remove need for this global
 var measureText*: (text: string, fontSize: float, font: string, baseline: string) -> Vec2[float]
@@ -127,11 +131,24 @@ method render*(self: Text): Option[Primitive] =
   )
   some(container)
 
+
+var invalidateTextEmitter = emitter[InvalidateTextArgs]()
+
+proc invalidateAllText*(): void =
+  invalidateTextEmitter.emit(InvalidateTextArgs())
+
+method onRooted*(self: Text) =
+  invalidateTextEmitter.add(self.onInvalidate)
+
+method onUnrooted*(self: Text) =
+  invalidateTextEmitter.remove(self.onInvalidate)
+
 proc initText*(self: Text, props: TextProps): void =
   self.textProps = props
 
 proc createText*(props: (ElementProps, TextProps), children: seq[Element] = @[]): Text =
   let (elemProps, textProps) = props
   result = Text()
+  result.onInvalidate = proc(args: InvalidateTextArgs) = result.invalidateLayout()
   initElement(result, elemProps)
   initText(result, textProps)
