@@ -48,18 +48,26 @@ proc getOrInit[K, V](table: TableRef[K, V], key: K, init: proc(): V): V =
     table[key] = result
 
 proc measureToken(token: string, font: FontDescriptor, cache: FontMeasureCache): Vec2[float] =
-  # TODO: Adde baseline to TextProps?
   cache.getOrInit(
     token,
     proc(): Vec2[float] =
-      measureText(token, font.fontSize, font.font, baseline="top")
+      measureText(
+        token,
+        font.fontSize,
+        font.font,
+        baseline="top" # TODO: Add baseline to TextProps?
+      )
   )
 
 iterator tokens(str: string): string =
   # TODO: Avoid copies by working with ranges
-  for (token, _) in tokenize(str):
-    # TODO: Split consecutive whitespace into separate tokens, so we don't cache distinct sequences of whitespace separately
-    yield token
+  for (token, isWhitespace) in tokenize(str):
+    if isWhitespace:
+      # TODO: Optimize this
+      for character in token.replace("\r\n", "\n"):
+        yield $character
+    else:
+      yield token
 
 method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
   let font = self.textProps.fontDescriptor
@@ -75,22 +83,33 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
 
   proc flushLine() =
     var lineString = lineTokens.join()
-    lines.add (content: lineString, size: lineSize)
+    let actualLineSize = vec2(
+      lineSize.x,
+      max(lineSize.y, font.fontSize)
+    )
+    lines.add (content: lineString, size: actualLineSize)
     totalSize.x = max(totalSize.x, lineSize.x)
     totalSize.y += lineSize.y
     lastLineSize = lineSize
     lineSize = vec2(0.0)
     lineTokens = @[]
 
-  for token in self.textProps.text.tokens():
-    let tokenSize = measureToken(token, font, measureCache)
-
-    if lineSize.x + tokenSize.x > avSize.x:
-      flushLine()
-
+  proc insertToken(token: string, tokenSize: Vec2[float]) =
     lineTokens.add(token)
     lineSize.x += tokenSize.x
     lineSize.y = max(lineSize.y, tokenSize.y)
+
+  for token in self.textProps.text.tokens():
+    let tokenSize = measureToken(token, font, measureCache)
+
+    if token == "\n":
+      flushLine()
+    else:
+      if lineSize.x + tokenSize.x > avSize.x and not token.isEmptyOrWhitespace:
+        flushLine()
+
+      # TODO: We currently include trailing whitespace past the wrapping point here, which will break layout for center/right alignment
+      insertToken(token, tokenSize)
 
   if lineTokens.len() > 0:
     flushLine()
