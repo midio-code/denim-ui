@@ -266,7 +266,7 @@ macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChild
   # Each child in each of these lists should be added to the children list of this element
   let childCollections = expanded.childCollections.toNimNode()
   let
-    childrenSym = Ident"children" # genSym(nskVar, "children")
+    childrenSym = genSym(nskVar, "children")
     behaviorsSym = genSym(nskVar, "behaviors")
 
   var elementSym = Ident"this"
@@ -409,7 +409,7 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
 
   let propsArgIdent = Ident("props")
 
-  let childrenIdent = Ident("children")
+  let childrenIdent = genSym(nskLet, "children")
 
 
   let parentType =

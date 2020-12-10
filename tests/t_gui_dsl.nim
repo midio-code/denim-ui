@@ -95,13 +95,13 @@ suite "Component test":
 
 suite "DSL: Dynamic children":
   test "... syntax for children":
-    let children = @[panel(), panel(), panel()]
+    let children: seq[Element] = @[panel().Element, panel().Element, panel().Element]
     let foo = panel():
       ...children
     check(foo.children.len() == 3)
 
   test "... syntax for children 2":
-    let children = @[panel(), panel(), panel()]
+    let children: seq[Element] = @[panel().Element, panel().Element, panel().Element]
     let foo = panel():
       panel()
       ...children
@@ -109,14 +109,14 @@ suite "DSL: Dynamic children":
     check(foo.children.len() == 5)
 
   test "... syntax for children 3":
-    let children = @[panel(), panel(), panel()]
+    let children: seq[Element] = @[panel().Element, panel().Element, panel().Element]
     let foo = panel():
       ...children
       ...children
     check(foo.children.len() == 6)
 
   test "... syntax for children 4":
-    let children = @[panel(), panel(), panel()]
+    let children: seq[Element] = @[panel().Element, panel().Element, panel().Element]
     let foo = panel():
       panel()
       ...children

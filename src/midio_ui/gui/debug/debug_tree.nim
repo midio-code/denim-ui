@@ -19,6 +19,9 @@ component Dock, CollapsablePanel():
   height <- isCollapsed.choose(50.0, 400.0)
   clipToBounds = true
 
+  # NOTE: Hack! This will break
+  let this = ret
+
   docking(DockDirection.Top):
     panel:
       onDrag(
@@ -36,7 +39,7 @@ component Dock, CollapsablePanel():
   panel(minHeight = 5.0):
     rectangle(color = panelBackground, radius = (0.0, 0.0, 5.0, 5.0))
     panel(visibility <- isCollapsed.map((x: bool) => choose(x, Visibility.Collapsed, Visibility.Visible))):
-      ...children
+      ...this.children
 
 proc descriptor(self: Element): string =
   "some element type (todo: get actual name)"
