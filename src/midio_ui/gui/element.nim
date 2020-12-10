@@ -63,18 +63,15 @@ proc arrange*(self: LayoutManager, elem: Element, rect: Bounds): void =
     else:
       echo "Tried to arrange element without a desired size"
 
-      # TODO(important): This is wrong, we cannot use the entire rect as available space for any other element than the root!
 proc performOutstandingMeasure(self: LayoutManager, availableSize: Vec2[float]): void =
   while self.toMeasure.len() > 0:
     let elem = self.toMeasure.pop()
     self.measure(elem, availableSize)
 
-# TODO(important): This is wrong, we cannot use the entire rect as available space for any other element than the root!
 proc performOutstandingArrange(self: LayoutManager, rect: Bounds): void =
   while self.toArrange.len() > 0:
     let elem = self.toArrange.pop()
     self.arrange(elem, rect)
-
 
 # NOTE: Defines: onBeforeLayout, emitLayoutPerformed
 createEvent(beforeLayout, Bounds)
