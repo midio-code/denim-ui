@@ -10,7 +10,7 @@ proc createTextPrimitive*(
   self: Element,
   text: string,
   color: Color = colWhite,
-  fontSize: float = 12.0,
+  fontSize: float = defaults.fontSize,
   font: string = defaults.font,
   textBaseline: string = "top",
   alignment: string = "left"
