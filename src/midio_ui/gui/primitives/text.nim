@@ -79,6 +79,7 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
       flushLine()
     else:
       let shouldWrap =
+        props.wordWrap and
         lineTokens.len() > 0 and
         lineSize.x + tokenSize.x > avSize.x and
         not token.isEmptyOrWhitespace

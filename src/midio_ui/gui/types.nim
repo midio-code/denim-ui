@@ -38,6 +38,7 @@ type
     fontSize*: Option[float]
     font*: Option[string]
     color*: Option[Color]
+    wordWrap*: bool
 
   TextChanged* = string -> void
 
