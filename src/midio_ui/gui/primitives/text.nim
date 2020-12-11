@@ -78,7 +78,12 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
     if token == "\n":
       flushLine()
     else:
-      if lineSize.x + tokenSize.x > avSize.x and not token.isEmptyOrWhitespace:
+      let shouldWrap =
+        lineTokens.len() > 0 and
+        lineSize.x + tokenSize.x > avSize.x and
+        not token.isEmptyOrWhitespace
+
+      if shouldWrap:
         flushLine()
 
       # TODO: We currently include trailing whitespace past the wrapping point here, which will break layout for center/right alignment
