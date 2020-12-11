@@ -46,7 +46,8 @@ iterator reverse*[T](a: seq[T]): T {.inline.} =
 
 proc hash*[T](self: Option[T]): Hash =
   if self.isSome:
-    self.get().hash
+    let x = self.get()
+    x.hash
   else:
     0
 

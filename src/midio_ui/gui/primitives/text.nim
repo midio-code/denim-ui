@@ -154,7 +154,10 @@ proc initText*(self: Text, props: TextProps): void =
 
 proc createText*(props: (ElementProps, TextProps), children: seq[Element] = @[]): Text =
   let (elemProps, textProps) = props
-  result = Text()
-  result.onInvalidate = proc(args: InvalidateTextArgs) = result.invalidateLayout()
-  initElement(result, elemProps)
-  initText(result, textProps)
+  let ret = Text()
+  ret.onInvalidate =
+    proc(args: InvalidateTextArgs) =
+      ret.invalidateLayout()
+  initElement(ret, elemProps)
+  initText(ret, textProps)
+  ret
