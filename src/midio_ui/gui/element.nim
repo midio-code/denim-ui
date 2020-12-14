@@ -10,6 +10,7 @@ import drawing_primitives
 import element_bounds_changed_event
 import ../events
 import types
+import world_position
 import tag
 
 export types

@@ -4,6 +4,7 @@ import ../element
 import ../drawing_primitives
 import ../../vec
 import ../../utils
+import ../world_position
 
 type
   CircleProps* = ref object

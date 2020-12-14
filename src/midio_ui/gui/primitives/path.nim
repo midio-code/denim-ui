@@ -3,6 +3,7 @@ import ../types
 import ../element
 import ../drawing_primitives
 import ../../vec
+import ../world_position
 
 export drawing_primitives.moveTo
 export drawing_primitives.lineTo

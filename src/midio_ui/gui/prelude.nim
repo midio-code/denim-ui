@@ -15,6 +15,7 @@ import animation/animation
 import ../utils
 import element_observables
 import element_utils
+import world_position
 
 import focus_manager
 
@@ -31,6 +32,7 @@ export thickness
 export element_observables
 export element_utils
 export focus_manager
+export world_position
 
 import dsl/dsl
 export dsl

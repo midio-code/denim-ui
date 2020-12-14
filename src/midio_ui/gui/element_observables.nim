@@ -2,6 +2,7 @@ import sugar, options
 import types, element_bounds_changed_event, element
 import ../vec
 import ../rect
+import world_position
 import rx_nim
 
 proc observeBounds*(e: Element): Observable[Rect[float]] =
