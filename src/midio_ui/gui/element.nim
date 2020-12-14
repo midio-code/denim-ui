@@ -398,6 +398,12 @@ proc relativeTo*(self: Vec2[float], elem: Element): Vec2[float] =
 proc relativeTo*(self: Rect[float], elem: Element): Rect[float] =
   self.withPos(self.pos.relativeTo(elem))
 
+proc childrenSortedByZIndex*(self: Element): seq[Element] =
+  self
+    .children
+    .sorted((a, b: Element) => b.props.zIndex.get(0) - a.props.zIndex.get(0), SortOrder.Descending)
+
+
 method render*(self: Element): Option[Primitive] {.base.} =
   if self.props.visibility.get(Visibility.Visible) != Visibility.Visible:
     return none[Primitive]()
@@ -417,8 +423,8 @@ method render*(self: Element): Option[Primitive] {.base.} =
     )
   )
   if result.isSome():
-    result.get().children = self.children
-      .sorted((a, b: Element) => b.props.zIndex.get(0) - a.props.zIndex.get(0), SortOrder.Descending)
+    result.get().children = self
+      .childrenSortedByZIndex
       .map((x: Element) => x.render())
       .filter((x: Option[Primitive]) => x.isSome())
       .map((x: Option[Primitive]) => x.get())

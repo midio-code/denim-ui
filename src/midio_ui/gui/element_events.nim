@@ -126,7 +126,7 @@ proc dispatchPointerDownImpl*(self: Element, arg: PointerArgs): EventResult =
   if not self.isPointInside(transformedArg.actualPos):
     return
 
-  for child in self.children.reverse():
+  for child in self.childrenSortedByZIndex.reverse():
     let result = child.dispatchPointerDownImpl(transformedArg)
     if result.handled:
        return result
@@ -146,7 +146,7 @@ proc dispatchPointerUpImpl*(self: Element, arg: PointerArgs): EventResult =
   if not self.isPointInside(transformedArg.actualPos) and not self.hasPointerCapture:
     return
 
-  for child in self.children.reverse():
+  for child in self.childrenSortedByZIndex.reverse():
     let result = child.dispatchPointerUpImpl(transformedArg)
     if result.handled:
       return result
@@ -167,7 +167,7 @@ proc pointerExited(self: Element, arg: PointerArgs): void =
   self.pointerInsideLastUpdate = false
   for handler in self.pointerExitedHandlers:
     handler(arg.withElem(self))
-  for child in self.children:
+  for child in self.childrenSortedByZIndex:
     if child.pointerInsideLastUpdate:
       let transformedArg = arg.transformed(child).withElem(child)
       child.pointerExited(transformedArg)
@@ -192,7 +192,7 @@ proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs): EventResult =
       let res = handler(transformedArg.withElem(self))
       if res.handled:
         return res
-    for child in self.children.reverse():
+    for child in self.childrenSortedByZIndex.reverse():
       result = child.dispatchPointerMoveImpl(transformedArg)
       if result.handled:
         return result
@@ -235,7 +235,7 @@ proc dispatchWheel*(self: Element, args: WheelArgs): EventResult =
   let transformedArg = args.transformed(self)
   if not self.isPointInside(transformedArg.actualPos):
     return
-  for child in self.children.reverse():
+  for child in self.childrenSortedByZIndex.reverse():
     let res = child.dispatchWheel(transformedArg)
     if res.handled:
       return res
