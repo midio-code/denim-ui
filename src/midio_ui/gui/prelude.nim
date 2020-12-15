@@ -12,6 +12,7 @@ import behaviors, tag
 import data_binding, element_events
 import ./behaviors/[onClicked,onHover,onDrag,onPointer,onWheel,onKey]
 import animation/animation
+import animation/element_animation
 import ../utils
 import element_observables
 import element_utils
@@ -27,6 +28,7 @@ export circle, behaviors, tag, data_binding, element_events
 export onClicked, onHover, onDrag, onPointer, onWheel, onKey
 export rx_nim
 export animation
+export element_animation
 export utils
 export thickness
 export element_observables

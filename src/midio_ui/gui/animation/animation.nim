@@ -5,6 +5,8 @@ import ../../vec
 import ../../number
 import easings
 
+export easings
+
 type
   PlayDirection* = enum
     Forward, Backward
@@ -75,7 +77,6 @@ proc playToEndThenBack*[T](self: Animator[T], callback: (() -> void) = nil): voi
 proc map*[T,R](self: Animator[T], mapper: (T -> R)): Animator[R] =
   Animator[R](play: self.play, value: self.value.map(mapper))
 
-
 proc animate*[T,R](self: Observable[T], interpolator: (T,T,float) -> R, duration: float): Observable[R] =
   let animator = createAnimator(duration)
   var prevValue: Option[T] = none[T]()
@@ -91,6 +92,7 @@ proc animate*[T,R](self: Observable[T], interpolator: (T,T,float) -> R, duration
         proc(val: T): void =
           if prevValue.isNone():
             # NOTE: This makes sure the animated value is initialized correctly
+            prevValue = some(val)
             subscriber.onNext(interpolator(val, val, 0.0))
           currentValue = some(val)
           animator.reset()
@@ -105,3 +107,5 @@ proc animate*[T,R](self: Observable[T], interpolator: (T,T,float) -> R, duration
           sub2.dispose()
       )
   )
+
+

@@ -16,19 +16,6 @@ proc unhandled*(): EventResult =
   EventResult(handled: false)
 
 
-template createElementEvent*(name: untyped, T: typedesc, TRes: typedesc): untyped =
-  var eventTable = initTable[Element, seq[T -> TRes]]()
-  proc `on name`*(self: Element, handler: T -> TRes): void =
-    if not eventTable.hasKey(self):
-      let arr: seq[T -> TRes] = @[]
-      eventTable[self] = arr
-    eventTable[self].add(handler)
-  proc `name handlers`(self: Element): seq[T -> TRes] =
-    if eventTable.hasKey(self):
-      eventTable[self]
-    else:
-      @[]
-
 type
   KeyArgs* = ref object
     key*: string

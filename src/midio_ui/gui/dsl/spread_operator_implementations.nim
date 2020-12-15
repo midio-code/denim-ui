@@ -13,7 +13,8 @@ proc bindChildCollection*(self: Element, item: Subject[Element]): void =
       if not isNil(prevElem):
         self.removeChild(prevElem)
       prevElem = e
-      self.addChild(e)
+      if not isNil(e):
+        self.addChild(e)
   )
 
 proc bindChildCollection*(self: Element, item: Observable[Option[Element]]): void =

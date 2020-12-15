@@ -1,4 +1,5 @@
 import sugar, tables, strformat, options, macros, strutils, sets, sequtils, algorithm
+import rx_nim
 import ../vec
 import ../rect
 import ../mat
@@ -14,6 +15,9 @@ import world_position
 import tag
 
 export types
+
+proc isChildOf*(child, parent: Element): bool =
+  parent.children.find(child) != -1 and  child.parent.isSome and child.parent.get() == parent
 
 # NOTE: Forward declarations
 proc isRoot*(self: Element): bool
@@ -140,24 +144,70 @@ proc getRoot*(self: Element): Element =
   while result.parent.isSome():
     result = result.parent.get()
 
+
+type RootState* {.pure.} = enum
+  Unrooted, Rooted, WillUnroot
+
+let isRootedObservables = newTable[Element, Subject[RootState]]()
+
+proc observeIsRooted*(self: Element): Observable[RootState] =
+  isRootedObservables.mgetorput(self, behaviorSubject(if self.isRooted: RootState.Rooted else: RootState.Unrooted))
+
 method onRooted*(self: Element): void {.base.} =
   discard
-
-proc dispatchOnRooted*(self: Element): void =
-  self.isRooted = true
-  self.onRooted()
-  for child in self.children:
-    child.dispatchOnRooted()
-
 
 method onUnrooted*(self: Element): void {.base.} =
   discard
 
+proc dispatchOnRooted*(self: Element): void =
+  self.isRooted = true
+  if self in isRootedObservables:
+    isRootedObservables[self] <- RootState.Rooted
+  self.onRooted()
+  for child in self.children:
+    child.dispatchOnRooted()
+
 proc dispatchOnUnrooted*(self: Element): void =
   self.isRooted = false
-  self.onUnrooted()
   for child in self.children:
     child.dispatchOnUnrooted()
+  self.onUnrooted()
+
+let beforeUnrootTasks = newTable[Element, seq[(Element, () -> void) -> void]]()
+proc beforeUnroot*(self: Element, task: (Element, () -> void) -> void): void =
+  beforeUnrootTasks.mgetorput(self, @[]).add(task)
+
+proc detachFromParent(self: Element): void =
+  let parent = self.parent.get()
+  parent.children.delete(parent.children.find(self))
+  self.parent = none[Element]()
+
+proc finishUnrooting*(self: Element): void =
+  if self in isRootedObservables:
+    isRootedObservables[self] <- RootState.Unrooted
+
+  self.detachFromParent()
+  self.dispatchOnUnrooted()
+
+proc performUnroot(self: Element): void =
+  ## Makes sure we run any tasks that should be run before the unroot actually happens.
+  ## This lets us for example animate elements out of view before they are removed from the visual tree.
+  if self in isRootedObservables:
+    isRootedObservables[self] <- RootState.WillUnroot
+  if self in beforeUnrootTasks:
+    var tasks = beforeUnrootTasks[self]
+    if tasks.len > 0:
+      var tasksLeft = tasks.len
+      for t in tasks:
+        t(
+          self,
+          proc(): void =
+            tasksLeft -= 1
+            if tasksLeft == 0:
+              self.finishUnrooting()
+        )
+      return
+  self.finishUnrooting()
 
 # TODO: Remove the need for this forward declaration
 proc addChild*(self: Element, child: Element): void =
@@ -167,16 +217,9 @@ proc addChild*(self: Element, child: Element): void =
   if self.isRooted or self.isRoot:
     child.dispatchOnRooted()
 
-proc detachFromParent(self: Element): void =
-  self.parent = none[Element]()
-  self.dispatchOnUnrooted()
-
 proc removeChild*(self: Element, child: Element): void =
-  let index = self.children.find(child)
-  if index >= 0:
-    self.children.delete(index)
-    self.invalidateLayout()
-    child.detachFromParent()
+  if child.isChildOf(self):
+    child.performUnroot()
 
 proc initElement*(
   self: Element,

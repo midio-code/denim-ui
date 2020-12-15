@@ -38,19 +38,22 @@ proc add*[T](self: var EventEmitter[T], listener: EventHandler[T]): void =
 proc remove*[T](self: var EventEmitter[T], listener: EventHandler[T]): void =
   self.toRemove.add(listener)
 
-# proc toObservable*[T](emitter: var EventEmitter[T]): Observable[T] =
-#   let subj = subject[T]()
-#   emitter.add(
-#     proc(newVal: T): void =
-#       subj.next(newVal)
-#   )
-#   subj.source
-
 template createEvent*(name: untyped, T: typedesc): untyped =
   var emitter = emitter[T]()
   proc `on name`*(handler: (T) -> void): void =
     emitter.add(handler)
   proc `emit name`*(args: T): void =
     emitter.emit(args)
-  # proc `observe name`*(): Observable[T] =
-  #   emitter.toObservable()
+
+template createElementEvent*(name: untyped, T: typedesc, TRes: typedesc): untyped =
+  var eventTable = initTable[Element, seq[T -> TRes]]()
+  proc `on name`*(self: Element, handler: T -> TRes): void =
+    if not eventTable.hasKey(self):
+      let arr: seq[T -> TRes] = @[]
+      eventTable[self] = arr
+    eventTable[self].add(handler)
+  proc `name handlers`(self: Element): seq[T -> TRes] =
+    if eventTable.hasKey(self):
+      eventTable[self]
+    else:
+      @[]
