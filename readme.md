@@ -2,13 +2,13 @@
 
 This project is still in pre-alpha, and should currenly not be used for anything other than playing around.
 
-# Midio UI framework
+# Denim UI framework
 
 A custom cross platform UI framework focused on fast and easy prototyping by the use of a custom DSL.
 
 # Reference docs
 
-https://nortero-code.github.io/midio-ui/
+https://nortero-code.github.io/denim-ui/
 
 # DSL
 
