@@ -13,6 +13,6 @@ test: test_dsl
 
 docs:
 	mkdir -p ./docs
-	nim doc --project --index\:on --outdir:./docs/ --nimcache:./docs/ ./src/midio_ui.nim
+	nim doc --project --index\:on --outdir:./docs/ --nimcache:./docs/ ./src/denim_ui.nim
 	nim buildIndex -o:./docs/index.html docs
 .PHONY: docs

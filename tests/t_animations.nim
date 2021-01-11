@@ -1,7 +1,7 @@
 import strformat
 import unittest
-import midio_ui
-import midio_ui/gui/update_manager
+import denim_ui
+import denim_ui/gui/update_manager
 import sugar
 
 suite "Animations":

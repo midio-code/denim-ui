@@ -1,5 +1,5 @@
 import strformat, sugar, unittest
-import midio_ui
+import denim_ui
 import testutils
 
 suite "Element events":

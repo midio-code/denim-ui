@@ -10,5 +10,5 @@ srcDir        = "src"
 # Dependencies
 
 requires "nim >= 1.4.0"
-requires "midio_ui"
-requires "midio_ui_canvas"
+requires "denim_ui"
+requires "denim_ui_canvas"

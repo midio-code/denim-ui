@@ -1,5 +1,5 @@
-import midio_ui
-import midio_ui_canvas
+import denim_ui
+import denim_ui_canvas
 import macros
 
 proc render(): Element =

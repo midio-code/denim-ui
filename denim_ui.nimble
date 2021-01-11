@@ -1,6 +1,6 @@
 version       = "0.1.0"
 author        = "Kristian Fjeld Hasselknippe"
-description   = "The Midio UI library"
+description   = "The Denim UI library"
 license       = "MIT"
 srcDir        = "src"
 

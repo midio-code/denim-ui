@@ -1,7 +1,7 @@
 import unittest
 import sets
 
-import midio_ui/guid
+import denim_ui/guid
 
 suite "Guid":
   test "It does not generate the same Guid twice in a row":

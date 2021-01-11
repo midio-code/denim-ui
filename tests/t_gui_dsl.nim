@@ -3,7 +3,7 @@ import options
 import sugar
 import unittest
 import testutils
-import midio_ui
+import denim_ui
 
 template notCompiles*(e: untyped): untyped =
   not compiles(e)
