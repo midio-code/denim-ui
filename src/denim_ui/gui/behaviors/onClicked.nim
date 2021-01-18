@@ -16,7 +16,7 @@ proc onClicked*(handler: (elem: Element, args: PointerArgs) -> void): Behavior =
         )
         element.onPointerReleased(
           proc(args: PointerArgs): EventResult =
-            if pressed:
+            if pressed and not element.pointerCapturedBySomeoneElse:
               handler(element, args)
             pressed = false
         )
