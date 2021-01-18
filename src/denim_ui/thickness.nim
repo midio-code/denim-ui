@@ -15,6 +15,18 @@ proc thickness*[T:Number](a:T): Thickness[T] =
 proc thickness*[T:Number](a:T, b:T): Thickness[T] =
   (a,b,a,b)
 
+proc left*[T:Number](self: T): Thickness[T] =
+  thickness(self, 0.0, 0.0, 0.0)
+
+proc right*[T:Number](self: T): Thickness[T] =
+  thickness(0.0, 0.0, self, 0.0)
+
+proc top*[T:Number](self: T): Thickness[T] =
+  thickness(0.0, self, 0.0, 0.0)
+
+proc bottom*[T:Number](self: T): Thickness[T] =
+  thickness(0.0, 0.0, 0.0, self)
+
 proc left*[T:Number](self: Thickness[T]): T =
   self[0]
 
