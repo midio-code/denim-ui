@@ -10,7 +10,12 @@ import colors
 
 # TODO: Move all this stuff to the canvas renderer
 
-let nativeContainer = getElementById("nativeContainer")
+var nativeContainer: dom.Element = nil
+
+proc getNativeContainer(): dom.Element =
+  if isNil(nativeContainer):
+    nativeContainer = getElementById("nativeContainer")
+  nativeContainer
 
 # TODO: Get the correct scaling here
 let hardCodedScale = 2.0
@@ -61,10 +66,10 @@ method render(self: HtmlTextInput): Option[Primitive] =
   none[Primitive]()
 
 method onRooted(self: HtmlTextInput): void =
-  nativeContainer.appendChild(self.domElement)
+  getNativeContainer().appendChild(self.domElement)
 
 method onUnrooted(self: HtmlTextInput): void =
-  nativeContainer.removeChild(self.domElement)
+  getNativeContainer().removeChild(self.domElement)
 
 # method arrangeOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[float] =
 #   availableSize
