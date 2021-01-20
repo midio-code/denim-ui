@@ -48,7 +48,8 @@ method render(self: Path): Option[Primitive] =
       )
     )
   else:
-    raise newException(Exception, "You must supply either data or stringData when using Path!")
+    echo "WARN: Path should have either stringData or data set"
+    none[Primitive]()
 
 # NOTE: This is set by main during initialization
 # TODO: Make initialization of these native dependent functions more explicit
