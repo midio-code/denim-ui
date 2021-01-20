@@ -16,29 +16,13 @@ type
     fill*: Option[Color]
     stroke*: Option[Color]
     strokeWidth*: Option[float]
-    data*: seq[PathSegment] # TODO: Not sure we should expose this type here, but will deal with that later
+
+    # TODO: Chang type so one must and can only supply either data or stringData
+    data*: Option[seq[PathSegment]] # TODO: Not sure we should expose this type here, but will deal with that later
+    stringData*: Option[string]
 
   Path* = ref object of Element
     pathProps*: PathProps
-
-# proc internalMeasure(self: Element, props: PathProps): Vec2[float] =
-#   var smallest = zero()
-#   var largest = zero()
-#   for p in props.data:
-#     var point: Point = zero()
-#     case p.kind:
-#       of PathSegmentKind.MoveTo, PathSegmentKind.LineTo:
-#         point = p.to
-#       of PathSegmentKind.QuadraticCurveTo:
-#         point = p.quadraticInfo.point
-#       of PathSegmentKind.BezierCurveTo:
-#         point = p.bezierInfo.point
-#       else: discard
-#     smallest = min(point, smallest)
-#     largest = max(point, largest)
-#   result = largest - smallest
-#   echo "Result is: ", result
-
 
 method render(self: Path): Option[Primitive] =
   let props = self.pathProps
@@ -47,13 +31,24 @@ method render(self: Path): Option[Primitive] =
     echo "WARN: Bounds of path was none"
     return none[Primitive]()
   let wp = self.actualWorldPosition()
-  some(
-    self.createPath(
-      some(ColorInfo(fill: props.fill, stroke: props.stroke)),
-      some(StrokeInfo(width: props.strokeWidth.get(1.0))),
-      props.data,
+  if self.pathProps.stringData.isSome:
+    some(
+      self.createPath(
+        some(ColorInfo(fill: props.fill, stroke: props.stroke)),
+        some(StrokeInfo(width: props.strokeWidth.get(1.0))),
+        self.pathProps.stringData.get,
+      )
     )
-  )
+  elif self.pathProps.data.isSome:
+    some(
+      self.createPath(
+        some(ColorInfo(fill: props.fill, stroke: props.stroke)),
+        some(StrokeInfo(width: props.strokeWidth.get(1.0))),
+        self.pathProps.data.get,
+      )
+    )
+  else:
+    raise newException(Exception, "You must supply either data or stringData when using Path!")
 
 # NOTE: This is set by main during initialization
 # TODO: Make initialization of these native dependent functions more explicit

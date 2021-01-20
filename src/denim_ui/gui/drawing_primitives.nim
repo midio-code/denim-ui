@@ -51,7 +51,27 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
     clipToBounds: self.props.clipToBounds.get(false),
     shadow: self.props.shadow,
     kind: Path,
-    segments: @segments,
+    pathInfo: PathInfo(
+      kind: PathInfoKind.Segments,
+      segments: @segments
+    ),
+    colorInfo: colorInfo,
+    strokeInfo: strokeInfo,
+    children: @[],
+  )
+
+
+proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], stringData: string): Primitive =
+  Primitive(
+    transform: self.props.transform,
+    bounds: self.bounds.get(),
+    clipToBounds: self.props.clipToBounds.get(false),
+    shadow: self.props.shadow,
+    kind: Path,
+    pathInfo: PathInfo(
+      kind: PathInfoKind.String,
+      data: stringData
+    ),
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     children: @[],
@@ -64,7 +84,10 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
     shadow: self.props.shadow,
     clipToBounds: self.props.clipToBounds.get(false),
     kind: Path,
-    segments: @segments,
+    pathInfo: PathInfo(
+      kind: PathInfoKind.Segments,
+      segments: @segments
+    ),
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     children: @[],

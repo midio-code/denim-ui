@@ -229,7 +229,7 @@ proc expandNiceAttributeSyntax*(attributesAndChildren: NimNode): ExpandedNiceSyn
   )
 
 macro safeCastToElement*(self: string or int or float): untyped =
-  error("strings and numbers are children is not supported")
+  error("strings and numbers as children is not supported")
 
 proc safeCastToElement*[T](self: T): Element =
   if self is Element:

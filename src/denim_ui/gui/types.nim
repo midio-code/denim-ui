@@ -102,6 +102,17 @@ type
   RectangleInfo* = ref object
     bounds*: Rect[float]
 
+  PathInfoKind* {.pure.} = enum
+    Segments, String
+
+  PathInfo* = ref object
+    case kind*: PathInfoKind
+    of PathInfoKind.Segments:
+      segments*: seq[PathSegment]
+    of PathInfoKind.String:
+      data*: string
+
+
   Shadow* = ref object
     color*: Color
     alpha*: float
@@ -122,7 +133,7 @@ type
     of Text:
       textInfo*: TextInfo
     of Path:
-      segments*: seq[PathSegment]
+      pathInfo*: PathInfo
     of Circle:
       circleInfo*: CircleInfo
     of Ellipse:
