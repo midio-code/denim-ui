@@ -39,6 +39,12 @@ proc bottomRight*[T:Number](b, r: T): Thickness[T] =
 proc bottomLeft*[T:Number](b, l: T): Thickness[T] =
   thickness(l, 0.0, 0.0, b)
 
+proc horizontal*[T:Number](h: T): Thickness[T] =
+  thickness(h, 0.0, h, 0.0)
+
+proc vertical*[T:Number](v: T): Thickness[T] =
+  thickness(0.0, v, 0.0, v)
+
 proc left*[T:Number](self: Thickness[T]): T =
   self[0]
 
