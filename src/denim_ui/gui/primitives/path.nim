@@ -30,7 +30,6 @@ method render(self: Path): Option[Primitive] =
     # TODO: Fix whatever caused the need for this check
     echo "WARN: Bounds of path was none"
     return none[Primitive]()
-  let wp = self.actualWorldPosition()
   if self.pathProps.stringData.isSome:
     some(
       self.createPath(
