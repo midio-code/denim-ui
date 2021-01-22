@@ -36,6 +36,7 @@ proc updateTextProps(self: HtmlTextInput): void =
   self.domElement.style.height = &"{bounds.height * hardCodedScale}px"
   self.domElement.style.padding = &"0 0 0 0"
   self.domElement.style.margin = &"0 0 0 0"
+  self.domElement.style.border = "0px hidden"
   self.domElement.style.color = $self.textInputProps.color.get("black".parseColor())
   self.domElement.style.fontSize = &"{fontSize}px"
   self.domElement.style.fontFamily = props.font.get(defaults.font)
