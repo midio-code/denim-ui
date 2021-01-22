@@ -230,7 +230,8 @@ proc hash*(element: Element): Hash =
   element.id.hash()
 
 proc `$`*(element: Element): string =
-  &"Element({element.id})"
+  let debugStr = element.props.debugName.map(x => &": {x}").get("")
+  &"Element({element.id}{debugStr})"
 
 proc `elementProps`*(self: Element): ElementProps =
   self.props
