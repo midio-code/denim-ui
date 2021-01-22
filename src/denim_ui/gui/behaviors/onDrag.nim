@@ -14,6 +14,7 @@ proc onDrag*(
 ): Behavior =
   var pastPos = vec2(0.0, 0.0)
   var canCurrentlyStartDrag = true
+  var pressed = false
 
   Behavior(
     added: some(
@@ -25,16 +26,19 @@ proc onDrag*(
 
         element.onPointerMoved(
           proc(arg: PointerArgs): EventResult =
-            if element.hasPointerCapture():
-              let diff = arg.actualPos.sub(pastPos)
-              moved(diff)
-              pastPos = arg.actualPos
+            if pressed:
+              if not element.pointerCapturedBySomeoneElse:
+                element.capturePointer()
+              if element.hasPointerCapture():
+                let diff = arg.actualPos.sub(pastPos)
+                moved(diff)
+                pastPos = arg.actualPos
         )
         element.onPointerPressed(
           proc(arg: PointerArgs): EventResult =
             if canCurrentlyStartDrag and arg.pointerIndex == pointerIndex:
-              element.capturePointer()
               pastPos = arg.actualPos
+              pressed = true
               return handled()
         )
 
@@ -42,6 +46,7 @@ proc onDrag*(
           proc(arg: PointerArgs): EventResult =
             if arg.pointerIndex == pointerIndex:
               arg.sender.releasePointer()
+              pressed = false
         )
     )
   )
