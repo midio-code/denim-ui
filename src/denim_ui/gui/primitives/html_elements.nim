@@ -25,8 +25,21 @@ type
     domElement*: dom.Element
 
 proc updateTextProps(self: HtmlTextInput): void =
+  let props = self.textInputProps
+  let positionScale = vec2(hardCodedScale) # TODO: Get correct scaling
+  let bounds = self.worldBoundsExpensive()
+  let fontSize = props.fontSize.get(defaults.fontSize) * 2.0
+  let pos = bounds.pos * positionScale
+  self.domElement.style.transform = &"translate({pos.x}px,{pos.y}px)"
+  self.domElement.style.background = "none"
+  self.domElement.style.width = &"{bounds.width * hardCodedScale}px"
+  self.domElement.style.height = &"{bounds.height * hardCodedScale}px"
+  self.domElement.style.padding = &"0 0 0 0"
+  self.domElement.style.margin = &"0 0 0 0"
   self.domElement.style.color = $self.textInputProps.color.get("black".parseColor())
-  self.domElement.style.fontSize = $self.textInputProps.fontSize.get(12.0) & "px"
+  self.domElement.style.fontSize = &"{fontSize}px"
+  if props.text != self.domElement.innerHtml:
+    self.domElement.innerHtml = props.text
 
 proc createHtmlTextInput(props: TextInputProps): dom.Element =
   result = document.createElement("INPUT")
@@ -48,21 +61,7 @@ method measureOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[fl
 
 # TODO: We are kind of misusing render here. Create a way to react to layouts instead of using render.
 method render(self: HtmlTextInput): Option[Primitive] =
-  let props = self.textInputProps
-  let positionScale = vec2(hardCodedScale) # TODO: Get correct scaling
-  let bounds = self.worldBoundsExpensive()
-  let fontSize = props.fontSize.get(12.0) * 2.0
-  let pos = bounds.pos * positionScale
-  self.domElement.style.transform = &"translate({pos.x}px,{pos.y}px)"
-  self.domElement.style.background = "none"
-  self.domElement.style.width = &"{bounds.width * hardCodedScale}px"
-  self.domElement.style.height = &"{bounds.height * hardCodedScale}px"
-  self.domElement.style.padding = &"0 0 0 0"
-  self.domElement.style.margin = &"0 0 0 0"
-  self.domElement.style.setProperty("font-size", &"{fontSize}px")
   self.updateTextProps()
-  if props.text != self.domElement.innerHtml:
-    self.domElement.innerHtml = props.text
   none[Primitive]()
 
 method onRooted(self: HtmlTextInput): void =
