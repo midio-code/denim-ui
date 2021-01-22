@@ -4,6 +4,7 @@ import ../element
 import ../drawing_primitives
 import ../types
 import ../../vec
+import ../../mat
 import ../../rect
 import defaults
 import colors
@@ -27,8 +28,10 @@ type
 proc updateTextProps(self: HtmlTextInput): void =
   let props = self.textInputProps
   let positionScale = vec2(hardCodedScale) # TODO: Get correct scaling
-  let bounds = self.worldBoundsExpensive()
-  let fontSize = props.fontSize.get(defaults.fontSize) * 2.0
+  let worldTransform = self.worldTransformExpensive()
+  let bounds = self.worldBoundsWithTransform(worldTransform)
+  let fontScale = worldTransform[1,1]
+  let fontSize = props.fontSize.get(defaults.fontSize) * hardCodedScale * fontScale
   let pos = bounds.pos * positionScale
   self.domElement.style.transform = &"translate({pos.x}px,{pos.y}px)"
   self.domElement.style.background = "none"
