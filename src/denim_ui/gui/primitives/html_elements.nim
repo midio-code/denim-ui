@@ -43,8 +43,6 @@ proc updateTextProps(self: HtmlTextInput): void =
   self.domElement.style.color = $self.textInputProps.color.get("black".parseColor())
   self.domElement.style.fontSize = &"{fontSize}px"
   self.domElement.style.fontFamily = props.font.get(defaults.font)
-  if props.text != self.domElement.innerHtml:
-    self.domElement.innerHtml = props.text
 
 proc createHtmlTextInput(props: TextInputProps): dom.Element =
   result = document.createElement("INPUT")
