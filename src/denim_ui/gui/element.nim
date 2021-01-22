@@ -487,8 +487,7 @@ proc transformFromRootElem*(self: Point, elem: Element): Point =
     a = self.transformFromRootElem(elem.parent.get())
   a.transformInv(elem.props.transform)
 
-
-proc worldBoundsExpensive*(elem: Element): Bounds =
+proc worldTransformExpensive*(elem: Element): Mat3 =
   var currentElem = elem
   var transforms: seq[Transform] = transform.translation(currentElem.bounds.get().pos) & currentElem.props.transform.get(@[])
 
@@ -500,10 +499,14 @@ proc worldBoundsExpensive*(elem: Element): Bounds =
   var transformMatrix = mat.identity()
   for t in transforms:
     transformMatrix = transformMatrix * t.toMatrix()
+
+  transformMatrix
+
+proc worldBoundsWithTransform*(elem: Element, worldTransform: Mat3): Bounds =
   var b = elem.bounds.get
-  let tl = transformMatrix * vec2(b.left, b.top)
-  let br = transformMatrix * vec2(b.right, b.bottom)
-  result = rectFromPoints(
-    tl,
-    br,
-  )
+  let tl = worldTransform * vec2(b.left, b.top)
+  let br = worldTransform * vec2(b.right, b.bottom)
+  result = rectFromPoints(tl, br)
+
+proc worldBoundsExpensive*(elem: Element): Bounds =
+  elem.worldBoundsWithTransform(elem.worldTransformExpensive())
