@@ -225,7 +225,9 @@ proc initElement*(
   self: Element,
   props: ElementProps = ElementProps(),
 ): void =
-  self.id = genGuid()
+  let id = genGuid()
+  self.id = id
+  self.cachedHashOfId = id.hash()
   self.props = props
 
 proc addChildren*(self: Element, children: seq[Element]): void =

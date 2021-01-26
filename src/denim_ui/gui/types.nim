@@ -208,6 +208,9 @@ type
   # the implementation can access its private fields.
   Element* = ref object of RootObj
     id*: Guid
+    # NOTE: The hash field should be the hash of the id field, cached,
+    # as an optimization to avoid having to recalculate the hash each frame.
+    cachedHashOfId*: Hash
     children*: seq[Element]
     props*: ElementProps
     parent*: Option[Element]
@@ -227,7 +230,7 @@ type
     textInputProps*: TextInputProps
 
 proc hash*(element: Element): Hash =
-  element.id.hash()
+  element.cachedHashOfId
 
 proc `$`*(element: Element): string =
   let debugStr = element.props.debugName.map(x => &": {x}").get("")
