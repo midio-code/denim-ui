@@ -33,6 +33,15 @@ proc createTextPrimitive*(
     children: @[],
   )
 
+proc createContainer*(self: Element, children: seq[Primitive]): Primitive =
+  Primitive(
+    transform: self.props.transform,
+    bounds: self.bounds.get(),
+    clipToBounds: self.props.clipToBounds.get(false),
+    kind: Container,
+    children: children,
+  )
+
 proc moveTo*(x: float, y: float): PathSegment =
   PathSegment(kind: MoveTo, to: vec2(x,y))
 proc lineTo*(x: float, y: float): PathSegment =
