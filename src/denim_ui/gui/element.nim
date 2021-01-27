@@ -509,3 +509,14 @@ proc worldBoundsExpensive*(elem: Element): Bounds =
     tl,
     br,
   )
+
+proc dumpTree*(root: Element): string =
+  result = ""
+  proc visit(element: Element, depth: int = 0) =
+    result &= repeat("│ ", depth)
+    result &= $element
+    result &= "\n"
+    for child in element.children:
+      visit(child, depth + 1)
+
+  visit(root)
