@@ -75,12 +75,6 @@ proc bindChildCollection*(self: Element, subj: Subject[seq[Element]]): void =
     )
 
 proc bindChildCollection*(self: Element, obs: Observable[seq[Element]]): void =
-  ## TODO: If we are to bind an Observable of seq[Element], we need a way for the binding
-  ## we make here to be able to only add the elements that are new, and remove those that are not there
-  ## any more.
-  ## The problem is that the child collection also has children that are not 'managed' by this observable
-  ## and so, we need to not interfer with them!
-  raise newException(Exception, "This path is causing too much trouble in its currently unsolved state, so making it raise an exception until we fix it!")
   let subj = behaviorSubject(obs)
   self.bindChildCollection(subj)
 
