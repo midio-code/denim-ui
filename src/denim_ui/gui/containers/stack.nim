@@ -4,6 +4,7 @@ import ../../vec
 import ../../rect
 import ../../thickness
 import ../../utils
+import ../../type_name
 
 type
   Stack* = ref object of Element
@@ -15,6 +16,7 @@ type
   StackProps* = ref object
     direction*: StackDirection
 
+implTypeName(Stack)
 
 method measureOverride(self: Stack, availableSize: Vec2[float]): Vec2[float] =
   let props = self.stackProps

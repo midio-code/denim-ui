@@ -7,6 +7,7 @@ import ../../guid
 import ../../vec
 import ../../thickness
 import ../../rect
+import ../../type_name
 
 type
   DockProps* = ref object
@@ -22,6 +23,8 @@ type
     dir: DockDirection
 
   DockChildren* = seq[Docking]
+
+implTypeName(Dock)
 
 var intrinsicDockProps = initTable[Guid, DockDirection]()
 

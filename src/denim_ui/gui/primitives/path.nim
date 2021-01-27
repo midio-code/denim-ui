@@ -2,8 +2,9 @@ import sequtils, options, sugar
 import ../types
 import ../element
 import ../drawing_primitives
-import ../../vec
 import ../world_position
+import ../../vec
+import ../../type_name
 
 export drawing_primitives.moveTo
 export drawing_primitives.lineTo
@@ -23,6 +24,8 @@ type
 
   Path* = ref object of Element
     pathProps*: PathProps
+
+implTypeName(Path)
 
 method render(self: Path): Option[Primitive] =
   let props = self.pathProps

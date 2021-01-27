@@ -4,6 +4,7 @@ import ../element
 import ../drawing_primitives
 import ../../vec
 import ../../utils
+import ../../type_name
 import ../world_position
 
 type
@@ -15,6 +16,8 @@ type
 
   Circle* = ref object of Element
     circleProps*: CircleProps
+
+implTypeName(Circle)
 
 method render(self: Circle): Option[Primitive] =
   let props = self.circleProps

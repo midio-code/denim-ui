@@ -4,6 +4,7 @@ import ../element
 import ../drawing_primitives
 import ../../vec
 import ../../rect
+import ../../type_name
 
 type
   RectangleElem* = ref object of Element
@@ -14,6 +15,8 @@ type
     radius*: Option[CornerRadius]
     stroke*: Option[Color]
     strokeWidth*: Option[float]
+
+implTypeName(RectangleElem)
 
 method render(self: RectangleElem): Option[Primitive] =
   let

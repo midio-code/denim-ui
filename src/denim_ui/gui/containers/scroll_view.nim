@@ -6,6 +6,7 @@ import ../element
 import ../element_observables
 import ../../vec
 import ../../rect
+import ../../type_name
 
 type
   ScrollViewProps* = ref object
@@ -15,6 +16,8 @@ type
 
   ScrollView* = ref object of Element
     scrollViewProps*: ScrollViewProps
+
+implTypeName(ScrollView)
 
 method measureOverride(self: ScrollView, availableSize: Vec2[float]): Vec2[float] =
   let props = self.scrollViewProps

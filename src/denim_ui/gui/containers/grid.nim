@@ -8,6 +8,7 @@ import ../../guid
 import ../../vec
 import ../../thickness
 import ../../rect
+import ../../type_name
 
 type
   Grid* = ref object of Element
@@ -27,6 +28,8 @@ type
   AxisMetrics = object
     staticExtent: float
     sumOfProportions: float
+
+implTypeName(Grid)
 
 proc points*(extent: float): GridSection =
   GridSection(

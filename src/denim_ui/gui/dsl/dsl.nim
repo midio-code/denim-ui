@@ -523,6 +523,7 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
     Ident"ret"
   )
 
+  let nameStrUpperFirstLit = newStrLitNode(nameStrUpperFirst)
 
   result = quote do:
     `componentPropsTypeDef`
@@ -550,6 +551,8 @@ macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: 
 
     proc `createCompIdent`*(`propsIdent`: `propsTypeTuple`): `compName` =
       `createCompProcBody`
+
+    method typeName*(self: `compName`): string = `nameStrUpperFirstLit`
 
 
 macro sortChildren*(childrenTuple: untyped): untyped =

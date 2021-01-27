@@ -11,6 +11,7 @@ import ../vec
 import ../transform
 import ../thickness
 import ../rect
+import ../type_name
 
 export transform
 export colors
@@ -229,12 +230,15 @@ type
   TextInput* = ref object of Element
     textInputProps*: TextInputProps
 
+implTypeName(Element)
+implTypeName(TextInput)
+
 proc hash*(element: Element): Hash =
   element.cachedHashOfId
 
 proc `$`*(element: Element): string =
   let debugStr = element.props.debugName.map(x => &": {x}").get("")
-  &"Element({element.id}{debugStr})"
+  &"{element.typeName()}({element.id}{debugStr})"
 
 proc `elementProps`*(self: Element): ElementProps =
   self.props

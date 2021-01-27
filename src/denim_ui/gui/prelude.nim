@@ -3,6 +3,7 @@ import ../vec
 import ../rect
 import ../number
 import ../thickness
+import ../type_name
 import types, element, ../events
 
 import containers/dock, containers/stack, containers/scroll_view, containers/grid
@@ -35,6 +36,7 @@ export element_observables
 export element_utils
 export focus_manager
 export world_position
+export type_name
 
 import dsl/dsl
 export dsl
