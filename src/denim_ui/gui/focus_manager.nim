@@ -34,3 +34,6 @@ proc hasFocus*(self: Element): Observable[bool] =
     proc(f: Option[Element]): bool =
       f.isSome and f.get() == self
   )
+
+proc isFocused*(self: Element): bool =
+  focusedElementSubject.value.isSome and focusedElementSubject.value.get == self
