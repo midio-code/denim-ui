@@ -10,6 +10,9 @@ import colors
 
 # TODO: Move all this stuff to the canvas renderer
 
+# domElement.contains(domElement) polyfill
+proc contains(self: dom.Element, elem: dom.Element): bool {.importjs: "#.contains(@)".}
+
 var nativeContainer: dom.Element = nil
 
 proc getNativeContainer(): dom.Element =
@@ -69,11 +72,9 @@ method onRooted(self: HtmlTextInput): void =
   getNativeContainer().appendChild(self.domElement)
 
 method onUnrooted(self: HtmlTextInput): void =
-  getNativeContainer().removeChild(self.domElement)
-
-# method arrangeOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[float] =
-#   availableSize
-
+  let nativeContainer = getNativeContainer()
+  if nativeContainer.contains(self.domElement):
+    nativeContainer.removeChild(self.domElement)
 
 proc htmlTextInput*(props: ElementProps, textInputProps: TextInputProps): HtmlTextInput =
   let domElement = createHtmlTextInput(textInputProps)
