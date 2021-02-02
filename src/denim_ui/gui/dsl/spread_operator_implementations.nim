@@ -81,13 +81,22 @@ proc bindChildCollection*(self: Element, obs: Observable[seq[Element]]): void =
 proc bindChildCollection*(self: Element, obs: ObservableCollection[Element]): void =
   # TODO: Handle subscriptions for bound child collections
   discard obs.subscribe(
-    proc(added: Element): void =
-      self.addChild(added),
-    proc(removed: Element): void =
-      self.removeChild(removed),
-    proc(initial: seq[Element]): void =
-      for i in initial:
-        self.addChild(i)
+    proc(change: Change[Element]): void =
+      echo "123 Got change, which was: ", change.kind
+      case change.kind:
+        of ChangeKind.Added:
+          echo "Added"
+          self.addChild(change.newItem)
+        of ChangeKind.Removed:
+          echo "Removed"
+          self.removeChild(change.removedItem)
+        of ChangeKind.Changed:
+          echo "Swapping child"
+          self.swapChild(change.oldVal, change.newVal)
+        of ChangeKind.InitialItems:
+          echo "Initial items"
+          for i in change.items:
+            self.addChild(i)
   )
 
 template bindChildCollection*(self: Element, subj: CollectionSubject[Element]): void =

@@ -178,9 +178,12 @@ proc beforeUnroot*(self: Element, task: (Element, () -> void) -> void): void =
   beforeUnrootTasks.mgetorput(self, @[]).add(task)
 
 proc detachFromParent(self: Element): void =
-  let parent = self.parent.get()
-  parent.children.delete(parent.children.find(self))
-  self.parent = none[Element]()
+  if self.parent.isSome:
+    let parent = self.parent.get()
+    let index = parent.children.find(self)
+    if index != -1:
+      parent.children.delete(index)
+    self.parent = none[Element]()
 
 proc finishUnrooting*(self: Element): void =
   if self in isRootedObservables:
@@ -220,6 +223,15 @@ proc addChild*(self: Element, child: Element): void =
 proc removeChild*(self: Element, child: Element): void =
   if child.isChildOf(self):
     child.performUnroot()
+
+proc swapChild*(self: Element, oldChild: Element, newChild: Element): void =
+  let index = self.children.find(oldChild)
+  if index != -1:
+    self.invalidateLayout()
+    self.children[index] = newChild
+    oldChild.performUnroot()
+    newChild.parent = some(self)
+    newChild.dispatchOnRooted()
 
 proc initElement*(
   self: Element,
