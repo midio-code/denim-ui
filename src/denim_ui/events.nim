@@ -22,7 +22,9 @@ proc numListeners*[T](self: EventEmitter[T]): int =
 
 proc emit*[T](self: var EventEmitter[T], data: T): void =
   for toRemove in self.toRemove:
-    self.listeners.delete(self.listeners.find(toRemove))
+    let index = self.listeners.find(toRemove)
+    if index != -1:
+      self.listeners.delete(index)
   self.toRemove = @[]
 
   for toAdd in self.toAdd:
@@ -42,6 +44,8 @@ template createEvent*(name: untyped, T: typedesc): untyped =
   var emitter = emitter[T]()
   proc `on name`*(handler: (T) -> void): void =
     emitter.add(handler)
+  proc `removeFrom name`*(handler: (T) -> void): void =
+    emitter.remove(handler)
   proc `emit name`*(args: T): void =
     emitter.emit(args)
 

@@ -88,7 +88,8 @@ proc bindChildCollection*(self: Element, obs: ObservableCollection[Element]): vo
         of ChangeKind.Removed:
           self.removeChild(change.removedItem)
         of ChangeKind.Changed:
-          self.swapChild(change.oldVal, change.newVal)
+          self.removeChild(change.oldVal)
+          self.addChild(change.newVal)
         of ChangeKind.InitialItems:
           for i in change.items:
             self.addChild(i)

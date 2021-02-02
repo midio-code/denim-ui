@@ -65,9 +65,13 @@ proc transformed(args: WheelArgs, elem: Element): WheelArgs =
 createElementEvent(pointerEntered, PointerArgs, void)
 createElementEvent(pointerExited, PointerArgs, void)
 createElementEvent(pointerMoved, PointerArgs, EventResult)
-createElementEvent(pointerClicked, PointerArgs, EventResult)
 createElementEvent(pointerPressed, PointerArgs, EventResult)
 createElementEvent(pointerReleased, PointerArgs, EventResult)
+
+
+createEvent(pointerMovedGlobal, PointerArgs)
+createEvent(pointerPressedGlobal, PointerArgs)
+createEvent(pointerReleasedGlobal, PointerArgs)
 
 var pointerCapturedEmitter* = emitter[PointerCaptureChangedArgs]()
 var pointerCaptureReleasedEmitter* = emitter[PointerCaptureChangedArgs]()
@@ -295,6 +299,7 @@ proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs): EventResult =
 
 proc dispatchPointerDown*(self: Element, arg: PointerArgs): EventResult =
   elementsHandledPointerDownThisUpdate.clear()
+  emitPointerPressedGlobal(arg)
   self.dispatchPointerDownImpl(arg)
 
 proc transformArgFromRootElem(self: Element, arg: PointerArgs): PointerArgs =
@@ -306,6 +311,7 @@ proc transformArgFromRootElem(self: Element, arg: PointerArgs): PointerArgs =
 proc dispatchPointerUp*(self: Element, arg: PointerArgs): EventResult =
   withCaptureLock()
   elementsHandledPointerUpThisUpdate.clear()
+  emitPointerReleasedGlobal(arg)
   result = self.dispatchPointerUpImpl(arg)
   for capture in pointerCaptures:
     if capture.deleted: continue
@@ -316,6 +322,7 @@ proc dispatchPointerUp*(self: Element, arg: PointerArgs): EventResult =
 proc dispatchPointerMove*(self: Element, arg: PointerArgs): EventResult =
   withCaptureLock()
   elementsHandledPointerMoveThisUpdate.clear()
+  emitPointerMovedGlobal(arg)
   result = self.dispatchPointerMoveImpl(arg)
   for capture in pointerCaptures:
     if capture.deleted: continue

@@ -39,6 +39,7 @@ let instance = initLayoutManager()
 
 proc measure*(self: LayoutManager, elem: Element, availableSize: Vec2[float]): void =
   if not elem.isRooted:
+    echo "WARN: Tried to measure an unrooted element: ", elem.id
     return
 
   let parent = elem.parent
@@ -180,6 +181,7 @@ proc beforeUnroot*(self: Element, task: (Element, () -> void) -> void): void =
 proc detachFromParent(self: Element): void =
   if self.parent.isSome:
     let parent = self.parent.get()
+    parent.invalidateLayout()
     let index = parent.children.find(self)
     if index != -1:
       parent.children.delete(index)
@@ -223,15 +225,6 @@ proc addChild*(self: Element, child: Element): void =
 proc removeChild*(self: Element, child: Element): void =
   if child.isChildOf(self):
     child.performUnroot()
-
-proc swapChild*(self: Element, oldChild: Element, newChild: Element): void =
-  let index = self.children.find(oldChild)
-  if index != -1:
-    self.invalidateLayout()
-    self.children[index] = newChild
-    oldChild.performUnroot()
-    newChild.parent = some(self)
-    newChild.dispatchOnRooted()
 
 proc initElement*(
   self: Element,
@@ -468,7 +461,8 @@ method render*(self: Element): Option[Primitive] {.base.} =
     echo "Not rooted"
     return none[Primitive]()
   if not self.isArrangeValid:
-    echo "Arrange not valid"
+    echo "Arrange not valid for: ", self.typeName()
+    echo "   parent: ", self.parent.get().typeName()
     return none[Primitive]()
 
   result = some(
