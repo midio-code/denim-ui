@@ -82,19 +82,14 @@ proc bindChildCollection*(self: Element, obs: ObservableCollection[Element]): vo
   # TODO: Handle subscriptions for bound child collections
   discard obs.subscribe(
     proc(change: Change[Element]): void =
-      echo "123 Got change, which was: ", change.kind
       case change.kind:
         of ChangeKind.Added:
-          echo "Added"
           self.addChild(change.newItem)
         of ChangeKind.Removed:
-          echo "Removed"
           self.removeChild(change.removedItem)
         of ChangeKind.Changed:
-          echo "Swapping child"
           self.swapChild(change.oldVal, change.newVal)
         of ChangeKind.InitialItems:
-          echo "Initial items"
           for i in change.items:
             self.addChild(i)
   )
