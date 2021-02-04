@@ -8,8 +8,12 @@ import ../vec
 import ../transform
 
 type
+
+  PointerCaptureChangedArgs* = object
+
   EventResult* = object
     handled: bool
+
 proc handled*(): EventResult =
   EventResult(handled: true)
 proc unhandled*(): EventResult =
@@ -82,7 +86,7 @@ proc pointerCaptured*(self: Element): bool =
 proc releasePointer*(self: Element) =
   if pointerCapturedTo == self:
     pointerCapturedTo = none[Element]()
-    pointerCaptureReleasedEmitter.emit(self)
+    pointerCaptureReleasedEmitter.emit(PointerCaptureChangedArgs())
 
 proc hasPointerCapture*(self: Element): bool =
   pointerCapturedTo.map(x => x == self).get(false)
@@ -95,7 +99,7 @@ proc capturePointer*(self: Element): void =
     echo "WARN: Tried to capture pointer that was already captured by someone else!"
 
   pointerCapturedTo = some(self)
-  pointerCapturedEmitter.emit(self)
+  pointerCapturedEmitter.emit(PointerCaptureChangedArgs())
 
 proc pointerArgs*(element: Element, pos: Vec2[float], pointerIndex: PointerIndex): PointerArgs =
   PointerArgs(sender: element, actualPos: pos, viewportPos: pos, pointerIndex: pointerIndex)

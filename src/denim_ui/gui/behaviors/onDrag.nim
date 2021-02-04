@@ -4,6 +4,7 @@ import rx_nim
 import ../behaviors
 import ../../events
 import ../../vec
+import ../../guid
 import ../element
 import ../element_events
 
@@ -12,28 +13,24 @@ proc onDrag*(
   pointerIndex: PointerIndex = PointerIndex.Primary,
   canStartDrag: Observable[bool] = behaviorSubject(true)
 ): Behavior =
-  var pastPos = vec2(0.0, 0.0)
-  var canCurrentlyStartDrag = true
-  var pressed = false
 
   Behavior(
     added: some(
       proc(element: Element): void =
+        let id = genGuid()
+
+        var pastPos = vec2(0.0, 0.0)
+        var canCurrentlyStartDrag = true
+        var pressed = false
+
         discard canStartDrag.subscribe( # TODO: Dispose subscription
           proc(value: bool) =
             canCurrentlyStartDrag = value
         )
 
-        element.onPointerMoved(
-          proc(arg: PointerArgs): EventResult =
-            if pressed:
-              if not element.pointerCapturedBySomeoneElse:
-                element.capturePointer()
-              if element.hasPointerCapture():
-                let diff = arg.actualPos.sub(pastPos)
-                moved(diff)
-                pastPos = arg.actualPos
-        )
+        proc onLostCapture() =
+          pressed = false
+
         element.onPointerPressed(
           proc(arg: PointerArgs): EventResult =
             if canCurrentlyStartDrag and arg.pointerIndex == pointerIndex:
@@ -41,11 +38,18 @@ proc onDrag*(
               pressed = true
               return handled()
         )
-
+        element.onPointerMoved(
+          proc(arg: PointerArgs): EventResult =
+            if pressed:
+              element.capturePointer()
+              let diff = arg.actualPos.sub(pastPos)
+              moved(diff)
+              pastPos = arg.actualPos
+        )
         element.onPointerReleased(
           proc(arg: PointerArgs): EventResult =
             if arg.pointerIndex == pointerIndex:
-              arg.sender.releasePointer()
+              element.releasePointer()
               pressed = false
         )
     )
