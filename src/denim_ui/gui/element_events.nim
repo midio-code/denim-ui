@@ -1,4 +1,4 @@
-import sugar, tables, options, sets, sequtils, strformat
+import sugar, tables, options, sets, strformat
 import types
 import element
 import rx_nim
@@ -6,7 +6,6 @@ import ../events
 import ../utils
 import ../vec
 import ../transform
-import ../guid
 
 type
   EventResult* = object
@@ -75,124 +74,28 @@ var pointerCaptureReleasedEmitter* = emitter[PointerCaptureChangedArgs]()
 var keyDownEmitter* = emitter[KeyArgs]()
 var keyUpEmitter* = emitter[KeyArgs]()
 
-type
-  CaptureKind* {.pure.} = enum Soft, Hard
-  Capture* = ref object
-    id*: Guid
-    element*: Element
-    kind*: CaptureKind
-    onLost*: proc(): void
-    deleted*: bool
-
-proc `$`*(capture: Capture): string =
-  &"(id: {capture.id}, element: {capture.element}, kind: {capture.kind})"
-
-var pointerCaptures = newSeq[Capture]()
-var pointerCapturesToAdd = newSeq[Capture]()
-var captureLockDepth: int = 0
-
-proc flushPointerCaptureChanges() =
-  pointerCaptures.keepIf(x => not x.deleted)
-  for capture in pointerCapturesToAdd:
-    pointerCaptures.add(capture)
-  pointerCapturesToAdd.setLen(0)
-
-proc pushCaptureLock() =
-  captureLockDepth += 1
-
-proc popCaptureLock() =
-  captureLockDepth -= 1
-  assert(captureLockDepth >= 0)
-  if captureLockDepth == 0:
-    flushPointerCaptureChanges()
-
-template withCaptureLock() =
-  pushCaptureLock()
-  defer: popCaptureLock()
-
-proc hasPointerCapture*(self: Element): bool =
-  for capture in pointerCaptures:
-    if capture.element == self and not capture.deleted:
-      return true
-
-proc getPointerCapture(id: Guid): Option[Capture] =
-  for capture in pointerCaptures:
-    if capture.id == id and not capture.deleted:
-      return some(capture)
-
-  return none(Capture)
-
-proc delete(capture: Capture) =
-  capture.deleted = true
+var pointerCapturedTo = none[Element]()
 
 proc pointerCaptured*(self: Element): bool =
-  self.hasPointerCapture()
+  pointerCapturedTo.isSome() and pointerCapturedTo.get() == self
 
 proc releasePointer*(self: Element) =
-  withCaptureLock()
-  for capture in pointerCaptures:
-    if capture.element == self and not capture.deleted:
-      capture.delete()
+  if pointerCapturedTo == self:
+    pointerCapturedTo = none[Element]()
+    pointerCaptureReleasedEmitter.emit(self)
 
-proc releasePointer*(self: Element, id: Guid) =
-  withCaptureLock()
-  for capture in pointerCaptures:
-    if capture.element == self and capture.id == id and not capture.deleted:
-      capture.delete()
+proc hasPointerCapture*(self: Element): bool =
+  pointerCapturedTo.map(x => x == self).get(false)
 
-proc isCaptureAllowed(capture: Capture): bool =
-  withCaptureLock()
+proc pointerCapturedBySomeoneElse*(self: Element): bool =
+  pointerCapturedTo.isSome() and pointerCapturedTo.get() != self
 
-  for prevCapture in pointerCaptures:
-    if prevCapture.deleted or prevCapture.id == capture.id:
-      continue
-    if prevCapture.kind == CaptureKind.Hard:
-      return false
+proc capturePointer*(self: Element): void =
+  if pointerCapturedBySomeoneElse(self):
+    echo "WARN: Tried to capture pointer that was already captured by someone else!"
 
-  return true
-
-proc noop(): void = discard
-
-## Attempts to capture pointer input.
-## Returns true if the capture was successful, false otherwise.
-proc capturePointer*(
-  element: Element,
-  id: Guid,
-  captureKind = CaptureKind.Hard,
-  onLost: proc(): void = noop
-): bool =
-  withCaptureLock()
-
-  let existingCapture = getPointerCapture(id)
-  let (capture, isNew) =
-    if existingCapture.isSome():
-      (existingCapture.get(), false)
-    else:
-      let newCapture = Capture(
-        id: id,
-        element: element,
-        kind: captureKind,
-        onLost: onLost
-      )
-      (newCapture, true)
-
-  if not isCaptureAllowed(capture):
-    return false
-
-  if isNew:
-    pointerCapturesToAdd.add(capture)
-  else:
-    assert(capture.element == element, "Cannot change element of existing capture")
-    capture.kind = captureKind
-    capture.onLost = onLost
-
-  for prevCapture in pointerCaptures:
-    if capture == prevCapture: continue
-    if capture.kind == CaptureKind.Hard:
-      prevCapture.onLost()
-      prevCapture.delete()
-
-  return true
+  pointerCapturedTo = some(self)
+  pointerCapturedEmitter.emit(self)
 
 proc pointerArgs*(element: Element, pos: Vec2[float], pointerIndex: PointerIndex): PointerArgs =
   PointerArgs(sender: element, actualPos: pos, viewportPos: pos, pointerIndex: pointerIndex)
@@ -292,33 +195,30 @@ proc dispatchPointerDown*(self: Element, arg: PointerArgs): EventResult =
   emitPointerPressedGlobal(arg)
   self.dispatchPointerDownImpl(arg)
 
+proc dispatchPointerUp*(self: Element, arg: PointerArgs): EventResult =
+  elementsHandledPointerUpThisUpdate.clear()
+  emitPointerReleasedGlobal(arg)
+  result = self.dispatchPointerUpImpl(arg)
+  if pointerCapturedTo.isSome():
+    let capturedElem = pointerCapturedTo.get()
+    if not elementsHandledPointerUpThisUpdate.contains(capturedElem):
+      discard capturedElem.dispatchPointerUpImpl(arg)
+
 proc transformArgFromRootElem(self: Element, arg: PointerArgs): PointerArgs =
   var a = arg
   if self.parent.isSome():
     a = self.parent.get().transformArgFromRootElem(arg)
   a.transformed(self)
 
-proc dispatchPointerUp*(self: Element, arg: PointerArgs): EventResult =
-  withCaptureLock()
-  elementsHandledPointerUpThisUpdate.clear()
-  emitPointerReleasedGlobal(arg)
-  result = self.dispatchPointerUpImpl(arg)
-  for capture in pointerCaptures:
-    if capture.deleted: continue
-    if not elementsHandledPointerUpThisUpdate.contains(capture.element):
-      var transformedArg = capture.element.transformArgFromRootElem(arg)
-      discard capture.element.dispatchPointerUpImpl(transformedArg)
-
 proc dispatchPointerMove*(self: Element, arg: PointerArgs): EventResult =
-  withCaptureLock()
   elementsHandledPointerMoveThisUpdate.clear()
   emitPointerMovedGlobal(arg)
   result = self.dispatchPointerMoveImpl(arg)
-  for capture in pointerCaptures:
-    if capture.deleted: continue
-    if not elementsHandledPointerMoveThisUpdate.contains(capture.element):
-      var transformedArg = capture.element.transformArgFromRootElem(arg)
-      discard capture.element.dispatchPointerMoveImpl(transformedArg)
+  if pointerCapturedTo.isSome():
+    let capturedElem = pointerCapturedTo.get()
+    if not elementsHandledPointerMoveThisUpdate.contains(capturedElem):
+      var transformedArg = capturedElem.transformArgFromRootElem(arg)
+      discard capturedElem.dispatchPointerMoveImpl(transformedArg)
 
 createElementEvent(wheel, WheelArgs, EventResult)
 

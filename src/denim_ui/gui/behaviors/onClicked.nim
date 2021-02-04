@@ -3,7 +3,6 @@ import options
 import tables
 import ../behaviors
 import ../../events
-import ../../guid
 import ../element
 import ../element_events
 
