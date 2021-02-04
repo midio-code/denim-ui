@@ -41,7 +41,7 @@ proc onDrag*(
         element.onPointerMoved(
           proc(arg: PointerArgs): EventResult =
             if pressed:
-              element.capturePointer()
+              element.capturePointer(some(onLostCapture))
               let diff = arg.actualPos.sub(pastPos)
               moved(diff)
               pastPos = arg.actualPos

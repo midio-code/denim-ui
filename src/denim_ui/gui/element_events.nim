@@ -78,27 +78,33 @@ var pointerCaptureReleasedEmitter* = emitter[PointerCaptureChangedArgs]()
 var keyDownEmitter* = emitter[KeyArgs]()
 var keyUpEmitter* = emitter[KeyArgs]()
 
-var pointerCapturedTo = none[Element]()
+type
+  PointerCapture = tuple[owner: Element, lostCapture: Option[() -> void]]
+
+var pointerCapturedTo = none[PointerCapture]()
 
 proc pointerCaptured*(self: Element): bool =
-  pointerCapturedTo.isSome() and pointerCapturedTo.get() == self
+  pointerCapturedTo.isSome() and pointerCapturedTo.get.owner == self
 
 proc releasePointer*(self: Element) =
-  if pointerCapturedTo == self:
-    pointerCapturedTo = none[Element]()
+  if pointerCapturedTo.isSome and pointerCapturedTo.get.owner == self:
+    let lostCaptureCallback = pointerCapturedTo.get.lostCapture
+    pointerCapturedTo = none[PointerCapture]()
     pointerCaptureReleasedEmitter.emit(PointerCaptureChangedArgs())
+    if lostCaptureCallback.isSome:
+      lostCaptureCallback.get()()
 
 proc hasPointerCapture*(self: Element): bool =
-  pointerCapturedTo.map(x => x == self).get(false)
+  pointerCapturedTo.map(x => x.owner == self).get(false)
 
 proc pointerCapturedBySomeoneElse*(self: Element): bool =
-  pointerCapturedTo.isSome() and pointerCapturedTo.get() != self
+  pointerCapturedTo.isSome and pointerCapturedTo.get.owner != self
 
-proc capturePointer*(self: Element): void =
+proc capturePointer*(self: Element, lostCapture: Option[() -> void] = none[() -> void]()): void =
   if pointerCapturedBySomeoneElse(self):
     echo "WARN: Tried to capture pointer that was already captured by someone else!"
 
-  pointerCapturedTo = some(self)
+  pointerCapturedTo = some((self, lostCapture))
   pointerCapturedEmitter.emit(PointerCaptureChangedArgs())
 
 proc pointerArgs*(element: Element, pos: Vec2[float], pointerIndex: PointerIndex): PointerArgs =
@@ -204,7 +210,7 @@ proc dispatchPointerUp*(self: Element, arg: PointerArgs): EventResult =
   emitPointerReleasedGlobal(arg)
   result = self.dispatchPointerUpImpl(arg)
   if pointerCapturedTo.isSome():
-    let capturedElem = pointerCapturedTo.get()
+    let capturedElem = pointerCapturedTo.get.owner
     if not elementsHandledPointerUpThisUpdate.contains(capturedElem):
       discard capturedElem.dispatchPointerUpImpl(arg)
 
@@ -218,8 +224,8 @@ proc dispatchPointerMove*(self: Element, arg: PointerArgs): EventResult =
   elementsHandledPointerMoveThisUpdate.clear()
   emitPointerMovedGlobal(arg)
   result = self.dispatchPointerMoveImpl(arg)
-  if pointerCapturedTo.isSome():
-    let capturedElem = pointerCapturedTo.get()
+  if pointerCapturedTo.isSome:
+    let capturedElem = pointerCapturedTo.get.owner
     if not elementsHandledPointerMoveThisUpdate.contains(capturedElem):
       var transformedArg = capturedElem.transformArgFromRootElem(arg)
       discard capturedElem.dispatchPointerMoveImpl(transformedArg)

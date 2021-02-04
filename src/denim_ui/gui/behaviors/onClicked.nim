@@ -17,7 +17,6 @@ proc onClicked*(handler: ClickedHandler): Behavior =
     added: some(
       proc(element: Element): void =
         if not clickedHandlers.hasKey(element):
-          let id = genGuid()
           var pressed = false
 
           proc onLostCapture() =
@@ -25,8 +24,9 @@ proc onClicked*(handler: ClickedHandler): Behavior =
 
           element.onPointerPressed(
             proc(arg: PointerArgs): EventResult =
-              element.capturePointer()
-              pressed = true
+              if arg.pointerIndex == PointerIndex.Primary and not element.pointerCapturedBySomeoneElse():
+                element.capturePointer(some(onLostCapture))
+                pressed = true
           )
           element.onPointerReleased(
             proc(args: PointerArgs): EventResult =
