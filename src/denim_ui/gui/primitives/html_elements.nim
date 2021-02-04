@@ -20,9 +20,6 @@ proc getNativeContainer(): dom.Element =
     nativeContainer = getElementById("nativeContainer")
   nativeContainer
 
-# TODO: Get the correct scaling here
-let hardCodedScale = 2.0
-
 type
   HtmlTextInput* = ref object of TextInput
     domElement*: dom.Element
@@ -52,14 +49,13 @@ method measureOverride(self: HtmlTextInput, availableSize: Vec2[float]): Vec2[fl
 # TODO: We are kind of misusing render here. Create a way to react to layouts instead of using render.
 method render(self: HtmlTextInput): Option[Primitive] =
   let props = self.textInputProps
-  let positionScale = vec2(hardCodedScale) # TODO: Get correct scaling
   let bounds = self.worldBoundsExpensive()
-  let fontSize = props.fontSize.get(12.0) * 2.0
-  let pos = bounds.pos * positionScale
+  let fontSize = props.fontSize.get(12.0)
+  let pos = bounds.pos
   self.domElement.style.transform = &"translate({pos.x}px,{pos.y}px)"
   self.domElement.style.background = "none"
-  self.domElement.style.width = &"{bounds.width * hardCodedScale}px"
-  self.domElement.style.height = &"{bounds.height * hardCodedScale}px"
+  self.domElement.style.width = &"{bounds.width}px"
+  self.domElement.style.height = &"{bounds.height}px"
   self.domElement.style.padding = &"0 0 0 0"
   self.domElement.style.margin = &"0 0 0 0"
   self.domElement.style.setProperty("font-size", &"{fontSize}px")
