@@ -42,8 +42,6 @@ type
     deltaZ*: float
     unit*: WheelDeltaUnit
 
-  PointerCaptureChangedArgs* = object
-
 proc transformed(args: PointerArgs, elem: Element): PointerArgs =
   PointerArgs(
     sender: args.sender,
@@ -67,7 +65,6 @@ createElementEvent(pointerExited, PointerArgs, void)
 createElementEvent(pointerMoved, PointerArgs, EventResult)
 createElementEvent(pointerPressed, PointerArgs, EventResult)
 createElementEvent(pointerReleased, PointerArgs, EventResult)
-
 
 createEvent(pointerMovedGlobal, PointerArgs)
 createEvent(pointerPressedGlobal, PointerArgs)
@@ -95,17 +92,10 @@ var pointerCapturesToAdd = newSeq[Capture]()
 var captureLockDepth: int = 0
 
 proc flushPointerCaptureChanges() =
-  let prevCount = pointerCaptures.len
   pointerCaptures.keepIf(x => not x.deleted)
   for capture in pointerCapturesToAdd:
     pointerCaptures.add(capture)
   pointerCapturesToAdd.setLen(0)
-  let newCount = pointerCaptures.len
-
-  if prevCount == 0 and newCount > 0:
-    pointerCapturedEmitter.emit(PointerCaptureChangedArgs())
-  elif prevCount > 0 and newCount == 0:
-    pointerCaptureReleasedEmitter.emit(PointerCaptureChangedArgs())
 
 proc pushCaptureLock() =
   captureLockDepth += 1
