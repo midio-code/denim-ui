@@ -35,6 +35,14 @@ proc initLayoutManager*(): LayoutManager =
 proc log*(self: Element, message: string): void =
   echo &"{self.id}: {message}"
 
+proc ancestorsDebugString*(self: Element): string =
+  var ancestors = ""
+  var parent = self.parent
+  while parent.isSome:
+    ancestors = ancestors & " <- " & parent.get.typeName
+    parent = parent.get.parent
+  self.typeName & " <- " & ancestors
+
 let instance = initLayoutManager()
 
 proc measure*(self: LayoutManager, elem: Element, availableSize: Vec2[float]): void =
