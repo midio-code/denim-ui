@@ -13,7 +13,7 @@ type
   PointerCaptureChangedArgs* = object
 
   EventResult* = object
-    handledBy*: seq[Guid]
+    handledBy: seq[Guid]
 
 proc `&`(self: EventResult, other: EventResult): EventResult =
   EventResult(
@@ -22,6 +22,9 @@ proc `&`(self: EventResult, other: EventResult): EventResult =
 
 proc addHandledBy*(self: var EventResult, id: Guid): void =
   self.handledBy.add(id)
+
+proc isHandledBy*(self: EventResult, id: Guid): bool =
+  id in self.handledBy
 
 type
   KeyArgs* = ref object
@@ -97,32 +100,32 @@ var keyDownEmitter* = emitter[KeyArgs]()
 var keyUpEmitter* = emitter[KeyArgs]()
 
 type
-  PointerCapture = tuple[owner: Element, id: Guid, lostCapture: Option[() -> void]]
+  PointerCapture = tuple[owner: Element, lostCapture: Option[() -> void]]
 
 var pointerCapturedTo = none[PointerCapture]()
 
 proc pointerCaptured*(self: Element): bool =
   pointerCapturedTo.isSome() and pointerCapturedTo.get.owner == self
 
-proc releasePointer*(self: Element, id: Guid = self.id) =
-  if pointerCapturedTo.isSome and pointerCapturedTo.get.owner == self and pointerCapturedTo.get.id == id:
+proc releasePointer*(self: Element) =
+  if pointerCapturedTo.isSome and pointerCapturedTo.get.owner == self:
     let lostCaptureCallback = pointerCapturedTo.get.lostCapture
     pointerCapturedTo = none[PointerCapture]()
     pointerCaptureReleasedEmitter.emit(PointerCaptureChangedArgs())
     if lostCaptureCallback.isSome:
       lostCaptureCallback.get()()
 
-proc hasPointerCapture*(self: Element, id: Guid = self.id): bool =
-  pointerCapturedTo.map(x => x.owner == self and x.id == id).get(false)
+proc hasPointerCapture*(self: Element): bool =
+  pointerCapturedTo.map(x => x.owner == self).get(false)
 
-proc pointerCapturedBySomeoneElse*(self: Element, id: Guid = self.id): bool =
-  pointerCapturedTo.isSome and pointerCapturedTo.get.owner != self and pointerCapturedTo.get.id == id
+proc pointerCapturedBySomeoneElse*(self: Element): bool =
+  pointerCapturedTo.isSome and pointerCapturedTo.get.owner != self
 
-proc capturePointer*(self: Element, id: Guid = self.id, lostCapture: Option[() -> void] = none[() -> void]()): void =
+proc capturePointer*(self: Element, lostCapture: Option[() -> void] = none[() -> void]()): void =
   if pointerCapturedBySomeoneElse(self):
     echo "WARN: Tried to capture pointer that was already captured by someone else!"
 
-  pointerCapturedTo = some((self, id, lostCapture))
+  pointerCapturedTo = some((self, lostCapture))
   pointerCapturedEmitter.emit(PointerCaptureChangedArgs())
 
 proc pointerArgs*(element: Element, pos: Vec2[float], pointerIndex: PointerIndex): PointerArgs =
@@ -144,7 +147,7 @@ proc dispatchPointerDownImpl*(self: Element, arg: PointerArgs, res: var EventRes
   if not self.isPointInside(transformedArg.actualPos):
     return
 
-  for child in self.childrenSortedByZIndex:
+  for child in self.childrenSortedByZIndex.reverse:
     child.dispatchPointerDownImpl(transformedArg, res)
 
   if self.isPointInside(transformedArg.actualPos):
@@ -161,7 +164,7 @@ proc dispatchPointerUpImpl*(self: Element, arg: PointerArgs, res: var EventResul
   if not self.isPointInside(transformedArg.actualPos) and not self.hasPointerCapture:
     return
 
-  for child in self.childrenSortedByZIndex:
+  for child in self.childrenSortedByZIndex.reverse:
     child.dispatchPointerUpImpl(transformedArg, res)
 
   if (self.isPointInside(transformedArg.actualPos) or self.pointerCaptured()):
@@ -195,7 +198,7 @@ proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs, res: var EventResu
   if pointInside or self.hasPointerCapture:
     if self.pointerInsideLastUpdate == false:
       self.pointerEntered(transformedArg, res)
-    for child in self.childrenSortedByZIndex:
+    for child in self.childrenSortedByZIndex.reverse:
       child.dispatchPointerMoveImpl(transformedArg, res)
     elementsHandledPointerMoveThisUpdate.incl(self)
     for handler in self.pointerMovedHandlers:

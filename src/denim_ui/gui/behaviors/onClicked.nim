@@ -31,11 +31,11 @@ proc onClicked*(handler: ClickedHandler): Behavior =
           )
           element.onPointerReleased(
             proc(args: PointerArgs, res: var EventResult): void =
-              if pressed and not element.pointerCapturedBySomeoneElse:
-                pressed = false
+              if pressed and not res.isHandledBy(behaviorId):
                 for handler in clickedHandlers[element]:
                   handler(element, args)
                 res.addHandledBy(behaviorId)
+              pressed = false
           )
 
         clickedHandlers.mgetorput(element, @[]).add(handler)
