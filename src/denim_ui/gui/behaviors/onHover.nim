@@ -10,11 +10,11 @@ proc onHover*(entered: (Element) -> void, exited: (Element) -> void): Behavior =
     added: some(
       proc(element: Element):void =
         element.onPointerEntered(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs, res: var EventResult): void =
             entered(element)
         )
         element.onPointerExited(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs, res: var EventResult): void =
             exited(element)
         )
     )
@@ -25,7 +25,7 @@ proc onHover*(entered: (Element) -> void): Behavior =
     added: some(
       proc(element: Element):void =
         element.onPointerEntered(
-          proc(arg: PointerArgs): void =
+          proc(arg: PointerArgs, res: var EventResult): void =
             entered(element)
         )
     )

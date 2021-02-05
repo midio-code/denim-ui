@@ -8,6 +8,8 @@ import ../../guid
 import ../element
 import ../element_events
 
+let behaviorId = genGuid()
+
 proc onDrag*(
   moved: (Vec2[float] -> void),
   pointerIndex: PointerIndex = PointerIndex.Primary,
@@ -32,24 +34,24 @@ proc onDrag*(
           pressed = false
 
         element.onPointerPressed(
-          proc(arg: PointerArgs): EventResult =
+          proc(arg: PointerArgs, res: var EventResult): void =
             if canCurrentlyStartDrag and arg.pointerIndex == pointerIndex:
               pastPos = arg.actualPos
               pressed = true
-              return handled()
         )
         element.onPointerMoved(
-          proc(arg: PointerArgs): EventResult =
+          proc(arg: PointerArgs, res: var EventResult): void =
             if pressed:
-              element.capturePointer(some(onLostCapture))
+              element.capturePointer(behaviorId, some(onLostCapture))
               let diff = arg.actualPos.sub(pastPos)
               moved(diff)
               pastPos = arg.actualPos
+              res.addHandledBy(behaviorId)
         )
         element.onPointerReleased(
-          proc(arg: PointerArgs): EventResult =
+          proc(arg: PointerArgs, res: var EventResult): void =
             if arg.pointerIndex == pointerIndex:
-              element.releasePointer()
+              element.releasePointer(behaviorId)
               pressed = false
         )
     )

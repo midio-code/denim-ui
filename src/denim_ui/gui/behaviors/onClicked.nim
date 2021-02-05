@@ -10,6 +10,8 @@ import ../../events
 type
   ClickedHandler* = (Element, PointerArgs) -> void
 
+let behaviorId = genGuid()
+
 var clickedHandlers = initTable[Element, seq[ClickedHandler]]()
 
 proc onClicked*(handler: ClickedHandler): Behavior =
@@ -23,19 +25,17 @@ proc onClicked*(handler: ClickedHandler): Behavior =
             pressed = false
 
           element.onPointerPressed(
-            proc(arg: PointerArgs): EventResult =
-              if arg.pointerIndex == PointerIndex.Primary and not element.pointerCapturedBySomeoneElse():
-                element.capturePointer(some(onLostCapture))
+            proc(arg: PointerArgs, res: var EventResult): void =
+              if arg.pointerIndex == PointerIndex.Primary:
                 pressed = true
           )
           element.onPointerReleased(
-            proc(args: PointerArgs): EventResult =
-              if pressed and element.hasPointerCapture:
+            proc(args: PointerArgs, res: var EventResult): void =
+              if pressed and not element.pointerCapturedBySomeoneElse:
                 pressed = false
-                element.capturePointer()
-                element.releasePointer()
                 for handler in clickedHandlers[element]:
                   handler(element, args)
+                res.addHandledBy(behaviorId)
           )
 
         clickedHandlers.mgetorput(element, @[]).add(handler)
