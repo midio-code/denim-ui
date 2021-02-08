@@ -247,3 +247,28 @@ proc `$`*(element: Element): string =
 
 proc `elementProps`*(self: Element): ElementProps =
   self.props
+
+type
+  KeyArgs* = ref object
+    key*: string
+    keyCode*: int
+
+  PointerArgs* = ref object
+    # TODO: Remove sender from pointer args?
+    sender*: Element
+    ## The original position of the pointer in the viewport
+    viewportPos*: Point
+    ## The actual position of the pointer transformed to the context of the currently visited element
+    actualPos*: Point # TODO: Might move this somewhere else as it is only meaningful in the context of "visiting an element" (as we do in out pointer events for example)
+    pointerIndex*: PointerIndex
+
+  WheelDeltaUnit* = enum
+    Pixel, Line, Page
+
+  WheelArgs* = object
+    actualPos*: Point
+    viewportPos*: Point
+    deltaX*: float
+    deltaY*: float
+    deltaZ*: float
+    unit*: WheelDeltaUnit

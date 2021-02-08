@@ -3,6 +3,8 @@ import types
 import element
 import rx_nim
 import focus_manager
+import key_bindings
+import types
 import ../events
 import ../guid
 import ../utils
@@ -27,30 +29,6 @@ proc addHandledBy*(self: var EventResult, id: Guid): void =
 proc isHandledBy*(self: EventResult, id: Guid): bool =
   id in self.handledBy
 
-type
-  KeyArgs* = ref object
-    key*: string
-    keyCode*: int
-
-  PointerArgs* = ref object
-    # TODO: Remove sender from pointer args?
-    sender*: Element
-    ## The original position of the pointer in the viewport
-    viewportPos*: Point
-    ## The actual position of the pointer transformed to the context of the currently visited element
-    actualPos*: Point # TODO: Might move this somewhere else as it is only meaningful in the context of "visiting an element" (as we do in out pointer events for example)
-    pointerIndex*: PointerIndex
-
-  WheelDeltaUnit* = enum
-    Pixel, Line, Page
-
-  WheelArgs* = object
-    actualPos*: Point
-    viewportPos*: Point
-    deltaX*: float
-    deltaY*: float
-    deltaZ*: float
-    unit*: WheelDeltaUnit
 
 proc transformed(args: PointerArgs, elem: Element): PointerArgs =
   PointerArgs(
@@ -106,11 +84,13 @@ var pointerCaptureReleasedEmitter* = emitter[PointerCaptureChangedArgs]()
 
 proc dispatchKeyDown*(args: KeyArgs): EventResult =
   emitKeyDownGlobal(args)
+
   let focusedElem = getCurrentlyFocusedElement()
   if focusedElem.isSome:
     result = EventResult(handledBy: @[])
     for handler in focusedElem.get.keyDownHandlers:
       handler(args, result)
+    focusedElem.get.dispatchKeyBindings(args)
 
 proc dispatchKeyUp*(args: KeyArgs): EventResult =
   emitKeyUpGlobal(args)
