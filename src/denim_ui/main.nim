@@ -122,7 +122,7 @@ proc dispatchWheel*(x: float, y: float, deltaX: float, deltaY: float, deltaZ: fl
   ))
 
 proc dispatchKeyDown*(keyCode: int, key: string): void {.exportc.} =
-  keyDownEmitter.emit(
+  discard dispatchKeyDown(
     KeyArgs(
       key: key, # TODO: We seem to be gettin the wrong key
       keyCode: keyCode
@@ -130,7 +130,7 @@ proc dispatchKeyDown*(keyCode: int, key: string): void {.exportc.} =
   )
 
 proc dispatchKeyUp*(keyCode: int, key: string): void {.exportc.} =
-  keyUpEmitter.emit(
+  discard dispatchKeyUp(
     KeyArgs(
       key: key, # TODO: We seem to be gettin the wrong key
       keyCode: keyCode

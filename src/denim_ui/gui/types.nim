@@ -236,6 +236,11 @@ implTypeName(TextInput)
 proc hash*(element: Element): Hash =
   element.cachedHashOfId
 
+proc `==`*(self: Element, other: Element): bool =
+  if isNil(self) or isNil(other):
+    return true
+  self.id == other.id
+
 proc `$`*(element: Element): string =
   let debugStr = element.props.debugName.map(x => &": {x}").get("")
   &"{element.typeName()}({element.id}{debugStr})"

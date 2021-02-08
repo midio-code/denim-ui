@@ -5,6 +5,12 @@ import rx_nim
 
 let focusedElementSubject = behaviorSubject[Option[(Element, Option[() -> void])]]()
 
+proc getCurrentlyFocusedElement*(): Option[Element] =
+  if focusedElementSubject.value.isSome:
+    some(focusedElementSubject.value.get[0])
+  else:
+    none[Element]()
+
 proc nextSibling(self: Element): Option[Element] =
   if self.parent.isSome:
     let parent = self.parent.get()
@@ -25,8 +31,6 @@ proc focusNext*(): void =
       focusedElementSubject <- some((next.get(), none[() -> void]()))
     else:
       focusedElementSubject <- none[(Element, Option[() -> void])]()
-
-
 
 proc clearFocus*(): void =
   if focusedElementSubject.value.isSome and focusedElementSubject.value.get[1].isSome:

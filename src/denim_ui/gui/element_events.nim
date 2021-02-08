@@ -2,6 +2,7 @@ import sugar, tables, options, sets, strformat
 import types
 import element
 import rx_nim
+import focus_manager
 import ../events
 import ../guid
 import ../utils
@@ -94,10 +95,30 @@ createEvent(pointerMovedGlobal, PointerArgs)
 createEvent(pointerPressedGlobal, PointerArgs)
 createEvent(pointerReleasedGlobal, PointerArgs)
 
+createEvent(keyDownGlobal, KeyArgs)
+createEvent(keyUpGlobal, KeyArgs)
+
+createElementEvent(keyDown, KeyArgs)
+createElementEvent(keyUp, KeyArgs)
+
 var pointerCapturedEmitter* = emitter[PointerCaptureChangedArgs]()
 var pointerCaptureReleasedEmitter* = emitter[PointerCaptureChangedArgs]()
-var keyDownEmitter* = emitter[KeyArgs]()
-var keyUpEmitter* = emitter[KeyArgs]()
+
+proc dispatchKeyDown*(args: KeyArgs): EventResult =
+  emitKeyDownGlobal(args)
+  let focusedElem = getCurrentlyFocusedElement()
+  if focusedElem.isSome:
+    result = EventResult(handledBy: @[])
+    for handler in focusedElem.get.keyDownHandlers:
+      handler(args, result)
+
+proc dispatchKeyUp*(args: KeyArgs): EventResult =
+  emitKeyUpGlobal(args)
+  let focusedElem = getCurrentlyFocusedElement()
+  if focusedElem.isSome:
+    result = EventResult(handledBy: @[])
+    for handler in focusedElem.get.keyUpHandlers:
+      handler(args, result)
 
 type
   PointerCapture = tuple[owner: Element, lostCapture: Option[() -> void]]

@@ -12,7 +12,7 @@ proc onKeyDown*(
   Behavior(
     added: some(
       proc(element: Element): void =
-        keyDownEmitter.add(
+        onKeyDownGlobal(
           proc(event: KeyArgs) =
             if event.key == key:
               handler(element, event)
@@ -27,7 +27,7 @@ proc onKeyUp*(
   Behavior(
     added: some(
       proc(element: Element): void =
-        keyUpEmitter.add(
+        onKeyUpGlobal(
           proc(event: KeyArgs) =
             if event.key == key:
               handler(element, event)
