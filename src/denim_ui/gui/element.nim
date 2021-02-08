@@ -407,8 +407,10 @@ proc measureCore(self: Element, availableSize: Vec2[float]): Vec2[float] =
   result = vec2(width, height).inflate(margin).nonNegative()
 
 proc measure*(self: Element, availableSize: Vec2[float]): void =
-  if not self.isRooted:
-    return
+  # TODO: We need to be able to measure unrooted elements sometimes;
+  # figure out if this can cause trouble (commenting out for now)
+  # if not self.isRooted:
+  #   return
 
   if availableSize.x == NaN or availableSize.y == NaN:
     raise newException(Exception, "Cannot call Measure using a size with NaN values.")
