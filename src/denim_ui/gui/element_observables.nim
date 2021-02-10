@@ -76,15 +76,14 @@ proc observeSide*(self: Element, side: Side): Observable[Point] =
   )
 
 proc observeSideRelativeTo*(self: Element, side: Side, other: Element): Observable[Point] =
-  self.observeWorldPosition().map(
-    proc(p: Point): Point =
-      if other.isNil:
-        p
-      elif self.bounds.isNone:
-        p.relativeTo(other)
-      else:
-        p.relativeTo(other).mapPointToSide(self.bounds.get(), side)
-  )
+  if isNil(other):
+    raise newException(Exception, "Tried to observe side of an Element that was nil")
+  self.observeWorldPosition()
+    .combineLatest(
+      self.observeBounds(),
+      proc(p: Point, bounds: Bounds): Point =
+        p.relativeTo(other).mapPointToSide(bounds, side)
+    )
 
 
 proc observeHalfWidth*(self: Element): Observable[float] =
