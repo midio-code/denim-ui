@@ -237,8 +237,10 @@ proc hash*(element: Element): Hash =
   element.cachedHashOfId
 
 proc `==`*(self: Element, other: Element): bool =
-  if isNil(self) or isNil(other):
+  if isNil(self) and isNil(other):
     return true
+  if isNil(self) or isNil(other):
+    return false
   self.id == other.id
 
 proc `$`*(element: Element): string =
