@@ -90,7 +90,6 @@ proc dispatchKeyDown*(args: KeyArgs): EventResult =
     result = EventResult(handledBy: @[])
     for handler in focusedElem.get.keyDownHandlers:
       handler(args, result)
-    focusedElem.get.dispatchKeyBindings(args)
 
 proc dispatchKeyUp*(args: KeyArgs): EventResult =
   emitKeyUpGlobal(args)
@@ -99,6 +98,7 @@ proc dispatchKeyUp*(args: KeyArgs): EventResult =
     result = EventResult(handledBy: @[])
     for handler in focusedElem.get.keyUpHandlers:
       handler(args, result)
+    focusedElem.get.dispatchKeyBindings(args)
 
 type
   PointerCapture = tuple[owner: Element, lostCapture: Option[() -> void]]
