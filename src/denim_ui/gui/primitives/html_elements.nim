@@ -66,6 +66,8 @@ method render(self: HtmlTextInput): Option[Primitive] =
 
 method onRooted(self: HtmlTextInput): void =
   getNativeContainer().appendChild(self.domElement)
+  if self.textInputProps.focusWhenRooted.get(true):
+    self.domElement.focus()
 
 method onUnrooted(self: HtmlTextInput): void =
   let nativeContainer = getNativeContainer()
