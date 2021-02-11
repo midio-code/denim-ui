@@ -13,7 +13,7 @@ import primitives/text, primitives/circle, primitives/rectangle, primitives/path
 
 import behaviors, tag
 import data_binding, element_events
-import ./behaviors/[onClicked,onHover,onDrag,onPointer,onWheel,onKey]
+import ./behaviors/[onClicked,onHover,onDrag,onPointer,onWheel,onKey,onObservable]
 import animation/animation
 import animation/element_animation
 import ../utils
@@ -28,7 +28,7 @@ import rx_nim
 export options, vec, rect, number
 export types, element, events, dock, stack, rectangle, path, text, scroll_view, grid
 export circle, behaviors, tag, data_binding, element_events
-export onClicked, onHover, onDrag, onPointer, onWheel, onKey
+export onClicked, onHover, onDrag, onPointer, onWheel, onKey, onObservable
 export rx_nim
 export animation
 export element_animation
