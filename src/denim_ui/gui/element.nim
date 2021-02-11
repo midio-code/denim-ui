@@ -75,7 +75,7 @@ proc arrange*(self: LayoutManager, elem: Element, rect: Bounds): void =
     elif elem.previousArrange.isSome():
       elem.arrange(elem.previousArrange.get())
     else:
-      echo "Tried to arrange element without a desired size"
+      echo "Tried to arrange element without a desired size."
 
 proc performOutstandingMeasure(self: LayoutManager, availableSize: Vec2[float]): void =
   while self.toMeasure.len() > 0:
@@ -189,11 +189,11 @@ proc beforeUnroot*(self: Element, task: (Element, () -> void) -> void): void =
 proc detachFromParent(self: Element): void =
   if self.parent.isSome:
     let parent = self.parent.get()
-    parent.invalidateLayout()
     let index = parent.children.find(self)
     if index != -1:
       parent.children.delete(index)
     self.parent = none[Element]()
+    parent.invalidateLayout()
 
 proc finishUnrooting*(self: Element): void =
   if self in isRootedObservables:

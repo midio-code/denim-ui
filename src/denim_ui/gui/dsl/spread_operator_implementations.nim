@@ -59,7 +59,13 @@ proc bindChildCollection*(self: Element, subj: Subject[seq[Element]]): void =
       # not in this version of the clist.
       for id in elementsManagedByThisBinding:
         if not newVal.any((x) => x.id == id):
-          self.children.deleteWhere((x) => x.id == id)
+          var toRemove: seq[Element] = @[]
+          for child in self.children:
+            if child.id == id:
+              toRemove.add(child)
+          for child in toRemove:
+            self.removeChild(child)
+
           toRemoveFromManagementList.add(id)
       # Remove the items we are no longer managing
       for id in toRemoveFromManagementList:
