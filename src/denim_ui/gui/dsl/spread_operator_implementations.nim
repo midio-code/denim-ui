@@ -50,7 +50,7 @@ proc bindChildCollection*(self: Element, items: seq[Element]): void =
 proc bindChildCollection*(self: Element, subj: Subject[seq[Element]]): void =
   ## TODO: Keep the correct ordering of the children even with multiple child lists spread
 
-  var elementsManagedByThisBinding = initHashSet[Guid]()
+  var elementsManagedByThisBinding = newSeq[Guid]()
   ## TODO: Dispose of collection subscription !!!!!!!!
   discard subj.subscribe(
     proc(newVal: seq[Element]): void =
@@ -63,14 +63,13 @@ proc bindChildCollection*(self: Element, subj: Subject[seq[Element]]): void =
           toRemoveFromManagementList.add(id)
       # Remove the items we are no longer managing
       for id in toRemoveFromManagementList:
-        elementsManagedByThisBinding.excl(id)
-
+        elementsManagedByThisBinding.delete(elementsManagedByThisBinding.find(id))
 
       # Add the new elements
       for elem in newVal:
         let elemId = elem.id
         if not self.children.any((x) => x.id == elemId):
-          elementsManagedByThisBinding.incl(elemId)
+          elementsManagedByThisBinding.add(elemId)
           self.addChild(elem)
     )
 
