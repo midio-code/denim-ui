@@ -5,23 +5,20 @@ import primitives/text
 import ../utils
 import ../vec
 
-when defined(js):
-  import primitives/html_elements
+var nativeElementsSingleton*: NativeElements = nil
 
-  proc createTextInput*(props: (ElementProps, TextInputProps), children: seq[Element] = @[]): TextInput =
-    let (elemProps, textInputProps) = props
-    htmlTextInput(elemProps, textInputProps)
+proc createTextInput*(props: (ElementProps, TextInputProps), children: seq[Element] = @[]): TextInput =
+  nativeElementsSingleton.createTextInput(props, children)
 
-else:
-  proc createTextInput*(props: (ElementProps, TextInputProps), children: seq[Element] = @[]): TextInput =
-    let (elemProps, textProps) = props
-    cast[TextInput](createText(
-      (
-        elemProps,
-        TextProps(
-          text: textProps.text,
-          fontSize: textProps.fontSize,
-          color: textProps.color,
-        )
-      )
-    ))
+  # proc createTextInput*(props: (ElementProps, TextInputProps), children: seq[Element] = @[]): TextInput =
+  #   let (elemProps, textProps) = props
+  #   cast[TextInput](createText(
+  #     (
+  #       elemProps,
+  #       TextProps(
+  #         text: textProps.text,
+  #         fontSize: textProps.fontSize,
+  #         color: textProps.color,
+  #       )
+  #     )
+  #   ))

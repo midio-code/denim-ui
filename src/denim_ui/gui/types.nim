@@ -231,6 +231,11 @@ type
   TextInput* = ref object of Element
     textInputProps*: TextInputProps
 
+type
+  NativeElements* = ref object
+    createTextInput*: ((ElementProps, TextInputProps), seq[Element]) -> TextInput
+
+
 implTypeName(Element)
 implTypeName(TextInput)
 
