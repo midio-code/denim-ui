@@ -58,7 +58,8 @@ proc bindChildCollection*(self: Element, subj: Subject[seq[Element]]): void =
       # Delete items which we manage, but which are
       # not in this version of the clist.
       for id in elementsManagedByThisBinding:
-        if not newVal.any((x) => x.id == id):
+        let capturedId = id # NOTE: Need a variable here to not violate memory safety (as reported by the compiler)
+        if not newVal.any((x) => x.id == capturedId):
           var toRemove: seq[Element] = @[]
           for child in self.children:
             if child.id == id:
