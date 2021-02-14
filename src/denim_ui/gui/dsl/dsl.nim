@@ -323,7 +323,7 @@ macro expandSyntax*(propTypes: untyped, constructor: untyped, attributesAndChild
     )
   )
 
-template element_type(identifier: untyped, propTypes: untyped, constructor: untyped): untyped =
+template element_type*(identifier: untyped, propTypes: untyped, constructor: untyped): untyped =
   template `identifier`*(attributesAndChildren: varargs[untyped]): untyped =
     expandSyntax(
       propTypes,
