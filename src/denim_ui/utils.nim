@@ -44,13 +44,6 @@ iterator reverse*[T](a: seq[T]): T {.inline.} =
         yield a[i]
         dec(i)
 
-proc hash*[T](self: Option[T]): Hash =
-  if self.isSome:
-    let x = self.get()
-    x.hash
-  else:
-    0
-
 proc `*`*(a: Color, val: float): Color =
   let (r,g,b) = a.extractRgb()
   let rNew = int(float(r) * val)
