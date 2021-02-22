@@ -77,16 +77,19 @@ proc playToEndThenBack*[T](self: Animator[T], callback: (() -> void) = nil): voi
 proc map*[T,R](self: Animator[T], mapper: (T -> R)): Animator[R] =
   Animator[R](play: self.play, value: self.value.map(mapper))
 
-proc animate*[T,R](self: Observable[T], interpolator: (T,T,float) -> R, duration: float): Observable[R] =
+proc animate*[T](self: Observable[T], interpolator: (T,T,float) -> T, duration: float): Observable[T] =
   let animator = createAnimator(duration)
   var prevValue: Option[T] = none[T]()
   var currentValue: Option[T] = none[T]()
-  Observable[R](
-    onSubscribe: proc(subscriber: Subscriber[R]): Subscription =
+  Observable[T](
+    onSubscribe: proc(subscriber: Subscriber[T]): Subscription =
+      var lastEmittedValue = none[T]()
       let sub1 = animator.value.subscribe(
         proc(progress: float): void =
           if prevValue.isSome() and currentValue.isSome():
-            subscriber.onNext(interpolator(prevValue.get(), currentValue.get(), progress))
+            let newVal = interpolator(prevValue.get(), currentValue.get(), progress)
+            lastEmittedValue = some(newVal)
+            subscriber.onNext(newVal)
       )
       let sub2 = self.subscribe(
         proc(val: T): void =
@@ -94,6 +97,9 @@ proc animate*[T,R](self: Observable[T], interpolator: (T,T,float) -> R, duration
             # NOTE: This makes sure the animated value is initialized correctly
             prevValue = some(val)
             subscriber.onNext(interpolator(val, val, 0.0))
+
+          if lastEmittedValue.isSome:
+            prevValue = some(lastEmittedValue.get)
           currentValue = some(val)
           animator.reset()
           animator.start(

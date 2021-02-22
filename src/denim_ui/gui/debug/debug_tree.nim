@@ -65,10 +65,10 @@ component DebugTreeImpl(tree: Element, filterText: Observable[string]):
       let visibility = toggledByUser.choose(Visibility.Visible, Visibility.Collapsed)
       let arrowRotation = toggledByUser
         .choose(PI / 2.0, 0.0)
-        .animate(
-          proc(a: float, b: float, t: float): seq[Transform] =
-            @[rotation(lerp(a,b,t))],
-          200.0
+        .animate(lerp, 200.0)
+        .map(
+          proc(val: float): seq[Transform] =
+            @[rotation(val)]
         )
       let highlightStrokeWidth = filterText.map(
         proc(text: string): float =
