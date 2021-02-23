@@ -145,7 +145,9 @@ proc init*(
   hitTestPath: (Element, PathProps, Point) -> bool,
   render: () -> Element,
   nativeElements: NativeElements,
+  setCursorHandler: (Cursor) -> void
 ): Context {.exportc.} =
+  setCursor = setCursorHandler
   text.measureText = measureTextFunction
   path.hitTestPath = hitTestPath
   nativeElementsSingleton = nativeElements

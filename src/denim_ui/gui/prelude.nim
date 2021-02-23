@@ -6,6 +6,8 @@ import ../thickness
 import ../type_name
 import types, element, ../events
 
+import cursor
+
 import key_bindings
 
 import containers/dock, containers/stack, containers/scroll_view, containers/grid
@@ -40,6 +42,7 @@ export focus_manager
 export world_position
 export type_name
 export key_bindings
+export cursor
 
 import dsl/dsl
 export dsl
