@@ -29,6 +29,8 @@ proc addHandledBy*(self: var EventResult, id: Guid): void =
 proc isHandledBy*(self: EventResult, id: Guid): bool =
   id in self.handledBy
 
+proc isHandled*(self: EventResult): bool =
+  self.handledBy.len > 0
 
 proc transformed(args: PointerArgs, elem: Element): PointerArgs =
   PointerArgs(
