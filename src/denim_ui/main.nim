@@ -5,7 +5,6 @@ import gui/primitives/path
 import gui/native_element
 import gui/debug_draw
 import gui/update_manager
-import gui/debug/debug_tree
 import std/monotimes
 import gui/element_bounds_changed_event
 

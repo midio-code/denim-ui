@@ -13,7 +13,7 @@ let behaviorId = genGuid()
 proc onDrag*(
   moved: (Vec2[float] -> void),
   pointerIndex: PointerIndex = PointerIndex.Primary,
-  canStartDrag: Observable[bool] = behaviorSubject(true)
+  canStartDrag: Observable[bool] = behaviorSubject(true).source
 ): Behavior =
 
   Behavior(

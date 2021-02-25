@@ -4,7 +4,6 @@ import ./denim_ui/main
 # exposing the measureText function pointer
 import ./denim_ui/gui/primitives/text
 import ./denim_ui/guid
-import ./denim_ui/gui/debug/debug_tree
 
 export prelude
 export init

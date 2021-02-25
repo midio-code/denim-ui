@@ -160,7 +160,7 @@ type RootState* {.pure.} = enum
 let isRootedObservables = newTable[Element, Subject[RootState]]()
 
 proc observeIsRooted*(self: Element): Observable[RootState] =
-  isRootedObservables.mgetorput(self, behaviorSubject(if self.isRooted: RootState.Rooted else: RootState.Unrooted))
+  isRootedObservables.mgetorput(self, behaviorSubject(if self.isRooted: RootState.Rooted else: RootState.Unrooted)).source
 
 method onRooted*(self: Element): void {.base.} =
   discard

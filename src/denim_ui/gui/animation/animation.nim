@@ -54,7 +54,7 @@ proc createAnimator*(duration: float): Animator[float] =
     time = 0.0
     playState = PlayState.Stopped
 
-  Animator[float](play: play, value: state, reset: reset)
+  Animator[float](play: play, value: state.source, reset: reset)
 
 template createAnimator*[T](duration: float, `from`: T, to: T): Animator[T] =
   createAnimator(duration).map((x: float) => lerp(`from`, to, x))

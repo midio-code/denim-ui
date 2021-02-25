@@ -103,3 +103,4 @@ proc bindChildCollection*(self: Element, obs: ObservableCollection[Element]): vo
 
 template bindChildCollection*(self: Element, subj: CollectionSubject[Element]): void =
   self.bindChildCollection(subj.source)
+
