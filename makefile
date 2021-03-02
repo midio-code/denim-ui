@@ -9,6 +9,7 @@ test: test_dsl
 	nim c -r ./tests/t_element_observables.nim
 	nim c -r ./tests/t_element_events.nim
 	nim c -r ./tests/t_guid.nim
+	nim c -r ./tests/t_element_bounds.nim
 .PHONY: test_dsl test
 
 docs:

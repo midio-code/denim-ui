@@ -1,20 +1,32 @@
 import options
+import sequtils
+import sugar
 import vec
 import rect
 import mat
 import math
+import strformat
 
 type
-  TransformKind* = enum
+  TransformKind* {.pure.} = enum
     Scaling, Translation, Rotation
   Transform* {.requiresInit.} = ref object
     case kind*: TransformKind
-    of Scaling:
+    of TransformKind.Scaling:
       scale*: Vec2[float]
-    of Translation:
+    of TransformKind.Translation:
       translation*: Vec2[float]
-    of Rotation:
+    of TransformKind.Rotation:
       rotation*: float
+
+proc `$`*(self: Transform): string =
+  case self.kind:
+    of TransformKind.Scaling:
+      &"Scaling: {self.scale}"
+    of TransformKind.Translation:
+      &"Translation: {self.translation}"
+    of TransformKind.Rotation:
+      &"Rotation: {self.rotation}"
 
 proc transformInv*(point: Vec2[float], trans: Transform): Vec2[float] =
   case trans.kind:
@@ -73,3 +85,27 @@ proc toMatrix*(self: Transform): Mat3 =
       mat.translation(self.translation)
     of TransformKind.Rotation:
       mat.rotation(self.rotation)
+
+proc toMatrix*(self: seq[Transform]): Mat3 =
+  var res = mat.identity()
+  for t in self:
+    res = res * t.toMatrix()
+  return res
+
+proc onlyTranslations*(self: seq[Transform]): seq[Transform] =
+  self.filter((x: Transform) => x.kind == TransformKind.Translation)
+
+proc exceptTranslations*(self: seq[Transform]): seq[Transform] =
+  self.filter((x: Transform) => x.kind != TransformKind.Translation)
+
+proc onlyScaling*(self: seq[Transform]): seq[Transform] =
+  self.filter((x: Transform) => x.kind == TransformKind.Scaling)
+
+proc exceptScaling*(self: seq[Transform]): seq[Transform] =
+  self.filter((x: Transform) => x.kind != TransformKind.Scaling)
+
+proc onlyRotation*(self: seq[Transform]): seq[Transform] =
+  self.filter((x: Transform) => x.kind == TransformKind.Rotation)
+
+proc exceptRotation*(self: seq[Transform]): seq[Transform] =
+  self.filter((x: Transform) => x.kind != TransformKind.Rotation)

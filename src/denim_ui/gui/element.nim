@@ -507,17 +507,19 @@ proc transformFromRootElem*(self: Point, elem: Element): Point =
 
 
 proc worldBoundsExpensive*(elem: Element): tuple[bounds: Bounds, scale: Vec2[float]] =
-  var currentElem = elem
-  var transforms: seq[Transform] = transform.translation(currentElem.bounds.get().pos) & currentElem.props.transform.get(@[])
-
-  while currentElem.parent.isSome():
-    currentElem = currentElem.parent.get()
-    transforms = transform.translation(currentElem.bounds.get().pos) & currentElem.props.transform.get(@[]) & transforms
-
 
   var transformMatrix = mat.identity()
-  for t in transforms:
-    transformMatrix = transformMatrix * t.toMatrix()
+  var currentElem = some(elem)
+  while currentElem.isSome():
+    let e = currentElem.get
+    if e == elem:
+      # NOTE: We don't add the x,y coords of the first element as it is taken care
+      # of when we apply the transformation matrix
+      transformMatrix = e.props.transform.get(@[]).toMatrix * transformMatrix
+    else:
+      transformMatrix = transform.translation(e.bounds.get().pos).toMatrix * e.props.transform.get(@[]).toMatrix * transformMatrix
+    currentElem = e.parent
+
   var b = elem.bounds.get
   let tl = transformMatrix * vec2(b.left, b.top)
   let br = transformMatrix * vec2(b.right, b.bottom)

@@ -11,7 +11,7 @@ template expectLayoutWithoutPerforming(self: Element, tests: varargs[Rect[float]
 
 template expectLayout(self: Element, tests: varargs[Rect[float]]): untyped =
   self.dispatchOnRooted()
-  invalidateWorldPositionsCache()
+  self.recalculateWorldPositionsCache()
   self.invalidateLayout()
   performOutstandingLayoutsAndMeasures(rect(0.0, 0.0, 500.0, 500.0))
   var i = 0

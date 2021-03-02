@@ -35,7 +35,7 @@ proc onDrag*(
 
         element.onPointerPressed(
           proc(arg: PointerArgs, res: var EventResult): void =
-            if canCurrentlyStartDrag and arg.pointerIndex == pointerIndex:
+            if canCurrentlyStartDrag and arg.pointerIndex == pointerIndex and not element.pointerCapturedBySomeoneElse():
               pastPos = arg.actualPos
               pressed = true
         )

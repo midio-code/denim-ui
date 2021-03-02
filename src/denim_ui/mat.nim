@@ -16,6 +16,12 @@ proc newMat3(): Mat3 =
     data: [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   )
 
+proc `$`*(self: Mat3): string =
+  for y in 0..2:
+    for x in 0..2:
+      result &= $self.data[x * 3 + y] & "  "
+    result &= "\n"
+
 func identity*(): Mat3 =
   result = newMat3()
   result[0] = 1
