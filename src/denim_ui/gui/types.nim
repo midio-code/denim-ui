@@ -77,8 +77,19 @@ type
     stroke*: Option[Color]
     fill*: Option[Color]
 
+  LineDash* = seq[int]
+
+  LineCap* {.pure.} =  enum
+    Square, Butt, Round
+
+  LineJoin* {.pure.} = enum
+    Miter, Bevel, Round
+
   StrokeInfo* = ref object
     width*: float
+    lineDash*: Option[LineDash]
+    lineCap*: Option[LineCap]
+    lineJoin*: Option[LineJoin]
 
   TextInfo* = ref object
     text*: string

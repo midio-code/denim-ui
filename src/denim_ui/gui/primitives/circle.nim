@@ -13,6 +13,9 @@ type
     radius*: float
     stroke*: Option[Color]
     strokeWidth*: Option[float]
+    lineDash*: Option[LineDash]
+    lineCap*: Option[LineCap]
+    lineJoin*: Option[LineJoin]
 
   Circle* = ref object of Element
     circleProps*: CircleProps
@@ -25,7 +28,12 @@ method render(self: Circle): Option[Primitive] =
   some(
     self.circle(
       some(ColorInfo(fill: props.color, stroke: props.stroke)),
-      some(StrokeInfo(width: props.strokeWidth.get(1))),
+      some(StrokeInfo(
+        width: props.strokeWidth.get(1.0),
+        lineDash: props.lineDash,
+        lineCap: props.lineCap,
+        lineJoin: props.lineJoin
+      )),
       worldPos,
       props.radius
     )

@@ -15,6 +15,9 @@ type
     radius*: Option[CornerRadius]
     stroke*: Option[Color]
     strokeWidth*: Option[float]
+    lineDash*: Option[LineDash]
+    lineCap*: Option[LineCap]
+    lineJoin*: Option[LineJoin]
 
 implTypeName(RectangleElem)
 
@@ -29,7 +32,12 @@ method render(self: RectangleElem): Option[Primitive] =
   some(
     self.createPath(
       some(ColorInfo(fill: props.color, stroke: props.stroke)),
-      some(StrokeInfo(width: props.strokeWidth.get(0.0))),
+      some(StrokeInfo(
+        width: props.strokeWidth.get(1.0),
+        lineDash: props.lineDash,
+        lineCap: props.lineCap,
+        lineJoin: props.lineJoin
+      )),
       moveTo(radius[0], 0),
       lineTo(width - radius[1], 0),
       quadraticCurveTo(width, 0, width, radius[1]),

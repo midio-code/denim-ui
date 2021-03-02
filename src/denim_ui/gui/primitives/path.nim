@@ -17,6 +17,9 @@ type
     fill*: Option[Color]
     stroke*: Option[Color]
     strokeWidth*: Option[float]
+    lineDash*: Option[LineDash]
+    lineCap*: Option[LineCap]
+    lineJoin*: Option[LineJoin]
 
     # TODO: Chang type so one must and can only supply either data or stringData
     data*: Option[seq[PathSegment]] # TODO: Not sure we should expose this type here, but will deal with that later
@@ -37,7 +40,12 @@ method render(self: Path): Option[Primitive] =
     some(
       self.createPath(
         some(ColorInfo(fill: props.fill, stroke: props.stroke)),
-        some(StrokeInfo(width: props.strokeWidth.get(1.0))),
+        some(StrokeInfo(
+          width: props.strokeWidth.get(1.0),
+          lineDash: props.lineDash,
+          lineCap: props.lineCap,
+          lineJoin: props.lineJoin
+        )),
         self.pathProps.stringData.get,
       )
     )
@@ -45,7 +53,12 @@ method render(self: Path): Option[Primitive] =
     some(
       self.createPath(
         some(ColorInfo(fill: props.fill, stroke: props.stroke)),
-        some(StrokeInfo(width: props.strokeWidth.get(1.0))),
+        some(StrokeInfo(
+          width: props.strokeWidth.get(1.0),
+          lineDash: props.lineDash,
+          lineCap: props.lineCap,
+          lineJoin: props.lineJoin
+        )),
         self.pathProps.data.get,
       )
     )
