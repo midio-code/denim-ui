@@ -12,6 +12,7 @@ type
 
   RectangleProps* = ref object
     color*: Option[Color]
+    alpha*: Option[byte]
     radius*: Option[CornerRadius]
     stroke*: Option[Color]
     strokeWidth*: Option[float]
@@ -31,7 +32,11 @@ method render(self: RectangleElem): Option[Primitive] =
 
   some(
     self.createPath(
-      some(ColorInfo(fill: props.color, stroke: props.stroke)),
+      some(ColorInfo(
+        fill: props.color,
+        stroke: props.stroke,
+        alpha: props.alpha,
+      )),
       some(StrokeInfo(
         width: props.strokeWidth.get(1.0),
         lineDash: props.lineDash,

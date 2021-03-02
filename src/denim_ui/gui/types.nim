@@ -76,6 +76,7 @@ type
   ColorInfo* = ref object
     stroke*: Option[Color]
     fill*: Option[Color]
+    alpha*: Option[byte]
 
   LineDash* = seq[int]
 
