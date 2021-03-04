@@ -47,7 +47,7 @@ proc hasFocus*(self: Element): Observable[bool] =
   focusedElement.map(
     proc(f: Option[(Element, Option[() -> void])]): bool =
       f.isSome and f.get()[0] == self
-  )
+  ).distinctUntilChanged
 
 proc isFocused*(self: Element): bool =
   focusedElementSubject.value.isSome and focusedElementSubject.value.get[0] == self

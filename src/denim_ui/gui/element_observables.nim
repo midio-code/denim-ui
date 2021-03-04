@@ -66,7 +66,6 @@ proc mapPointToSide(point: Point, bounds: Bounds, side: Side): Point =
     of Vertical.Bottom: size.y
   point + vec2(xOffset, yOffset)
 
-
 proc observeSide*(self: Element, side: Side): Observable[Point] =
   self.observeWorldPosition().map(
     proc(p: Vec2[float]): Point =
@@ -84,7 +83,6 @@ proc observeSideRelativeTo*(self: Element, side: Side, other: Element): Observab
       proc(p: Point, bounds: Bounds): Point =
         p.relativeTo(other).mapPointToSide(bounds, side)
     )
-
 
 proc observeHalfWidth*(self: Element): Observable[float] =
   self.observeBounds().map((b: Bounds) => b.size.x / 2.0)
