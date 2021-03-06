@@ -1,6 +1,10 @@
 test_dsl:
 	nim c -r ./tests/t_gui_dsl.nim
 
+test_dsl2:
+	nim c -r ./tests/t_dsl2.nim
+.PHONY: test_dsl2
+
 test: test_dsl
 	nim c -r ./tests/t_rect.nim
 	nim c -r ./tests/t_event_to_observable.nim
