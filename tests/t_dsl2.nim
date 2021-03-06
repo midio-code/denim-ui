@@ -56,7 +56,7 @@ testAssignmentAndBinding()
 macro testParsingComponent_1(): untyped =
   let nodes = parseExpr(
     """
-Foo:
+Foo of Grid:
   prop bar: int = 123
   field baz: seq[int] = @[]
 
@@ -75,6 +75,7 @@ Foo:
   let comp = parseComponent(nodes)
   echo "Comp: ", comp.repr
   assert(comp.name.strVal == "Foo")
+  assert(comp.parentComp.get.strVal == "Grid")
 
   assert(comp.props.len == 1)
   assert(comp.props[0].item.name.strVal == "bar")

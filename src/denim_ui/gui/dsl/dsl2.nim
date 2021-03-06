@@ -187,11 +187,20 @@ proc emit(self: Component): NimNode =
   Ident"foo"
 
 proc parseComponent*(args: NimNode): Component =
-  echo "Parsing component: ", args.treeRepr
+  echo "Parsing component: \n", args.treeRepr
   if args[0].kind == nnkIdent:
-    let componentName = args[0]
+    var compName: NimNode
+    var parentComp: Option[NimNode]
+    var compBody: NimNode
+    if args.kind == nnkInfix:
+      assert(args[0].strVal == "of")
+      compName = args[1]
+      parentComp = some(args[2])
+      compBody = args[3]
+    else:
+      compName = args[0]
+      compBody = args[1]
 
-    let compBody = args[1]
     compBody.expectKind(nnkStmtList)
 
     var props: seq[Prop] = @[]
@@ -212,7 +221,9 @@ proc parseComponent*(args: NimNode): Component =
         body.add(stmt)
 
     return Component(
-      name: componentName,
+      name: compName,
+      parentComp: parentComp,
+
       props: props,
       fields: fields,
       children: children,
