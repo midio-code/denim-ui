@@ -45,3 +45,48 @@ macro testPropWithNameAndDefaultValue(): untyped =
   assert(p.defaultValue.get.kind == nnkIntLit)
 
 testPropWithNameAndDefaultValue()
+
+macro testAssignmentAndBinding(): untyped =
+  let asgn = parseExpr("width <- 10")
+  echo "Asgn: ", asgn.treeRepr
+
+testAssignmentAndBinding()
+
+
+macro testParsingComponent_1(): untyped =
+  let nodes = parseExpr(
+    """
+Foo:
+  prop bar: int = 123
+  field baz: seq[int] = @[]
+
+  let foo = "testing"
+
+  width = 123
+
+  discard x.subscribe(
+    () => echo("Testing")
+  )
+
+  panel():
+    rectangle()
+"""
+  )
+  let comp = parseComponent(nodes)
+  echo "Comp: ", comp.repr
+  assert(comp.name.strVal == "Foo")
+
+  assert(comp.props.len == 1)
+  assert(comp.props[0].item.name.strVal == "bar")
+
+  assert(comp.fields.len == 1)
+  assert(comp.fields[0].item.name.strVal == "baz")
+
+  assert(comp.assignments.len == 1)
+
+  assert(comp.body.len == 2)
+
+  assert(comp.children.len == 1)
+
+
+testParsingComponent_1()

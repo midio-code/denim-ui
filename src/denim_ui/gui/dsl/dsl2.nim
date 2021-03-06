@@ -74,10 +74,21 @@ type
   Field* = object
     item*: ComponentItem
 
+  AssignmentKind = enum
+    Normal, Binding
+  Assignment* = object
+    kind*: AssignmentKind
+    leftHand*: NimNode
+    rightHand*: NimNode
+
   Component* = object
     name*: NimNode
     parentComp*: Option[NimNode]
+    fields*: seq[Field]
     props*: seq[Prop]
+    children*: seq[NimNode]
+    body*: seq[NimNode]
+    assignments*: seq[NimNode]
 
 proc componentName*(self: Component): string =
   result = self.name.strVal
@@ -150,36 +161,68 @@ proc parseComponentItem*(arg: NimNode, keyword: string): ComponentItem =
     else:
       error("Error parsing prop")
 
+proc isPropNode(node: NimNode): bool =
+  (node.kind == nnkCommand and node[0].strVal == "prop") or (node.kind == nnkAsgn and node[0].kind == nnkCommand and node[0][0].strVal == "prop")
+
+proc isFieldNode(node: NimNode): bool =
+  (node.kind == nnkCommand and node[0].strVal == "field") or (node.kind == nnkAsgn and node[0].kind == nnkCommand and node[0][0].strVal == "field")
+
+proc isContentNode(node: NimNode): bool =
+  node.kind == nnkCall
+
+proc isAssignmentNode(node: NimNode): bool =
+  node.kind == nnkAsgn
+
 proc isPropIdent(node: NimNode): bool =
   node.kind == nnkIdent and node.strVal == "prop"
 
 proc parseProp*(node: NimNode): Prop =
+  echo "Parsing prop: ", node.treeRepr
   Prop(item: parseComponentItem(node, "prop"))
 
 proc parseField*(node: NimNode): Field =
   Field(item: parseComponentItem(node, "field"))
 
-
 proc emit(self: Component): NimNode =
   Ident"foo"
+
+proc parseComponent*(args: NimNode): Component =
+  echo "Parsing component: ", args.treeRepr
+  if args[0].kind == nnkIdent:
+    let componentName = args[0]
+
+    let compBody = args[1]
+    compBody.expectKind(nnkStmtList)
+
+    var props: seq[Prop] = @[]
+    var fields: seq[Field] = @[]
+    var children: seq[NimNode] = @[]
+    var assignments: seq[NimNode] = @[]
+    var body: seq[NimNode] = @[]
+    for stmt in compBody:
+      if isPropNode(stmt):
+        props.add(parseProp(stmt))
+      elif isFieldNode(stmt):
+        fields.add(parseField(stmt))
+      elif isContentNode(stmt):
+        children.add(stmt)
+      elif isAssignmentNode(stmt):
+        assignments.add(stmt)
+      else:
+        body.add(stmt)
+
+    return Component(
+      name: componentName,
+      props: props,
+      fields: fields,
+      children: children,
+      assignments: assignments,
+      body: body
+    )
 
 macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: untyped, body: untyped): untyped =
   echo "Parsing comp: ", args.treeRepr
   if args[0].kind == nnkIdent:
-    let componentName = args[0]
-
-    let body = args[1]
-    body.expectKind(nnkStmtList)
-
-    var props: seq[Prop] = @[]
-    for stmt in body:
-      if stmt[0].isPropIdent:
-        props.add(parseProp(stmt))
-
-    return Component(
-      name: componentName,
-      props: props
-    ).emit()
-
+    return parseComponent(args).emit()
   else:
     error("Multiple components per component declaration is not supported yet")
