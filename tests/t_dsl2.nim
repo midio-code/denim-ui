@@ -13,10 +13,11 @@ macro testPropWithNameAndType(): untyped =
   let prop = parseExpr("prop bi: int")
   echo "Prop stmt: ", prop.treeRepr
   let parsed = parseProp(prop)
-  assert(parsed.name.strVal == "bi")
-  assert(parsed.type.isSome)
-  assert(parsed.type.get.kind == nnkIdent)
-  assert(parsed.defaultValue.isNone)
+  let p = parsed.item
+  assert(p.name.strVal == "bi")
+  assert(p.type.isSome)
+  assert(p.type.get.kind == nnkIdent)
+  assert(p.defaultValue.isNone)
 
 testPropWithNameAndType()
 
@@ -24,11 +25,12 @@ macro testPropWithNameAndTypeAndDefaultValue(): untyped =
   let prop = parseExpr("prop bi: int = 123")
   echo "Prop stmt: ", prop.treeRepr
   let parsed = parseProp(prop)
-  assert(parsed.name.strVal == "bi")
-  assert(parsed.type.isSome)
-  assert(parsed.type.get.kind == nnkIdent)
-  assert(parsed.defaultValue.isSome)
-  assert(parsed.defaultValue.get.kind == nnkIntLit)
+  let p = parsed.item
+  assert(p.name.strVal == "bi")
+  assert(p.type.isSome)
+  assert(p.type.get.kind == nnkIdent)
+  assert(p.defaultValue.isSome)
+  assert(p.defaultValue.get.kind == nnkIntLit)
 
 testPropWithNameAndTypeAndDefaultValue()
 
@@ -36,9 +38,10 @@ macro testPropWithNameAndDefaultValue(): untyped =
   let prop = parseExpr("prop bi = 123")
   echo "Prop stmt: ", prop.treeRepr
   let parsed = parseProp(prop)
-  assert(parsed.name.strVal == "bi")
-  assert(parsed.type.isNone)
-  assert(parsed.defaultValue.isSome)
-  assert(parsed.defaultValue.get.kind == nnkIntLit)
+  let p = parsed.item
+  assert(p.name.strVal == "bi")
+  assert(p.type.isNone)
+  assert(p.defaultValue.isSome)
+  assert(p.defaultValue.get.kind == nnkIntLit)
 
 testPropWithNameAndDefaultValue()

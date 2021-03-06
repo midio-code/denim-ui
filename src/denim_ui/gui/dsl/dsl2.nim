@@ -63,10 +63,16 @@ import strformat
 #   )
 
 type
-  Prop* = object
+  ComponentItem* = object
     name*: NimNode
     `type`*: Option[NimNode]
     defaultValue*: Option[NimNode]
+
+  Prop* = object
+    item*: ComponentItem
+
+  Field* = object
+    item*: ComponentItem
 
   Component* = object
     name*: NimNode
@@ -93,13 +99,12 @@ proc propsTypeName*(self: Component): string =
 proc propsTypeIdent*(self: Component): NimNode =
   Ident(self.propsTypeName)
 
-proc parseProp*(arg: NimNode): Prop =
-  echo "Parsing prop: ", arg.treeRepr
+proc parseComponentItem*(arg: NimNode, keyword: string): ComponentItem =
   case arg.kind:
     of nnkCommand:
       # prop foo: int = 123
       # prop bar: string
-      assert(arg[0].strVal == "prop")
+      assert(arg[0].strVal == keyword)
       assert(arg[2].kind == nnkStmtList)
       case arg[2][0].kind:
         of nnkIdent:
@@ -109,7 +114,7 @@ proc parseProp*(arg: NimNode): Prop =
           #   Ident "bi"
           #   StmtList
           #     Ident "int"
-          return Prop(
+          return ComponentItem(
             name: arg[1],
             `type`: some(arg[2][0]),
           )
@@ -125,9 +130,8 @@ proc parseProp*(arg: NimNode): Prop =
           #         Ident "+"
           #         StrLit "foo"
           #         Ident "bi"
-          echo "Arg: ",  arg.treeRepr
           assert(arg[2][0].kind == nnkAsgn)
-          return Prop(
+          return ComponentItem(
             name: arg[1],
             `type`: some(arg[2][0][0]),
             defaultValue: some(arg[2][0][1])
@@ -138,7 +142,7 @@ proc parseProp*(arg: NimNode): Prop =
       let command = arg[0]
       assert(command[0].strVal == "prop")
       let val = arg[1]
-      return Prop(
+      return ComponentItem(
         name: command[1],
         `type`: none[NimNode](),
         defaultValue: some(val),
@@ -148,6 +152,13 @@ proc parseProp*(arg: NimNode): Prop =
 
 proc isPropIdent(node: NimNode): bool =
   node.kind == nnkIdent and node.strVal == "prop"
+
+proc parseProp*(node: NimNode): Prop =
+  Prop(item: parseComponentItem(node, "prop"))
+
+proc parseField*(node: NimNode): Field =
+  Field(item: parseComponentItem(node, "field"))
+
 
 proc emit(self: Component): NimNode =
   Ident"foo"
