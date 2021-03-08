@@ -233,11 +233,9 @@ proc dispatchPointerUp*(self: Element, arg: PointerArgs): EventResult =
   # NOTE: If anyone has capture, only they get the event
   if pointerCapturedTo.isSome():
     let capturedElem = pointerCapturedTo.get.owner
-    echo "Pointer up to captured: ", capturedElem.typeName
     if not elementsHandledPointerUpThisUpdate.contains(capturedElem):
       capturedElem.dispatchPointerUpImpl(arg, result)
   else:
-    echo "Pointer up dispatched"
     self.dispatchPointerUpImpl(arg, result)
 
 proc transformArgFromRootElem(self: Element, arg: PointerArgs): PointerArgs =

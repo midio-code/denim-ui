@@ -14,7 +14,7 @@ let behaviorId = genGuid()
 
 var clickedHandlers = initTable[Element, seq[ClickedHandler]]()
 
-proc onClicked*(handler: ClickedHandler): Behavior =
+proc onClicked*(handler: ClickedHandler, force: bool = false): Behavior =
   Behavior(
     added: some(
       proc(element: Element): void =
@@ -32,10 +32,9 @@ proc onClicked*(handler: ClickedHandler): Behavior =
           )
           element.onPointerReleased(
             proc(args: PointerArgs, res: var EventResult): void =
-              if pressed and not res.isHandledBy(behaviorId):
+              if pressed and (force or not res.isHandled()):
                 for handler in clickedHandlers[element]:
                   handler(element, args, res)
-                res.addHandledBy(behaviorId)
               pressed = false
           )
 
