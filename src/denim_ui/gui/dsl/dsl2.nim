@@ -184,7 +184,26 @@ proc parseField*(node: NimNode): Field =
   Field(item: parseComponentItem(node, "field"))
 
 proc emit(self: Component): NimNode =
-  Ident"foo"
+  # type
+  #   CompProps* = ref object of ParentCompProps
+  #     prop1*: Prop1Type
+  #     prop2*: Prop2Type
+  #
+  #   Compo* = ref object of ParentComp
+  #     field1*: Field1Type
+  #     field2*: Field2Type
+  #
+  #   proc init*(comp: Comp, props: CompProps): void =
+  #     ParentType(comp).init(props)
+  #     //or
+  #     initElement(props)
+  #
+  #     body
+  #
+  #   proc create*(props: CompProps): CompName =
+  #     let this = CompName()
+  #     init(this, props)
+  #
 
 proc parseComponent*(args: NimNode): Component =
   echo "Parsing component: \n", args.treeRepr
