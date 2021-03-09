@@ -34,3 +34,24 @@ proc onKeyUp*(
         )
     )
   )
+
+proc onKey*(
+  key: string,
+  down: (Element, KeyArgs) -> void,
+  up: (Element, KeyArgs) -> void
+): Behavior =
+  Behavior(
+    added: some(
+      proc(element: Element): void =
+        onKeyDownGlobal(
+          proc(event: KeyArgs) =
+            if event.key == key:
+              down(element, event)
+        )
+        onKeyUpGlobal(
+          proc(event: KeyArgs) =
+            if event.key == key:
+              up(element, event)
+        )
+    )
+  )
