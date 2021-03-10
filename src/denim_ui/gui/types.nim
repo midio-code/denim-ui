@@ -272,6 +272,7 @@ type
   KeyArgs* = ref object
     key*: string
     keyCode*: int
+    modifiers*: seq[string]
 
   PointerArgs* = ref object
     # TODO: Remove sender from pointer args?
