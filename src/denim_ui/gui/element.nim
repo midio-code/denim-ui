@@ -230,6 +230,19 @@ proc addChild*(self: Element, child: Element): void =
   if self.isRooted or self.isRoot:
     child.dispatchOnRooted()
 
+proc insertChild*(self: Element, child: Element, pos: int): void =
+  self.children.insert(child, pos)
+  child.parent = some(self)
+  self.invalidateLayout()
+  if self.isRooted or self.isRoot:
+    child.dispatchOnRooted()
+
+proc moveChild*(self: Element, child: Element, toIndex: int): void =
+  let index = self.children.find(child)
+  self.children.delete(index)
+  self.children.insert(child, toIndex)
+  self.invalidateLayout()
+
 proc removeChild*(self: Element, child: Element): void =
   if child.isChildOf(self):
     child.performUnroot()

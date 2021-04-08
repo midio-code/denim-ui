@@ -54,9 +54,10 @@ proc onDrag*(
             pastPos = arg.actualPos
             dragDistanceThisPress += diff.length
             if dragDistanceThisPress >= dragCaptureThreshold and pressed:
-              element.capturePointer(some(onLostCapture))
-              if not isNil(startedDrag):
-                startedDrag()
+              if not element.hasPointerCapture:
+                element.capturePointer(some(onLostCapture))
+                if not isNil(startedDrag):
+                  startedDrag()
               moved(diff)
               res.addHandledBy(behaviorId)
         )

@@ -90,7 +90,7 @@ proc bindChildCollection*(self: Element, obs: ObservableCollection[Element]): vo
     proc(change: Change[Element]): void =
       case change.kind:
         of ChangeKind.Added:
-          self.addChild(change.newItem)
+          self.insertChild(change.newItem, change.addedAtIndex)
         of ChangeKind.Removed:
           self.removeChild(change.removedItem)
         of ChangeKind.Changed:
