@@ -517,10 +517,10 @@ proc worldBoundsExpensive*(elem: Element): tuple[bounds: Bounds, scale: Vec2[flo
       # of when we apply the transformation matrix
       transformMatrix = e.props.transform.get(@[]).toMatrix * transformMatrix
     else:
-      transformMatrix = transform.translation(e.bounds.get().pos).toMatrix * e.props.transform.get(@[]).toMatrix * transformMatrix
+      transformMatrix = transform.translation(e.bounds.get(rect(0.0)).pos).toMatrix * e.props.transform.get(@[]).toMatrix * transformMatrix
     currentElem = e.parent
 
-  var b = elem.bounds.get
+  var b = elem.bounds.get(rect(0.0))
   let tl = transformMatrix * vec2(b.left, b.top)
   let br = transformMatrix * vec2(b.right, b.bottom)
   result = (

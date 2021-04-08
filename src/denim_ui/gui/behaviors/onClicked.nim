@@ -2,6 +2,7 @@ import sugar
 import options
 import tables
 import ../behaviors
+import ../update_manager
 import ../element
 import ../element_events
 import ../../guid
@@ -40,4 +41,25 @@ proc onClicked*(handler: ClickedHandler, force: bool = false): Behavior =
 
         clickedHandlers.mgetorput(element, @[]).add(handler)
     )
+  )
+
+let doublecClickedBehaviorId = genGuid()
+
+proc onDoubleClicked*(handler: ClickedHandler, force: bool = false): Behavior =
+  var clickedOnce = false
+  var dispose: Dispose = nil
+  onClicked(
+    proc(e: Element, args: PointerArgs, res: var EventResult): void =
+      if clickedOnce:
+        handler(e, args, res)
+        clickedOnce = false
+        if not isNil(dispose):
+          dispose()
+      else:
+        clickedOnce = true
+        dispose = wait(
+          proc() =
+            clickedOnce = false,
+        500)
+      res.addHandledBy(doublecClickedBehaviorId)
   )

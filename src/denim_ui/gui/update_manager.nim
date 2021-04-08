@@ -13,14 +13,18 @@ proc removeUpdateListener*(listener: EventHandler[float]): void =
 
 var time = 0.0
 
-type Waiter = object
-  callback: () -> void
-  startedAt: float
-  waitingFor: float
+type
+  Waiter = object
+    callback: () -> void
+    startedAt: float
+    waitingFor: float
+
+  Dispose* = () -> void
 
 var waiters: seq[Waiter] = @[]
 
-proc wait*(callback: () -> void, waitFor: float): () -> void =
+proc wait*(callback: () -> void, waitFor: float): Dispose =
+  ## Calls `callback` after `waitFor` ms
   let w =
     Waiter(
       callback: callback,
