@@ -35,7 +35,8 @@ proc onKeyUp*(
     )
   )
 
-proc onKey*(
+
+proc onKeyGlobal*(
   key: string,
   down: (Element, KeyArgs) -> void,
   up: (Element, KeyArgs) -> void
@@ -52,6 +53,49 @@ proc onKey*(
           proc(event: KeyArgs) =
             if event.key == key:
               up(element, event)
+        )
+    )
+  )
+
+proc onKey*(
+  key: string,
+  down: (Element, KeyArgs) -> void,
+  up: (Element, KeyArgs) -> void
+): Behavior =
+  Behavior(
+    added: some(
+      proc(element: Element): void =
+        element.onKeyDown(
+          proc(event: KeyArgs, res: var EventResult) =
+            if event.key == key:
+              down(element, event)
+        )
+        element.onKeyUp(
+          proc(event: KeyArgs, res: var EventResult) =
+            if event.key == key:
+              up(element, event)
+        )
+    )
+  )
+
+proc onKey*(
+  key: string,
+  clicked: (Element, KeyArgs) -> void,
+): Behavior =
+  Behavior(
+    added: some(
+      proc(element: Element): void =
+        var pressed = false
+        element.onKeyDown(
+          proc(event: KeyArgs, res: var EventResult) =
+            if event.key == key:
+              pressed = true
+        )
+        element.onKeyUp(
+          proc(event: KeyArgs, res: var EventResult) =
+            if event.key == key and pressed:
+              clicked(element, event)
+              pressed = false
         )
     )
   )

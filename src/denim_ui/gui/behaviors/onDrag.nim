@@ -12,6 +12,8 @@ let behaviorId = genGuid()
 
 proc onDrag*(
   moved: (Vec2[float] -> void),
+  startedDrag: () -> void,
+  released: () -> void,
   pointerIndex: PointerIndex = PointerIndex.Primary,
   canStartDrag: Observable[bool] = behaviorSubject(true).source,
   dragCaptureThreshold: float = 6.0,
@@ -38,9 +40,10 @@ proc onDrag*(
         element.onPointerPressed(
           proc(arg: PointerArgs, res: var EventResult): void =
             dragDistanceThisPress = 0.0
-            if canCurrentlyStartDrag and arg.pointerIndex == pointerIndex and not element.pointerCapturedBySomeoneElse():
+            if not res.isHandledBy(behaviorId) and canCurrentlyStartDrag and arg.pointerIndex == pointerIndex and not element.pointerCapturedBySomeoneElse():
               pastPos = arg.actualPos
               pressed = true
+              res.addHandledBy(behaviorId)
         )
         element.onPointerMoved(
           proc(arg: PointerArgs, res: var EventResult): void =
@@ -52,14 +55,26 @@ proc onDrag*(
             dragDistanceThisPress += diff.length
             if dragDistanceThisPress >= dragCaptureThreshold and pressed:
               element.capturePointer(some(onLostCapture))
+              if not isNil(startedDrag):
+                startedDrag()
               moved(diff)
               res.addHandledBy(behaviorId)
         )
         element.onPointerReleased(
           proc(arg: PointerArgs, res: var EventResult): void =
             if arg.pointerIndex == pointerIndex:
+              if not isNil(released):
+                released()
               element.releasePointer()
               pressed = false
         )
     )
   )
+
+template onDrag*(
+  moved: (Vec2[float] -> void),
+  pointerIndex: PointerIndex = PointerIndex.Primary,
+  canStartDrag: Observable[bool] = behaviorSubject(true).source,
+  dragCaptureThreshold: float = 6.0,
+): Behavior =
+  onDrag(moved, nil, nil, pointerIndex, canStartDrag, dragCaptureThreshold)

@@ -51,6 +51,7 @@ proc onDoubleClicked*(handler: ClickedHandler, force: bool = false): Behavior =
   onClicked(
     proc(e: Element, args: PointerArgs, res: var EventResult): void =
       if clickedOnce:
+        res.addHandledBy(doublecClickedBehaviorId)
         handler(e, args, res)
         clickedOnce = false
         if not isNil(dispose):
@@ -61,5 +62,4 @@ proc onDoubleClicked*(handler: ClickedHandler, force: bool = false): Behavior =
           proc() =
             clickedOnce = false,
         500)
-      res.addHandledBy(doublecClickedBehaviorId)
   )

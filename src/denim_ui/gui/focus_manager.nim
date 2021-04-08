@@ -11,17 +11,25 @@ proc getCurrentlyFocusedElement*(): Option[Element] =
   else:
     none[Element]()
 
-proc nextSibling(self: Element): Option[Element] =
+proc nextSibling*(self: Element): Option[Element] =
   if self.parent.isSome:
     let parent = self.parent.get()
     let myIndex = parent.children.find(self)
     if parent.children.len > myIndex + 1:
       return some(parent.children[myIndex + 1])
 
+proc previousSibling*(self: Element): Option[Element] =
+  if self.parent.isSome:
+    let parent = self.parent.get()
+    let myIndex = parent.children.find(self)
+    if myIndex - 1 >= 0:
+      return some(parent.children[myIndex - 1])
+
 proc giveFocus*(self: Element, lostFocusHandler: Option[() -> void] = none[() -> void]()): void =
   focusedElementSubject <- some((self, lostFocusHandler))
 
 proc focusNext*(): void =
+  echo "Current focus: ", focusedElementSubject.value
   if focusedElementSubject.value.isSome:
     let focusItem = focusedElementSubject.value.get
     if focusItem[1].isSome:
