@@ -1,4 +1,4 @@
-import macros, sugar, sets, sequtils, tables, options, strformat, strutils
+import macros, sugar, sets, sequtils, tables, options, strformat, strutils, typetraits
 import ../types, ../data_binding, ../element, ../behaviors
 import ../containers/stack, ../containers/dock, ../containers/scroll_view
 import ../primitives/text, ../primitives/rectangle, ../primitives/path, ../primitives/circle
@@ -237,6 +237,7 @@ proc safeCastToElement*[T](self: T): Element =
   else:
     # TODO: Make this check static, if possible.
     # TODO: Make safeCastToElement report exactly where the error is and what went wrong.
+    echo "Child did not inherit from element, was: ", name(type(T))
     raise newException(Exception, "Child did not inherit from Element")
 
 macro extractChildren*(childrenOrBehaviors: typed, childrenIdent: untyped, behaviorsIdent: untyped): untyped =
