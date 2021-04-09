@@ -1,4 +1,5 @@
 import sugar
+import strformat
 import options
 import types
 import element_events
@@ -10,17 +11,46 @@ type
     Default, Clickable, Dragging
 
 var setCursor*: (Cursor) -> void = nil
-var lastToSetCursor = none[Element]()
+
+type
+  CursorItem = ref object
+    cursor: Cursor
+    owner: Element
+
+proc `$`(self: CursorItem): string =
+  &"CursorItem: {self.owner.id} -> {self.cursor}"
+
+var cursorStack: seq[CursorItem] = @[]
+
+proc setCursorToTopOfCursorStack(): void =
+  if cursorStack.len == 0:
+    setCursor(Cursor.Default)
+  else:
+    setCursor(cursorStack[cursorStack.len - 1].cursor)
+
+proc pushCursor(cursor: Cursor, owner: Element): void =
+  cursorStack.add(
+    CursorItem(
+      cursor: cursor,
+      owner: owner
+    )
+  )
+  setCursorToTopOfCursorStack()
+
+proc popDownToElement(owner: Element): void =
+  for i in countdown(cursorStack.len - 1, 0):
+    let item = cursorStack[i]
+    cursorStack.delete(i)
+    if item.owner == owner:
+      setCursorToTopOfCursorStack()
+      return
 
 proc cursorOnHover*(cursor: Cursor): Behavior =
   onHover(
     proc(elem: Element): void =
-      setCursor(cursor)
-      lastToSetCursor = some(elem),
+      pushCursor(cursor, elem),
     proc(elem: Element): void =
-      if lastToSetCursor.isSome and lastToSetCursor.get == elem:
-        setCursor(Cursor.Default)
-        lastToSetCursor = none[Element]()
+      popDownToElement(elem)
   )
 
 proc cursorWhilePressed*(cursor: Cursor, pointerIndex: PointerIndex): Behavior =
@@ -30,14 +60,12 @@ proc cursorWhilePressed*(cursor: Cursor, pointerIndex: PointerIndex): Behavior =
         element.onPointerPressed(
           proc(arg: PointerArgs, res: var EventResult): void =
             if arg.pointerIndex == pointerIndex:
-              setCursor(Cursor.Dragging)
-              lastToSetCursor = some(element)
+              pushCursor(cursor, element)
         )
-        element.onPointerReleased(
-          proc(arg: PointerArgs, res: var EventResult): void =
-            if arg.pointerIndex == pointerIndex and lastToSetCursor.isSome and lastToSetCursor.get == element:
-              setCursor(Cursor.Default)
-              lastToSetCursor = none[Element]()
+        onPointerReleasedGlobal(
+          proc(arg: PointerArgs): void =
+            if arg.pointerIndex == pointerIndex:
+              popDownToElement(element)
         )
     )
   )
