@@ -7,10 +7,10 @@ import rx_nim
 
 proc observeBounds*(e: Element): Observable[Rect[float]] =
   let state = behaviorSubject(e.bounds.get(rect(0.0)))
-  var prevBounds = e.bounds.get(rect(0.0))
+  var prevBounds: Bounds
   e.onBoundsChanged(
     proc(newBounds: Rect[float]): void =
-      if prevBounds != newBounds:
+      if isNil(prevBounds) or prevBounds != newBounds:
         prevBounds = newBounds
         state.next(newBounds)
   )
