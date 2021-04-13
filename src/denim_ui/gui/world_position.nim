@@ -10,7 +10,7 @@ proc actualWorldPosition*(self: Element): Vec2[float] =
   worldPositions.mgetorput(self, zero())
 
 proc observeWorldPosition*(self: Element): Observable[Vec2[float]] =
-  worldPositionObservers.mgetorput(self, behaviorSubject(self.actualWorldPosition)).unique
+  worldPositionObservers.mgetorput(self, subject[Vec2[float]]()).unique
 
 proc recalculateWorldPositionsCache*(root: Element): void =
   worldPositions.clear()
