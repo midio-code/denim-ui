@@ -6,14 +6,15 @@ import options
 import strutils
 
 type
-  Command = () -> void
+  Command* = () -> void
   KeyCombo = ref object
     key*: string
     modifier*: Option[string]
   KeyBinding* = ref object
     keyCombo*: KeyCombo
-    command*: () -> void
+    command*: Command
 
+var globalBindings: seq[KeyBinding] = @[]
 var bindings: Table[Element, seq[KeyBinding]] = initTable[Element, seq[KeyBinding]]()
 
 proc parseKeyCombo(self: string): KeyCombo =
@@ -31,8 +32,16 @@ proc parseKeyCombo(self: string): KeyCombo =
       modifier: none[string]()
     )
 
-proc bindKey*(self: Element, keyComboStr: string, command: () -> void): void =
+proc bindKey*(self: Element, keyComboStr: string, command: Command): void =
   bindings.mgetorput(self, @[]).add(
+    KeyBinding(
+      keyCombo: parseKeyCombo(keyComboStr),
+      command: command,
+    )
+  )
+
+proc bindGlobalKey*(self: Element, keyComboStr: string, command: Command): void =
+  globalBindings.add(
     KeyBinding(
       keyCombo: parseKeyCombo(keyComboStr),
       command: command,
@@ -54,8 +63,49 @@ proc dispatchKeyBindings*(self: Element, args: KeyArgs): void =
     for b in elemBindings.matchingBindings(args):
       b.command()
 
+proc dispatchGlobalKeyBindings*(args: KeyArgs): void =
+  for b in globalBindings.matchingBindings(args):
+    b.command()
+
+type
+  KeyMapping = ref object
+    mapping*: string
+    handler*: Command
+
+proc newKeyBinding*(mapping: string, handler: Command): KeyMapping =
+  KeyMapping(
+    mapping: mapping,
+    handler: handler
+  )
+
+proc withGlobalKeyBindings*(
+  bindings: seq[KeyMapping]
+): Behavior =
+  Behavior(
+    added: some(
+      proc(elem: Element): void =
+        for b in bindings:
+          let key = b.mapping
+          let command = b.handler
+          elem.bindGlobalKey(key, command)
+    )
+  )
+
 proc withKeyBindings*(
-  bindings: seq[(string, () -> void)]
+  bindings: seq[KeyMapping]
+): Behavior =
+  Behavior(
+    added: some(
+      proc(elem: Element): void =
+        for b in bindings:
+          let key = b.mapping
+          let command = b.handler
+          elem.bindKey(key, command)
+    )
+  )
+
+proc withKeyBindings*(
+  bindings: seq[(string, Command)]
 ): Behavior =
   Behavior(
     added: some(

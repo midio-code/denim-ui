@@ -95,6 +95,7 @@ proc dispatchKeyDown*(args: KeyArgs): EventResult =
 
 proc dispatchKeyUp*(args: KeyArgs): EventResult =
   emitKeyUpGlobal(args)
+  dispatchGlobalKeyBindings(args)
   let focusedElem = getCurrentlyFocusedElement()
   if focusedElem.isSome:
     result = EventResult(handledBy: @[])
