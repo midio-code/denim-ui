@@ -10,19 +10,6 @@ import ../../events
 import ../../type_name
 import defaults
 
-type
-  Text* = ref object of Element
-    textProps*: TextProps
-    lines: seq[TextLine]
-    onInvalidate: proc(args: InvalidateTextArgs): void
-
-  TextLine* = tuple
-    content: string
-    size: Vec2[float]
-
-  InvalidateTextArgs* = object
-
-implTypeName(Text)
 
 # TODO: Remove need for this global
 var measureText*: (text: string, fontSize: float, font: string, baseline: string) -> Vec2[float]

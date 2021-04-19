@@ -27,7 +27,7 @@ proc createTextPrimitive*(
     bounds: self.bounds.get(),
     clipToBounds: self.props.clipToBounds.get(false),
     shadow: self.props.shadow,
-    kind: Text,
+    kind: PrimitiveKind.Text,
     textInfo: textInfo,
     colorInfo: ColorInfo(fill: color),
     children: @[],

@@ -240,15 +240,28 @@ type
 
     pointerInsideLastUpdate*: bool
 
+  Text* = ref object of Element
+    textProps*: TextProps
+    lines*: seq[TextLine]
+    onInvalidate*: (InvalidateTextArgs) -> void
+
+  TextLine* = tuple
+    content: string
+    size: Vec2[float]
+
+  InvalidateTextArgs* = object
+
   TextInput* = ref object of Element
     textInputProps*: TextInputProps
 
-type
+
   NativeElements* = ref object
     createTextInput*: ((ElementProps, TextInputProps), seq[Element]) -> TextInput
+    createNativeText*: ((ElementProps, TextProps), seq[Element]) -> Text
 
 
 implTypeName(Element)
+implTypeName(Text)
 implTypeName(TextInput)
 
 proc hash*(element: Element): Hash =

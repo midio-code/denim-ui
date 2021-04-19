@@ -367,9 +367,26 @@ template docking*(dir: DockDirection, element: Element): Element =
     setDocking(elem, dir)
     elem
 
+template dockLeft*(elem: Element): Element =
+  docking(DockDirection.Left):
+    elem
+
+template dockRight*(elem: Element): Element =
+  docking(DockDirection.Right):
+    elem
+
+template dockTop*(elem: Element): Element =
+  docking(DockDirection.Top):
+    elem
+
+template dockBottom*(elem: Element): Element =
+  docking(DockDirection.Bottom):
+    elem
+
 element_type(text, (ElementProps, TextProps), createText)
 element_type(circle, (ElementProps, CircleProps), createCircle)
 element_type(textInput, (ElementProps, TextInputProps), createTextInput)
+element_type(nativeText, (ElementProps, TextProps), createNativeText)
 
 macro component*(args: varargs[untyped]): untyped = #parentType: untyped, head: untyped, body: untyped): untyped =
   let (head, body) =
