@@ -1,2 +1,0 @@
-onBoundsChanged	midio_ui/gui/element_bounds_changed_event.html#onBoundsChanged,Element,BoundsChangedHandler	element_bounds_changed_event: onBoundsChanged(self: Element; handler: BoundsChangedHandler): void	
-emitOnBoundsChanged	midio_ui/gui/element_bounds_changed_event.html#emitOnBoundsChanged,Element	element_bounds_changed_event: emitOnBoundsChanged(self: Element): void	

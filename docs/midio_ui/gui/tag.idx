@@ -1,3 +1,0 @@
-Tag	midio_ui/gui/tag.html#Tag	tag: Tag	
-addTag	midio_ui/gui/tag.html#addTag,Element,Tag	tag: addTag(element: Element; tag: Tag): void	
-hasTag	midio_ui/gui/tag.html#hasTag,Element,Tag	tag: hasTag(element: Element; tag: Tag): bool	

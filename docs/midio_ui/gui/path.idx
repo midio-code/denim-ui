@@ -1,2 +1,0 @@
-PathProps	midio_ui/gui/path.html#PathProps	path: PathProps	
-createPath	midio_ui/gui/path.html#createPath,PathProps,ElemProps,seq[Element]	path: createPath(props: PathProps = PathProps(); elemProps: ElemProps = ElemProps();\n           children: seq[Element] = @[]): Element	

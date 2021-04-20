@@ -1,2 +1,0 @@
-onDrag	midio_ui/gui/behaviors/onDrag.html#onDrag	onDrag: onDrag(moved: (Vec2[float] -&gt; void)): Behavior	
-onDragAbsolute	midio_ui/gui/behaviors/onDrag.html#onDragAbsolute	onDrag: onDragAbsolute(moved: (Vec2[float] -&gt; void)): Behavior	

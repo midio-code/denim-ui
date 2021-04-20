@@ -1,1 +1,0 @@
-observeBounds	midio_ui/gui/element_observables.html#observeBounds,Element	element_observables: observeBounds(e: Element): Observable[Rect[float]]	

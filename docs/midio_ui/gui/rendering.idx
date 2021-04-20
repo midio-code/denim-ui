@@ -1,1 +1,0 @@
-render	midio_ui/gui/rendering.html#render,Element	rendering: render(self: Element): seq[Primitive]	

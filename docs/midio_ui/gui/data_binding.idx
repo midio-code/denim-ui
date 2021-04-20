@@ -1,3 +1,0 @@
-bindProp	midio_ui/gui/data_binding.html#bindProp.t,typed,Observable[T]	data_binding: bindProp[T](prop: typed; observable: Observable[T]): untyped	
-bindCollection	midio_ui/gui/data_binding.html#bindCollection.t,seq[T],ObservableCollection[T]	data_binding: bindCollection[T](prop: seq[T]; collection: ObservableCollection[T]): untyped	
-bindLayoutProp	midio_ui/gui/data_binding.html#bindLayoutProp.t,Element,untyped,Observable[T]	data_binding: bindLayoutProp[T](element: Element; prop: untyped; observable: Observable[T]): untyped	

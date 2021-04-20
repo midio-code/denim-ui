@@ -1,3 +1,0 @@
-onPressed	midio_ui/gui/behaviors/onPointer.html#onPressed	onPointer: onPressed(handler: (elem: Element) -&gt; void): Behavior	
-onReleased	midio_ui/gui/behaviors/onPointer.html#onReleased	onPointer: onReleased(handler: (elem: Element) -&gt; void): Behavior	
-onPointerMoved	midio_ui/gui/behaviors/onPointer.html#onPointerMoved	onPointer: onPointerMoved(handler: (elem: Element, pos: Point) -&gt; void): Behavior	

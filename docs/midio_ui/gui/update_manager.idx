@@ -1,3 +1,0 @@
-addUpdateListenerIfNotPresent	midio_ui/gui/update_manager.html#addUpdateListenerIfNotPresent,EventHandler[float]	update_manager: addUpdateListenerIfNotPresent(listener: EventHandler[float]): void	
-removeUpdateListener	midio_ui/gui/update_manager.html#removeUpdateListener,EventHandler[float]	update_manager: removeUpdateListener(listener: EventHandler[float]): void	
-dispatchUpdate	midio_ui/gui/update_manager.html#dispatchUpdate,float	update_manager: dispatchUpdate(dt: float): void	

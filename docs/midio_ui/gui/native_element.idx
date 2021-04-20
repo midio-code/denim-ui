@@ -1,2 +1,0 @@
-createTextInput	midio_ui/gui/native_element.html#createTextInput,TextInputProps	native_element: createTextInput(props: TextInputProps): Element	
-createTextInput	midio_ui/gui/native_element.html#createTextInput,string,TextChanged	native_element: createTextInput(text: string; onChange: TextChanged): Element	

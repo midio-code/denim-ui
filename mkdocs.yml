@@ -1,0 +1,7 @@
+site_name: Denim UI
+
+theme:
+  name: material
+
+markdown_extensions:
+  - admonition

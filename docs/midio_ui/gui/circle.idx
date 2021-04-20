@@ -1,5 +1,0 @@
-CircleProps	midio_ui/gui/circle.html#CircleProps	circle: CircleProps	
-measureCircle	midio_ui/gui/circle.html#measureCircle,Element,Vec2[float],CircleProps	circle: measureCircle(self: Element; availableSize: Vec2[float]; props: CircleProps): Vec2[\n    float]	
-createCircle	midio_ui/gui/circle.html#createCircle,CircleProps,ElemProps,seq[Element]	circle: createCircle(props: CircleProps = CircleProps(); elemProps: ElemProps = ElemProps();\n             children: seq[Element] = @[]): Element	
-createCircle	midio_ui/gui/circle.html#createCircle,Color,Vec2[float],float	circle: createCircle(color: Color; pos: Vec2[float]; radius: float): Element	
-createCircle	midio_ui/gui/circle.html#createCircle,Color,float	circle: createCircle(color: Color; radius: float): Element	

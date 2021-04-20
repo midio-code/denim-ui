@@ -3,7 +3,5 @@
 *.log
 tmp/
 
-/docs
-
 /tests/t_*
 !/tests/t_*.nim

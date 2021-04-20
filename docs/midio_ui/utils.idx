@@ -1,9 +1,0 @@
-toOption	midio_ui/utils.html#toOption.c,T	utils: toOption[T](x: T): Option[T]	
-toFloat	midio_ui/utils.html#toFloat.c,int	utils: toFloat(x: int): float	
-toFloatOption	midio_ui/utils.html#toFloatOption.c,int	utils: toFloatOption(x: int): Option[float]	
-find	midio_ui/utils.html#find,seq[T],	utils: find[T](sequence: seq[T]; predicate: (T) -&gt; bool): Option[tuple[item: T, index: int]]	
-remove	midio_ui/utils.html#remove,seq[T],T	utils: remove[T](self: var seq[T]; item: T): void	
-deleteWhere	midio_ui/utils.html#deleteWhere,seq[T],	utils: deleteWhere[T](sequence: var seq[T]; predicate: (T) -&gt; bool): void	
-isBetween	midio_ui/utils.html#isBetween,float,float,float,float	utils: isBetween(a: float; b: float; t: float; offset: float = 0): bool	
-choose	midio_ui/utils.html#choose.t,bool,untyped,untyped	utils: choose(cond: bool; a, b: untyped): untyped	
-reverse	midio_ui/utils.html#reverse.i,seq[T]	utils: reverse[T](a: seq[T]): T	
