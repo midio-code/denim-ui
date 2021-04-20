@@ -1,0 +1,1548 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.2">
+    
+    
+      
+        <title>Denim UI</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.6f955dcd.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#denim-ui" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Denim UI" class="md-header__button md-logo" aria-label="Denim UI" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Denim UI
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/nortero-code/denim-ui/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    
+  
+
+
+  <li class="md-tabs__item">
+    <a href="." class="md-tabs__link md-tabs__link--active">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="tutorial/" class="md-tabs__link">
+      Tutorial
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Denim UI" class="md-nav__button md-logo" aria-label="Denim UI" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Denim UI
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/nortero-code/denim-ui/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Home
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        Home
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#minimal-example" class="md-nav__link">
+    Minimal example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backends" class="md-nav__link">
+    Backends
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dsl" class="md-nav__link">
+    DSL
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-element-type" class="md-nav__link">
+    The Element type
+  </a>
+  
+    <nav class="md-nav" aria-label="The Element type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes-available-on-all-element-types" class="md-nav__link">
+    Attributes available on all element types:
+  </a>
+  
+    <nav class="md-nav" aria-label="Attributes available on all element types:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alignment" class="md-nav__link">
+    Alignment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visibility" class="md-nav__link">
+    Visibility
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layout" class="md-nav__link">
+    Layout
+  </a>
+  
+    <nav class="md-nav" aria-label="Layout">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#panel" class="md-nav__link">
+    Panel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dock" class="md-nav__link">
+    Dock
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stack" class="md-nav__link">
+    Stack
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid" class="md-nav__link">
+    Grid
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visual-primitives" class="md-nav__link">
+    Visual primitives
+  </a>
+  
+    <nav class="md-nav" aria-label="Visual primitives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rectangle" class="md-nav__link">
+    Rectangle
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circle" class="md-nav__link">
+    Circle
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#text" class="md-nav__link">
+    Text
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path" class="md-nav__link">
+    Path
+  </a>
+  
+    <nav class="md-nav" aria-label="Path">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linecap" class="md-nav__link">
+    LineCap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linejoin" class="md-nav__link">
+    LineJoin
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linedash" class="md-nav__link">
+    LineDash
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#behaviors" class="md-nav__link">
+    Behaviors
+  </a>
+  
+    <nav class="md-nav" aria-label="Behaviors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onclicked" class="md-nav__link">
+    onClicked
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onpressedonreleasedonpointermoved" class="md-nav__link">
+    onPressed/onReleased/onPointerMoved
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ondrag" class="md-nav__link">
+    onDrag
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onkey" class="md-nav__link">
+    onKey
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-bindings" class="md-nav__link">
+    Key bindings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observables-and-subjects" class="md-nav__link">
+    Observables and Subjects
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#animation" class="md-nav__link">
+    Animation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#focus" class="md-nav__link">
+    Focus
+  </a>
+  
+    <nav class="md-nav" aria-label="Focus">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#givefocuselement" class="md-nav__link">
+    giveFocus(Element)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clearfocus" class="md-nav__link">
+    clearFocus
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#releasefocuselement" class="md-nav__link">
+    releaseFocus(Element)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hasfocuselement-observablebool" class="md-nav__link">
+    hasFocus(Element) -&gt; Observable[bool]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isfocusedelement-bool" class="md-nav__link">
+    isFocused(Element) -&gt; bool
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-focus-related-functions" class="md-nav__link">
+    Other focus related functions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capturing" class="md-nav__link">
+    Capturing
+  </a>
+  
+    <nav class="md-nav" aria-label="Capturing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capturepointerelement-option-l-void" class="md-nav__link">
+    capturePointer(Element, [Option[() -&gt;L void]])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#releasepointerelement" class="md-nav__link">
+    releasePointer(Element)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-capture-related-functions" class="md-nav__link">
+    Other capture related functions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-binding" class="md-nav__link">
+    Data binding
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    Components
+  </a>
+  
+    <nav class="md-nav" aria-label="Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#component-fields" class="md-nav__link">
+    Component fields
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorial/" class="md-nav__link">
+        Tutorial
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#minimal-example" class="md-nav__link">
+    Minimal example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backends" class="md-nav__link">
+    Backends
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dsl" class="md-nav__link">
+    DSL
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-element-type" class="md-nav__link">
+    The Element type
+  </a>
+  
+    <nav class="md-nav" aria-label="The Element type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes-available-on-all-element-types" class="md-nav__link">
+    Attributes available on all element types:
+  </a>
+  
+    <nav class="md-nav" aria-label="Attributes available on all element types:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alignment" class="md-nav__link">
+    Alignment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visibility" class="md-nav__link">
+    Visibility
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layout" class="md-nav__link">
+    Layout
+  </a>
+  
+    <nav class="md-nav" aria-label="Layout">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#panel" class="md-nav__link">
+    Panel
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dock" class="md-nav__link">
+    Dock
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stack" class="md-nav__link">
+    Stack
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid" class="md-nav__link">
+    Grid
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visual-primitives" class="md-nav__link">
+    Visual primitives
+  </a>
+  
+    <nav class="md-nav" aria-label="Visual primitives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rectangle" class="md-nav__link">
+    Rectangle
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circle" class="md-nav__link">
+    Circle
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#text" class="md-nav__link">
+    Text
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path" class="md-nav__link">
+    Path
+  </a>
+  
+    <nav class="md-nav" aria-label="Path">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linecap" class="md-nav__link">
+    LineCap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linejoin" class="md-nav__link">
+    LineJoin
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linedash" class="md-nav__link">
+    LineDash
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#behaviors" class="md-nav__link">
+    Behaviors
+  </a>
+  
+    <nav class="md-nav" aria-label="Behaviors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onclicked" class="md-nav__link">
+    onClicked
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onpressedonreleasedonpointermoved" class="md-nav__link">
+    onPressed/onReleased/onPointerMoved
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ondrag" class="md-nav__link">
+    onDrag
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onkey" class="md-nav__link">
+    onKey
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-bindings" class="md-nav__link">
+    Key bindings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observables-and-subjects" class="md-nav__link">
+    Observables and Subjects
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#animation" class="md-nav__link">
+    Animation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#focus" class="md-nav__link">
+    Focus
+  </a>
+  
+    <nav class="md-nav" aria-label="Focus">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#givefocuselement" class="md-nav__link">
+    giveFocus(Element)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clearfocus" class="md-nav__link">
+    clearFocus
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#releasefocuselement" class="md-nav__link">
+    releaseFocus(Element)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hasfocuselement-observablebool" class="md-nav__link">
+    hasFocus(Element) -&gt; Observable[bool]
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isfocusedelement-bool" class="md-nav__link">
+    isFocused(Element) -&gt; bool
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-focus-related-functions" class="md-nav__link">
+    Other focus related functions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capturing" class="md-nav__link">
+    Capturing
+  </a>
+  
+    <nav class="md-nav" aria-label="Capturing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capturepointerelement-option-l-void" class="md-nav__link">
+    capturePointer(Element, [Option[() -&gt;L void]])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#releasepointerelement" class="md-nav__link">
+    releasePointer(Element)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-capture-related-functions" class="md-nav__link">
+    Other capture related functions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-binding" class="md-nav__link">
+    Data binding
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    Components
+  </a>
+  
+    <nav class="md-nav" aria-label="Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#component-fields" class="md-nav__link">
+    Component fields
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/nortero-code/denim-ui/edit/master/docs/index.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="denim-ui">Denim UI</h1>
+<p>A custom cross platform UI framework focused on fast and easy prototyping by the use of a custom DSL.</p>
+<p>The various platforms are supported through separate backend implementations. An js backend that uses the canvas api for drawing and html for native components the only somewhat usable backend, but a native one is planned.</p>
+<h2 id="minimal-example">Minimal example</h2>
+<p><img alt="minimal" src="minimal_example.png" /></p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="n">denim_ui</span>
+<span class="kn">import</span> <span class="n">denim_ui_canvas</span>
+
+<span class="k">proc </span><span class="nf">render</span><span class="p">():</span> <span class="n">Element</span> <span class="o">=</span>
+  <span class="n">panel</span><span class="p">:</span>
+    <span class="n">rectangle</span><span class="p">(</span>
+      <span class="n">color</span> <span class="o">=</span> <span class="n">colCadetBlue</span><span class="p">,</span>
+      <span class="n">radius</span> <span class="o">=</span> <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+      <span class="n">width</span> <span class="o">=</span> <span class="mi">150</span><span class="p">,</span>
+      <span class="n">height</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+      <span class="n">alignment</span> <span class="o">=</span> <span class="n">Alignment</span><span class="p">.</span><span class="n">Center</span>
+    <span class="p">)</span>
+    <span class="n">text</span><span class="p">(</span>
+      <span class="n">text</span> <span class="o">=</span> <span class="s">&quot;Hello world!&quot;</span><span class="p">,</span>
+      <span class="n">fontSize</span> <span class="o">=</span> <span class="mf">14.0</span><span class="p">,</span>
+      <span class="n">color</span> <span class="o">=</span> <span class="n">colWhite</span><span class="p">,</span>
+      <span class="n">alignment</span> <span class="o">=</span> <span class="n">Alignment</span><span class="p">.</span><span class="n">Center</span>
+    <span class="p">)</span>
+
+<span class="n">startApp</span><span class="p">(</span>
+  <span class="n">render</span><span class="p">,</span>
+  <span class="s">&quot;rootCanvas&quot;</span><span class="p">,</span>
+  <span class="s">&quot;nativeContainer&quot;</span>
+<span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;nativeContainer&quot;</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">canvas</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;rootCanvas&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">canvas</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="c">&lt;!-- the bundle output by nim --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;./dist/bundle.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+<h2 id="installation">Installation</h2>
+<p>Denim UI is provided through the nimble package manager:
+<div class="highlight"><pre><span></span><code>requires &quot;denim_ui&quot;
+</code></pre></div></p>
+<h3 id="backends">Backends</h3>
+<p>The only usable backend for denim UI is currently the canvas based javascript backend which can be added from nimble:
+<div class="highlight"><pre><span></span><code>requires &quot;denim_ui_canvas&quot;
+</code></pre></div></p>
+<h2 id="dsl">DSL</h2>
+<p>Denim has a neat custom DSL for writing UIs. It allows one to easily create deep UI trees, as well as group parts of the UI into reusable components.</p>
+<div class="highlight"><pre><span></span><code><span class="n">component</span> <span class="n">MyButton</span><span class="p">(</span>
+  <span class="n">label</span><span class="p">:</span> <span class="kt">string</span><span class="p">,</span>
+  <span class="n">clicked</span><span class="p">:</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="n">void</span>
+<span class="p">):</span>
+  <span class="k">let</span> <span class="n">isHovering</span> <span class="o">=</span> <span class="n">behaviorSubject</span><span class="p">(</span><span class="kp">false</span><span class="p">)</span>
+
+  <span class="n">alignment</span> <span class="o">=</span> <span class="n">Alignment</span><span class="p">.</span><span class="n">Center</span>
+
+  <span class="n">rectangle</span><span class="p">(</span>
+    <span class="n">color</span> <span class="o">&lt;-</span> <span class="n">isHovering</span><span class="p">.</span><span class="n">source</span><span class="p">.</span><span class="n">choose</span><span class="p">(</span><span class="n">colHotPink</span><span class="p">,</span> <span class="n">colForestGreen</span><span class="p">)</span>
+  <span class="p">)</span>
+  <span class="n">text</span><span class="p">(</span>
+    <span class="n">text</span> <span class="o">&lt;-</span> <span class="n">isHovering</span><span class="p">.</span><span class="n">source</span><span class="p">.</span><span class="n">choose</span><span class="p">(</span><span class="s">&quot;hovering&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">),</span>
+    <span class="n">margin</span> <span class="o">=</span> <span class="n">thickness</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">colWhite</span>
+  <span class="p">)</span>
+
+  <span class="n">toggleOnHover</span><span class="p">(</span>
+    <span class="n">isHovering</span> <span class="o">&lt;-</span> <span class="ow">not</span> <span class="n">isHovering</span><span class="p">.</span><span class="n">value</span>
+  <span class="p">)</span>
+
+  <span class="n">onClicked</span><span class="p">(</span>
+    <span class="k">proc</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">PointerArgs</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="kd">var</span> <span class="n">EventResult</span><span class="p">)</span> <span class="o">=</span>
+      <span class="k">if</span> <span class="ow">not</span> <span class="n">isNil</span><span class="p">(</span><span class="n">clicked</span><span class="p">):</span>
+        <span class="c"># NOTE: Due to a quirk in the DSL, function props</span>
+        <span class="c"># needs to be surrounded with () before being called</span>
+        <span class="p">(</span><span class="n">clicked</span><span class="p">)()</span>
+  <span class="p">)</span>
+
+<span class="k">proc </span><span class="nf">render</span><span class="o">*</span><span class="p">():</span> <span class="n">Element</span> <span class="o">=</span>
+  <span class="n">myButton</span><span class="p">(</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;Hello!&quot;</span><span class="p">,</span>
+    <span class="n">clicked</span> <span class="o">=</span> <span class="k">proc</span><span class="p">()</span> <span class="o">=</span>
+      <span class="n">echo</span> <span class="s">&quot;Button clicked&quot;</span>
+  <span class="p">)</span>
+</code></pre></div>
+<h2 id="the-element-type">The Element type</h2>
+<p>All the visual nodes in the UI tree inherit from the Element type.</p>
+<p><code>panel()</code>, for example, creates an element with the layout semantics of a panel (we'll get to layout soon).</p>
+<h3 id="attributes-available-on-all-element-types">Attributes available on all element types:</h3>
+<ul>
+<li>width: <code>Option[float]</code></li>
+<li>height: <code>Option[float]</code></li>
+<li>maxWidth: <code>Option[float]</code></li>
+<li>minWidth: <code>Option[float]</code></li>
+<li>maxHeight: <code>Option[float]</code></li>
+<li>minHeight: <code>Option[float]</code></li>
+<li>x: <code>Option[float]</code> The elements X-position in its parent</li>
+<li>y: <code>Option[float]</code> The elements Y-position in its parent</li>
+<li>xOffset: <code>Option[float]</code> An offset added to the X-position of the element after it has been arranged by its parent</li>
+<li>yOffset: <code>Option[float]</code> An offset added to the Y-position of the element after it has been arranged by its parent</li>
+<li>margin: <code>Option[Thickness[float]]</code></li>
+<li>alignment: <code>Option[Alignment]</code></li>
+<li>visibility: <code>Option[Visibility]</code></li>
+<li>clipToBounds: <code>Option[bool]</code></li>
+<li>transform: <code>seq[Transform]</code> A list of transforms added in order to the element after it has been arranged by its parent</li>
+<li>zIndex: <code>Option[int]</code> An index allowing an item to be drawn on top or below of its siblings. The higher the index, the more on top it is drawn.</li>
+<li>shadow: <code>Option[Shadow]</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note about all the options</p>
+<p>Denim exports a converter from any type to Option, so you don't have to explicitly wrap all attribute values in an option:
+<code>converter toOption*[T](x: T): Option[T] = some[T](x)</code>. It has proven quite convenient when writing UI code, but can sometimes get in the way, as generic converters often tend to do.
+We would like to remove this converter and get the DSL to handle the conversion instead in the future.</p>
+</div>
+<h4 id="alignment">Alignment</h4>
+<div class="highlight"><pre><span></span><code><span class="n">Alignment</span> <span class="o">=</span> <span class="k">enum</span>
+  <span class="n">Stretch</span><span class="p">,</span> <span class="n">Left</span><span class="p">,</span> <span class="n">TopLeft</span><span class="p">,</span> <span class="n">Top</span><span class="p">,</span> <span class="n">TopRight</span><span class="p">,</span> <span class="n">Right</span><span class="p">,</span>
+  <span class="n">BottomRight</span><span class="p">,</span> <span class="n">Bottom</span><span class="p">,</span> <span class="n">BottomLeft</span><span class="p">,</span> <span class="n">Center</span><span class="p">,</span>
+  <span class="n">CenterLeft</span><span class="p">,</span> <span class="n">CenterRight</span><span class="p">,</span> <span class="n">TopCenter</span><span class="p">,</span> <span class="n">BottomCenter</span><span class="p">,</span>
+  <span class="n">HorizontalCenter</span><span class="p">,</span> <span class="n">VerticalCenter</span>
+</code></pre></div>
+<h4 id="visibility">Visibility</h4>
+<div class="highlight"><pre><span></span><code><span class="n">Visibility</span> <span class="o">=</span> <span class="k">enum</span>
+  <span class="n">Visible</span><span class="p">,</span> <span class="n">Collapsed</span><span class="p">,</span> <span class="n">Hidden</span>
+</code></pre></div>
+<h2 id="layout">Layout</h2>
+<p>Layout is created using a set of elements that lays out its children in various ways.</p>
+<h3 id="panel">Panel</h3>
+<p>Panel performs the default layout on the children, where all children get all available space. The children of a panel will by default fill their entire space. If a panel contains several children, it simply layers them on top of each other.</p>
+<div class="highlight"><pre><span></span><code><span class="n">panel</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">):</span>
+  <span class="n">rectangle</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">)</span>
+  <span class="n">circle</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="n">colBlue</span><span class="p">,</span> <span class="n">radius</span> <span class="o">=</span> <span class="mf">25.0</span><span class="p">,</span> <span class="n">alignment</span> <span class="o">=</span> <span class="n">Aligmment</span><span class="p">.</span><span class="n">Center</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="dock">Dock</h3>
+<p>Lays out its children by docking them to the various sides, one after the other.</p>
+<div class="highlight"><pre><span></span><code><span class="n">dock</span><span class="p">:</span>
+  <span class="n">dockLeft</span><span class="p">:</span>
+    <span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">)</span>
+  <span class="n">dockTop</span><span class="p">:</span>
+    <span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colBlue</span><span class="p">)</span>
+  <span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colYellow</span><span class="p">)</span>
+</code></pre></div>
+<p>The last child element fills the remaining space.</p>
+<h3 id="stack">Stack</h3>
+<p>Stacks its children vertically by default. One can set the <code>direction</code> attribute to stack horizontally.</p>
+<div class="highlight"><pre><span></span><code><span class="n">stack</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">StackDirection</span><span class="p">.</span><span class="n">Horizontal</span><span class="p">):</span>
+  <span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">)</span>
+  <span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colBlue</span><span class="p">)</span>
+  <span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colYellow</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="grid">Grid</h3>
+<p>Lays out children in a grid formation.</p>
+<div class="highlight"><pre><span></span><code><span class="n">grid</span><span class="p">(</span>
+  <span class="n">width</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>
+  <span class="n">height</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>
+  <span class="n">rows</span> <span class="o">=</span> <span class="o">@[</span><span class="n">points</span><span class="p">(</span><span class="mf">400.0</span><span class="p">),</span> <span class="n">points</span><span class="p">(</span><span class="mf">400.0</span><span class="p">)</span><span class="o">]</span><span class="p">,</span>
+  <span class="n">cols</span> <span class="o">=</span> <span class="o">@[</span><span class="n">proportion</span><span class="p">(</span><span class="mf">2.0</span><span class="p">),</span> <span class="n">proportion</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span><span class="o">]</span><span class="p">,</span>
+<span class="p">):</span>
+  <span class="n">rectangle</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">)</span>
+  <span class="n">rectangle</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="n">colBlue</span><span class="p">)</span>
+  <span class="n">rectangle</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="n">colYellow</span><span class="p">)</span>
+  <span class="n">rectangle</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="n">colGreen</span><span class="p">)</span>
+</code></pre></div>
+<p>The <code>rows</code> and <code>cols</code> attributes lets one customize the sizes of the rows and columns of the grid. Points lets you explicitly set the size of the row/column, while proportion lets you create row/cols that are proportionally sized relative to each other and the available size.</p>
+<p>The children are placed automatically in grid cells, going from top to bottom, left to right.</p>
+<table>
+<thead>
+<tr>
+<th>1</th>
+<th>2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<h2 id="visual-primitives">Visual primitives</h2>
+<p>The folowing element types are used for drawing various shapes and text.</p>
+<h3 id="rectangle">Rectangle</h3>
+<p>Draws a rectangle with optionally curved edges. It can be filled and/or stroked.</p>
+<div class="highlight"><pre><span></span><code><span class="n">rectangle</span><span class="p">(</span>
+  <span class="n">color</span> <span class="o">=</span> <span class="n">colBlue</span><span class="p">,</span>
+  <span class="n">stroke</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">,</span>
+  <span class="n">strokeWidth</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+  <span class="n">radius</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
+  <span class="n">width</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
+  <span class="n">height</span> <span class="o">=</span> <span class="mf">20.0</span>
+<span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>radius</code> is used to make the corners of the rectangle curved. It takes a tuple of four <code>float</code>, which assigns a radius to the four corners <code>(topLeft, topRight, bottomRight, bottomLeft)</code></p>
+</div>
+<h3 id="circle">Circle</h3>
+<p>Draws a circle with the specified radius. It can be filled and/or stroked.</p>
+<div class="highlight"><pre><span></span><code><span class="n">circle</span><span class="p">(</span>
+  <span class="n">color</span> <span class="o">=</span> <span class="n">colBlue</span><span class="p">,</span>
+  <span class="n">stroke</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">,</span>
+  <span class="n">strokeWidth</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+  <span class="n">radius</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="text">Text</h3>
+<div class="highlight"><pre><span></span><code><span class="n">text</span><span class="p">(</span>
+  <span class="n">font</span> <span class="o">=</span> <span class="s">&quot;Inter&quot;</span><span class="p">,</span>
+  <span class="n">fontSize</span> <span class="o">=</span> <span class="mf">24.0</span><span class="p">,</span>
+  <span class="n">color</span> <span class="o">=</span> <span class="n">colBlack</span><span class="p">,</span>
+  <span class="n">wordWrap</span> <span class="o">=</span> <span class="kp">true</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Setting <code>wordWrap</code> to true enables multiline text. If not, all the text is drawn on one line. It is <code>false</code> by default.</p>
+<h3 id="path">Path</h3>
+<p>Draws a path using the provided data. The path can be filled and/or stroked.
+The path data can either be a string as explained <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths">here</a>, or a list of <code>PathSegment</code>.</p>
+<p><div class="highlight"><pre><span></span><code><span class="n">path</span><span class="p">(</span>
+  <span class="n">data</span> <span class="o">=</span> <span class="o">@[</span><span class="n">moveTo</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">lineTo</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">lineTo</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="n">close</span><span class="p">()</span><span class="o">]</span><span class="p">,</span>
+  <span class="n">lineDash</span> <span class="o">=</span> <span class="o">@[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="o">]</span><span class="p">,</span>
+  <span class="n">lineCap</span> <span class="o">=</span> <span class="n">LineCap</span><span class="p">.</span><span class="n">Round</span><span class="p">,</span>
+  <span class="n">lineJoin</span> <span class="o">=</span> <span class="n">LineJoin</span><span class="p">.</span><span class="n">Bevel</span><span class="p">,</span>
+  <span class="n">stroke</span> <span class="o">=</span> <span class="n">colBlue</span><span class="p">,</span>
+  <span class="n">strokeWidth</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="p">)</span>
+</code></pre></div>
+alternatively
+<div class="highlight"><pre><span></span><code><span class="n">path</span><span class="p">(</span>
+  <span class="n">data</span> <span class="o">=</span> <span class="s">&quot;M 0 0 L 10 0 L 5 10 Z&quot;</span><span class="p">,</span>
+  <span class="p">...</span>
+</code></pre></div></p>
+<h4 id="linecap">LineCap</h4>
+<div class="highlight"><pre><span></span><code><span class="n">LineCap</span> <span class="o">=</span>  <span class="k">enum</span>
+  <span class="n">Square</span><span class="p">,</span> <span class="n">Butt</span><span class="p">,</span> <span class="n">Round</span>
+</code></pre></div>
+<h4 id="linejoin">LineJoin</h4>
+<div class="highlight"><pre><span></span><code><span class="n">LineJoin</span> <span class="o">=</span> <span class="k">enum</span>
+  <span class="n">Miter</span><span class="p">,</span> <span class="n">Bevel</span><span class="p">,</span> <span class="n">Round</span>
+</code></pre></div>
+<h4 id="linedash">LineDash</h4>
+<p>Line dash lets one specify a line pattern for the path.</p>
+<p>For example
+<div class="highlight"><pre><span></span><code>lineDash = @[4, 2]
+</code></pre></div></p>
+<p>results in a line like like:</p>
+<div class="highlight"><pre><span></span><code>----  ----  ----  ----
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the number of elements in the sequence is odd, the elements of the sequence get copied and concatenated. For example, [5, 15, 25] will become [5, 15, 25, 5, 15, 25]. If the array is empty, the line dash list is cleared and line strokes return to being solid.</p>
+</div>
+<h2 id="behaviors">Behaviors</h2>
+<p>Behaviors are used to respond to user input and other events, and can be attached to any alement.</p>
+<h3 id="onclicked">onClicked</h3>
+<p>Lets one react to an element being clicked (the pointer being pressed and released on the element)</p>
+<div class="highlight"><pre><span></span><code><span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">):</span>
+  <span class="n">onClicked</span><span class="p">(</span>
+    <span class="k">proc</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">PointerArgs</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="kd">var</span> <span class="n">EventResult</span><span class="p">):</span> <span class="n">void</span> <span class="o">=</span>
+      <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">.</span><span class="n">isHandled</span><span class="p">:</span>
+        <span class="n">echo</span> <span class="s">&quot;We are handling this clicked event&quot;</span>
+        <span class="n">res</span><span class="p">.</span><span class="n">addHandledBy</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">)</span>
+  <span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>EventResult</code> argument is used to keep track of who might already handled this event. This lets us make sure only we handle a clicked event, or if we want to, let other elements (like for example the parent element), also handle the event.</p>
+</div>
+<h3 id="onpressedonreleasedonpointermoved">onPressed/onReleased/onPointerMoved</h3>
+<p>Lets one react to the pointer being pressed/released/moved on the element.</p>
+<div class="highlight"><pre><span></span><code><span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">):</span>
+  <span class="n">onPressed</span><span class="p">(</span>
+    <span class="k">proc</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">PointerArgs</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="kd">var</span> <span class="n">EventResult</span><span class="p">):</span> <span class="n">void</span> <span class="o">=</span>
+      <span class="n">echo</span> <span class="s">&quot;We are pressing&quot;</span>
+  <span class="p">)</span>
+  <span class="n">onReleased</span><span class="p">(</span>
+    <span class="k">proc</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">PointerArgs</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="kd">var</span> <span class="n">EventResult</span><span class="p">):</span> <span class="n">void</span> <span class="o">=</span>
+      <span class="n">echo</span> <span class="s">&quot;We are releasing&quot;</span>
+  <span class="p">)</span>
+  <span class="n">onPointerMoved</span><span class="p">(</span>
+    <span class="k">proc</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">PointerArgs</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="kd">var</span> <span class="n">EventResult</span><span class="p">):</span> <span class="n">void</span> <span class="o">=</span>
+      <span class="n">echo</span> <span class="s">&quot;We are releasing&quot;</span>
+  <span class="p">)</span>
+</code></pre></div>
+<h3 id="ondrag">onDrag</h3>
+<div class="highlight"><pre><span></span><code><span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">):</span>
+  <span class="n">onDrag</span><span class="p">(</span>
+    <span class="k">proc</span><span class="p">(</span><span class="n">amountMoved</span><span class="p">:</span> <span class="n">Vec2</span><span class="o">[</span><span class="kt">float</span><span class="o">]</span><span class="p">):</span> <span class="n">void</span> <span class="o">=</span>
+      <span class="n">echo</span> <span class="s">&quot;We dragged the pointer &quot;</span><span class="p">,</span> <span class="n">amountMoved</span>
+  <span class="p">)</span>
+</code></pre></div>
+<p><code>onDrag</code> can take a few more optional arguments:
+- startedDrag: <code>() -&gt; void</code>
+- released: <code>() -&gt; void</code>
+- pointerIndex: <code>PointerIndex = PointerIndex.Primary</code>
+- canStartDrag: <code>Observable[bool] = behaviorSubject(true).source</code>
+- dragCaptureThreshold: <code>float = 6.0</code></p>
+<h3 id="onkey">onKey</h3>
+<p>Used to react to key presses.</p>
+<div class="highlight"><pre><span></span><code><span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">):</span>
+  <span class="n">onKey</span><span class="p">(</span>
+    <span class="s">&quot;Shift&quot;</span><span class="p">,</span>
+    <span class="k">proc</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">KeyArgs</span><span class="p">)</span> <span class="o">=</span> <span class="n">echo</span><span class="p">(</span><span class="s">&quot;Shift was pressed&quot;</span><span class="p">),</span>
+    <span class="k">proc</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">KeyArgs</span><span class="p">)</span> <span class="o">=</span> <span class="n">echo</span><span class="p">(</span><span class="s">&quot;Shift was released&quot;</span><span class="p">)</span>
+  <span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only the focused element receives key events. See <a href="#focus">focus</a> for more information about focus.</p>
+</div>
+<h2 id="key-bindings">Key bindings</h2>
+<p>TODO</p>
+<h2 id="observables-and-subjects">Observables and Subjects</h2>
+<p>Denim makes heavy use of <a href="http://reactivex.io/">ReactiveX</a>-like observables provided by <a href="https://github.com/nortero-code/rx-nim">rx-nim</a>. See <a href="#data-binding">data binding</a> for more examples of using observables with Denim.</p>
+<h2 id="animation">Animation</h2>
+<p>One can animate any attribute of any element type. It is achieved by binding it to an animated observable. An observable can easily be converted to an animated version by using the <code>animate(source: Observable[T], interpolator: (T,T,float) -&gt; T, duration: float)</code> function.</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span> <span class="n">widthState</span> <span class="o">=</span> <span class="n">behaviorSubject</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)</span>
+
+<span class="n">rectangle</span><span class="p">(</span><span class="n">width</span> <span class="o">&lt;-</span> <span class="n">widthState</span><span class="p">.</span><span class="n">source</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="n">lerp</span><span class="p">,</span> <span class="mf">250.0</span><span class="p">),</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">colRed</span><span class="p">):</span>
+  <span class="n">onClicked</span><span class="p">(</span>
+    <span class="k">proc</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">args</span><span class="p">;</span> <span class="n">PointerArgs</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="kd">var</span> <span class="n">EventResult</span><span class="p">)</span> <span class="o">=</span>
+      <span class="n">widthState</span> <span class="o">&lt;-</span> <span class="n">widthState</span><span class="p">.</span><span class="n">value</span> <span class="o">+</span> <span class="mf">10.0</span>
+  <span class="p">)</span>
+</code></pre></div>
+<p>The above code increases the width of the rectangle by 10.0, every time it is clicked. The value is then interpolated over 250.0 ms, using a default linear interpolation function called lerp (which is implemented for a few types, like <code>float</code> and <code>Vec2[float]</code>). The animated value is then <a href="#data-binding">data bound</a> to the <code>width</code> attribute.</p>
+<h2 id="focus">Focus</h2>
+<p>One can focus an element to ensure it receivs key events. Focused elements receive keyboard events.</p>
+<h3 id="givefocuselement">giveFocus(Element)</h3>
+<div class="highlight"><pre><span></span><code><span class="n">myElement</span><span class="p">.</span><span class="n">giveFocus</span><span class="p">(</span>
+  <span class="k">proc</span><span class="p">()</span> <span class="o">=</span>
+    <span class="n">echo</span> <span class="s">&quot;Element lost focus&quot;</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Gives focus to <code>myElement</code>. The optional handler argument is called once the element loses focus (which might happen when a different element is given focus).</p>
+<h3 id="clearfocus">clearFocus</h3>
+<div class="highlight"><pre><span></span><code><span class="n">clearFocus</span><span class="p">()</span>
+</code></pre></div>
+<p>Unfocuses any focused element.</p>
+<h3 id="releasefocuselement">releaseFocus(Element)</h3>
+<div class="highlight"><pre><span></span><code><span class="n">myElement</span><span class="p">.</span><span class="n">releaseFocus</span><span class="p">()</span>
+</code></pre></div>
+<p>Releases focus if it is currently held by the supplied by <code>myElement</code>.</p>
+<h3 id="hasfocuselement-observablebool">hasFocus(Element) -&gt; Observable[bool]</h3>
+<p>Returns an <code>Observable[bool]</code> that pushes a new value whenever the focused state of the element changes.</p>
+<div class="highlight"><pre><span></span><code><span class="n">myElement</span><span class="p">.</span><span class="n">hasFocus</span><span class="p">().</span><span class="n">subscribe</span><span class="p">(</span>
+  <span class="k">proc</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="kt">bool</span><span class="p">)</span> <span class="o">=</span>
+    <span class="n">echo</span> <span class="s">&quot;Element focus changed to: &quot;</span><span class="p">,</span> <span class="n">val</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="isfocusedelement-bool">isFocused(Element) -&gt; bool</h3>
+<p>Returns whether the element is currently focused.</p>
+<h3 id="other-focus-related-functions">Other focus related functions</h3>
+<ul>
+<li><code>getCurrentlyFocusedElement() -&gt; Option[Element]</code></li>
+<li><code>focusNext()</code> Assigns focus to the next sibling of the currently focused element (if it has one).</li>
+</ul>
+<h2 id="capturing">Capturing</h2>
+<p>Capturing provides a means of making sure an element receives pointer events even if the event occurs outside the elements bounds. This is useful when for example dragging, as the pointer might be dragged outside the element between frames.</p>
+<h3 id="capturepointerelement-option-l-void">capturePointer(Element, [Option[() -&gt;L void]])</h3>
+<p>Captures the pointer to the supplied element. An optional callback can be supplied, which is called when the element loses capture.</p>
+<h3 id="releasepointerelement">releasePointer(Element)</h3>
+<p>Releases the pointer capture, if it is currently held by the supplied element.</p>
+<h3 id="other-capture-related-functions">Other capture related functions</h3>
+<ul>
+<li><code>hasPointerCapture(Element) -&gt; bool</code></li>
+<li><code>pointerCapturedBySomeoneElse(Element) -&gt; bool</code></li>
+</ul>
+<h2 id="data-binding">Data binding</h2>
+<p>For dynamic data, we use the Observable pattern, which works pretty much as RX observables (http://reactivex.io/intro.html), sans some missing operators.</p>
+<p>We can bind observables to attributes using the <code>&lt;-</code> operator:</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span> <span class="n">widthValue</span> <span class="o">=</span> <span class="n">behaviorSubject</span><span class="p">(</span><span class="mf">100.0</span><span class="p">)</span>
+<span class="n">panel</span><span class="p">(</span><span class="n">width</span> <span class="o">&lt;-</span> <span class="n">widthValue</span><span class="p">)</span>
+</code></pre></div>
+<p>We can also dynamically create a list of child elements using the spread operator <code>...</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span> <span class="n">someChildren</span> <span class="o">=</span> <span class="n">observableCollection</span><span class="p">(</span><span class="o">@[</span><span class="n">panel</span><span class="p">(),</span> <span class="n">text</span><span class="p">(),</span> <span class="n">rectangle</span><span class="p">()</span><span class="o">]</span><span class="p">)</span>
+<span class="n">panel</span><span class="p">:</span>
+  <span class="p">...</span><span class="n">someChildren</span>
+</code></pre></div>
+<p>Note that the spread operator currently works for the following types:
+- <code>seq[Element]</code>
+- <code>Subject[Element]</code>
+- <code>Subject[Option[Element]]</code>
+- <code>Subject[seq[Element]]</code>
+- <code>Observable[Element]</code>
+- <code>CollectionSubject[Element]</code></p>
+<p>More can be supported by simply creating a <code>proc</code> with the following signature:</p>
+<div class="highlight"><pre><span></span><code><span class="k">proc </span><span class="nf">bindChildCollection</span><span class="o">*</span><span class="p">(</span><span class="n">self</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">THE_TYPE_TO_SUPPORT</span><span class="p">):</span> <span class="n">void</span> <span class="o">=</span>
+   <span class="p">...</span>
+</code></pre></div>
+<p>This proc should set up the necessary subscriptions that manipulate the elements children using <code>addChild</code> and <code>removeChild</code>.</p>
+<p>Here is an example of how the implementation for <code>Subject[Element]</code> works:</p>
+<div class="highlight"><pre><span></span><code><span class="k">proc </span><span class="nf">bindChildCollection</span><span class="o">*</span><span class="p">(</span><span class="n">self</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Subject</span><span class="o">[</span><span class="n">Element</span><span class="o">]</span><span class="p">):</span> <span class="n">void</span> <span class="o">=</span>
+  <span class="kd">var</span> <span class="n">prevElem</span><span class="p">:</span> <span class="n">Element</span>
+  <span class="k">discard</span> <span class="n">item</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span>
+    <span class="k">proc</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">):</span> <span class="n">void</span> <span class="o">=</span>
+      <span class="k">if</span> <span class="ow">not</span> <span class="n">isNil</span><span class="p">(</span><span class="n">prevElem</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">removeChild</span><span class="p">(</span><span class="n">prevElem</span><span class="p">)</span>
+      <span class="n">prevElem</span> <span class="o">=</span> <span class="n">e</span>
+      <span class="n">self</span><span class="p">.</span><span class="n">addChild</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+  <span class="p">)</span>
+</code></pre></div>
+<h2 id="components">Components</h2>
+<p>Components lets us create reusable element types more easily, and can be defined like so:</p>
+<div class="highlight"><pre><span></span><code><span class="n">component</span> <span class="n">ComponentName</span><span class="p">(</span><span class="n">prop1</span><span class="p">:</span> <span class="n">AttrType1</span><span class="p">,</span> <span class="n">prop2</span><span class="p">:</span> <span class="n">AttrType2</span><span class="p">):</span>
+  <span class="k">let</span> <span class="n">foo</span> <span class="o">=</span> <span class="s">&quot;bar&quot;</span>
+
+  <span class="n">panel</span><span class="p">:</span>
+    <span class="n">text</span><span class="p">(</span><span class="n">text</span> <span class="o">=</span> <span class="n">foo</span><span class="p">)</span>
+</code></pre></div>
+<p>Component bodies can contain whatever code (almost) you want, as long as it return an element.</p>
+<p>The component can then be used with the DSL syntax like any other element:</p>
+<div class="highlight"><pre><span></span><code><span class="n">panel</span><span class="p">:</span>
+  <span class="n">componentName</span><span class="p">(</span><span class="n">prop1</span> <span class="o">=</span> <span class="p">....</span>
+</code></pre></div>
+<p>NOTE: Components should be named with an upper case first letter, but are instantiated with lower case.</p>
+<h3 id="component-fields">Component fields</h3>
+<p>One can add fields to a component using the field keyword:</p>
+<div class="highlight"><pre><span></span><code><span class="n">component</span> <span class="n">Foo</span><span class="p">():</span>
+  <span class="n">field</span> <span class="n">myField</span><span class="p">:</span> <span class="kt">float</span> <span class="o">=</span> <span class="mf">10.0</span>
+  <span class="p">...</span>
+</code></pre></div>
+<p>This field can the be accessed as a property on an instance of the component:</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span> <span class="n">f</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+<span class="n">echo</span> <span class="s">&quot;myField is: &quot;</span><span class="p">,</span> <span class="n">foo</span><span class="p">.</span><span class="n">myField</span>
+</code></pre></div>
+<p>This is useful if one wants to expose certain parts of a component to the outside world.</p>
+<div class="admonition warning">
+<p class="admonition-title">Databinding doesn't work for component properties</p>
+<p>Since the properties are just passed by value as parameters to the component body, if you want property values of component children to be changed dynamically, they need to be passed as Observables:</p>
+<div class="highlight"><pre><span></span><code>component MyDynamicComp(val1: Observabie[float]):
+  panel(width &lt;- val1)
+</code></pre></div>
+</div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+      
+        <a href="tutorial/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Tutorial
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.4ea5477f.min.js"></script>
+      
+    
+  </body>
+</html>
