@@ -104,6 +104,7 @@ proc withKeyBindings*(
     )
   )
 
+# TODO: Remove this overload
 proc withKeyBindings*(
   bindings: seq[(string, Command)]
 ): Behavior =

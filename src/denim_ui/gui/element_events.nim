@@ -261,10 +261,10 @@ proc dispatchPointerMove*(self: Element, arg: PointerArgs): EventResult =
 
 proc dispatchWheelImpl*(self: Element, args: WheelArgs, res: var EventResult): void =
   let transformedArg = args.transformed(self)
-  if not self.isPointInside(transformedArg.actualPos):
+  if not self.isPointInside(transformedArg.actualPos) and not self.hasPointerCapture:
     return
 
-  for child in self.childrenSortedByZIndex:
+  for child in self.childrenSortedByZIndex.reverse:
     child.dispatchWheelImpl(transformedArg, res)
   for handler in self.wheelHandlers:
     handler(transformedArg, res)

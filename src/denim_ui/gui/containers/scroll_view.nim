@@ -7,15 +7,11 @@ import ../element_observables
 import ../../vec
 import ../../rect
 import ../../type_name
+import ../dsl/dsl
 
-type
-  ScrollViewProps* = ref object
-    contentSize*: Subject[Vec2[float]]
-    scrollViewSize*: Subject[Vec2[float]]
-    scrollProgress*: Option[Vec2[float]]
-
-  ScrollView* = ref object of Element
-    scrollViewProps*: ScrollViewProps
+component ScrollView(scrollProgress: Option[Vec2[float]]):
+  field contentSize: Subject[Vec2[float]] = behaviorSubject(zero())
+  field scrollViewSize: Subject[Vec2[float]] = behaviorSubject(zero())
 
 implTypeName(ScrollView)
 
@@ -26,25 +22,16 @@ method measureOverride(self: ScrollView, availableSize: Vec2[float]): Vec2[float
   var largestChild = vec2(0.0)
   for child in self.children:
     largestChild = largestChild.max(child.desiredSize.get())
-  if not isNil(props.contentSize) and (isNil(props.contentSize.value) or props.contentSize.value != largestChild):
-    props.contentSize.next(largestChild)
-  if not isNil(props.scrollViewSize) and (isNil(props.scrollViewSize.value) or props.scrollViewSize.value != availableSize):
-    props.scrollViewSize.next(availableSize)
+  if not isNil(self.contentSize) and (isNil(self.contentSize.value) or self.contentSize.value != largestChild):
+    self.contentSize.next(largestChild)
+  if not isNil(self.scrollViewSize) and (isNil(self.scrollViewSize.value) or self.scrollViewSize.value != availableSize):
+    self.scrollViewSize.next(availableSize)
 
   availableSize
 
 method arrangeOverride(self: ScrollView, availableSize: Vec2[float]): Vec2[float] =
-  let props = self.scrollViewProps
-  let progress = props.scrollProgress.get(vec2(0.0)).clamp(vec2(0.0), vec2(1.0))
+  let progress = self.scrollViewProps.scrollProgress.get(vec2(0.0)).clamp(vec2(0.0), vec2(1.0))
   for child in self.children:
     let childSizeOverBounds = max(vec2(0.0), child.desiredSize.get() - availableSize)
     child.arrange(rect(-progress.x * childSizeOverBounds.x, -progress.y * childSizeOverBounds.y, availableSize.x, availableSize.y))
   self.desiredSize.get()
-
-proc initScrollView*(self: ScrollView, props: ScrollViewProps): void =
-  self.scrollViewProps = props
-proc createScrollView*(props: (ElementProps, ScrollViewProps)): ScrollView =
-  let (elemProps, scrollViewProps) = props
-  result = ScrollView()
-  initElement(result, elemProps)
-  initScrollView(result, scrollViewProps)

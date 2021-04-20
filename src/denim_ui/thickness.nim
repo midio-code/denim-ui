@@ -21,11 +21,17 @@ proc left*[T:Number](self: T): Thickness[T] =
 proc topLeft*[T:Number](t, l: T): Thickness[T] =
   thickness(l, t, 0.0, 0.0)
 
+template topLeft*[T:Number](tl: T): Thickness[T] =
+  thickness(tl, tl, 0.0, 0.0)
+
 proc right*[T:Number](self: T): Thickness[T] =
   thickness(0.0, 0.0, self, 0.0)
 
 proc topRight*[T:Number](t, r: T): Thickness[T] =
   thickness(0.0, t, r, 0.0)
+
+template topRight*[T:Number](tr: T): Thickness[T] =
+  thickness(0.0, tr, rr, 0.0)
 
 proc top*[T:Number](self: T): Thickness[T] =
   thickness(0.0, self, 0.0, 0.0)
@@ -36,8 +42,14 @@ proc bottom*[T:Number](self: T): Thickness[T] =
 proc bottomRight*[T:Number](b, r: T): Thickness[T] =
   thickness(0.0, 0.0, r, b)
 
+template bottomRight*[T:Number](br: T): Thickness[T] =
+  thickness(0.0, 0.0, br, br)
+
 proc bottomLeft*[T:Number](b, l: T): Thickness[T] =
   thickness(l, 0.0, 0.0, b)
+
+template bottomLeft*[T:Number](bl: T): Thickness[T] =
+  thickness(bl, 0.0, 0.0, bl)
 
 proc horizontal*[T:Number](h: T): Thickness[T] =
   thickness(h, 0.0, h, 0.0)

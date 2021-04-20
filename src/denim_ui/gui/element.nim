@@ -474,8 +474,7 @@ proc relativeTo*(self: Rect[float], elem: Element): Rect[float] =
 proc childrenSortedByZIndex*(self: Element): seq[Element] =
   self
     .children
-    .sorted((a, b: Element) => b.props.zIndex.get(0) - a.props.zIndex.get(0), SortOrder.Descending)
-
+    .sorted((a, b: Element) => b.props.zIndex.get(self.children.find(b)) - a.props.zIndex.get(self.children.find(a)), SortOrder.Descending)
 
 method render*(self: Element): Option[Primitive] {.base.} =
   if self.props.visibility.get(Visibility.Visible) != Visibility.Visible:

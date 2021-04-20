@@ -1,6 +1,6 @@
 import macros, sugar, sets, sequtils, tables, options, strformat, strutils, typetraits
 import ../types, ../data_binding, ../element, ../behaviors
-import ../containers/stack, ../containers/dock, ../containers/scroll_view
+import ../containers/stack, ../containers/dock
 import ../primitives/text, ../primitives/rectangle, ../primitives/path, ../primitives/circle
 import ../native_element
 import ../../utils
@@ -335,7 +335,6 @@ template element_type*(identifier: untyped, propTypes: untyped, constructor: unt
 element_type(rectangle, (ElementProps, RectangleProps), createRectangle)
 element_type(path, (ElementProps, PathProps), createPath)
 element_type(stack, (ElementProps, StackProps), createStack)
-element_type(scrollView, (ElementProps, ScrollViewProps), createScrollView)
 element_type(grid, (ElementProps, GridProps), createGrid)
 
 type

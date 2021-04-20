@@ -29,7 +29,6 @@ proc giveFocus*(self: Element, lostFocusHandler: Option[() -> void] = none[() ->
   focusedElementSubject <- some((self, lostFocusHandler))
 
 proc focusNext*(): void =
-  echo "Current focus: ", focusedElementSubject.value
   if focusedElementSubject.value.isSome:
     let focusItem = focusedElementSubject.value.get
     if focusItem[1].isSome:
