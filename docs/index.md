@@ -4,6 +4,9 @@ A custom cross platform UI framework focused on fast and easy prototyping by the
 
 The various platforms are supported through separate backend implementations. An js backend that uses the canvas api for drawing and html for native components the only somewhat usable backend, but a native one is planned.
 
+!!! warning
+    Note that this project is still in an early phase, and subject to possibly large changes and breakages. Use at your own risk.
+
 ## Minimal example
 
 ![minimal](minimal_example.png)
