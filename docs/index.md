@@ -435,8 +435,20 @@ Returns whether the element is currently focused.
 
 ## Capturing
 
-TODO
+Capturing provides a means of making sure an element receives pointer events even if the event occurs outside the elements bounds. This is useful when for example dragging, as the pointer might be dragged outside the element between frames.
 
+### capturePointer(Element, [Option[() ->L void]])
+
+Captures the pointer to the supplied element. An optional callback can be supplied, which is called when the element loses capture.
+
+### releasePointer(Element)
+
+Releases the pointer capture, if it is currently held by the supplied element.
+
+### Other capture related functions
+
+- `hasPointerCapture(Element) -> bool`
+- `pointerCapturedBySomeoneElse(Element) -> bool`
 
 ## Data binding
 
