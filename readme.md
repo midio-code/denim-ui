@@ -12,8 +12,6 @@ Note that this project is still in an early phase, and subject to possibly large
 
 ## Minimal example
 
-![minimal](minimal_example.png)
-
 ```nim
 import denim_ui
 import denim_ui_canvas
