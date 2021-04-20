@@ -216,7 +216,6 @@ rectangle(
   width = 50.0,
   height = 20.0
 )
-
 ```
 
 !!! note
@@ -224,39 +223,220 @@ rectangle(
 
 ### Circle
 
-TODO
+Draws a circle with the specified radius. It can be filled and/or stroked.
+
+```nim
+circle(
+  color = colBlue,
+  stroke = colRed,
+  strokeWidth = 2.0,
+  radius = 50.0,
+)
+```
 
 ### Text
 
-TODO
+```nim
+text(
+  font = "Inter",
+  fontSize = 24.0,
+  color = colBlack,
+  wordWrap = true
+)
+```
+
+Setting `wordWrap` to true enables multiline text. If not, all the text is drawn on one line. It is `false` by default.
 
 ### Path
 
-TODO
+Draws a path using the provided data. The path can be filled and/or stroked.
+The path data can either be a string as explained [here](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths), or a list of `PathSegment`.
+
+```nim
+path(
+  data = @[moveTo(0.0, 0.0), lineTo(10.0, 0.0), lineTo(5.0, 10.0), close()],
+  lineDash = @[4, 2],
+  lineCap = LineCap.Round,
+  lineJoin = LineJoin.Bevel,
+  stroke = colBlue,
+  strokeWidth = 2.0
+)
+```
+alternatively
+```nim
+path(
+  data = "M 0 0 L 10 0 L 5 10 Z",
+  ...
+```
+
+### LineCap
+
+```nim
+LineCap =  enum
+  Square, Butt, Round
+```
+
+### LineJoin
+```nim
+LineJoin = enum
+  Miter, Bevel, Round
+```
+
+### LineDash
+
+Line dash lets one specify a line pattern for the path.
+
+For example
+```
+lineDash = @[4, 2]
+```
+
+results in a line like like:
+
+```
+----  ----  ----  ----
+```
+
+!!! note
+    If the number of elements in the sequence is odd, the elements of the sequence get copied and concatenated. For example, [5, 15, 25] will become [5, 15, 25, 5, 15, 25]. If the array is empty, the line dash list is cleared and line strokes return to being solid.
 
 ## Behaviors
 
-TODO
+Behaviors are used to respond to user input and other events, and can be attached to any alement.
 
-### onClick
+### onClicked
 
-TODO
+Lets one react to an element being clicked (the pointer being pressed and released on the element)
 
-### onPressed
+```nim
+rectangle(width = 50.0, height = 50.0, color = colRed):
+  onClicked(
+    proc(e: Element, args: PointerArgs, res: var EventResult): void =
+      if not res.isHandled:
+        echo "We are handling this clicked event"
+        res.addHandledBy(e.id)
+  )
+```
+!!! note
+    The `EventResult` argument is used to keep track of who might already handled this event. This lets us make sure only we handle a clicked event, or if we want to, let other elements (like for example the parent element), also handle the event.
 
-TODO
+### onPressed/onReleased/onPointerMoved
 
-### onReleased 
+Lets one react to the pointer being pressed/released/moved on the element.
 
-TODO
-
-### onPointerMoved
-
-TODO
+```nim
+rectangle(width = 50.0, height = 50.0, color = colRed):
+  onPressed(
+    proc(e: Element, args: PointerArgs, res: var EventResult): void =
+      echo "We are pressing"
+  )
+  onReleased(
+    proc(e: Element, args: PointerArgs, res: var EventResult): void =
+      echo "We are releasing"
+  )
+  onPointerMoved(
+    proc(e: Element, args: PointerArgs, res: var EventResult): void =
+      echo "We are releasing"
+  )
+```
 
 ### onDrag
 
+```nim
+rectangle(width = 50.0, height = 50.0, color = colRed):
+  onDrag(
+    proc(amountMoved: Vec2[float]): void =
+      echo "We dragged the pointer ", amountMoved
+  )
+```
+
+`onDrag` can take a few more optional arguments:
+- startedDrag: `() -> void`
+- released: `() -> void`
+- pointerIndex: `PointerIndex = PointerIndex.Primary`
+- canStartDrag: `Observable[bool] = behaviorSubject(true).source`
+- dragCaptureThreshold: `float = 6.0`
+
+### onKey
+
+Used to react to key presses.
+
+```nim
+rectangle(width = 50.0, height = 50.0, color = colRed):
+  onKey(
+    "Shift",
+    proc(e: Element, a: KeyArgs) = echo("Shift was pressed"),
+    proc(e: Element, a: KeyArgs) = echo("Shift was released")
+  )
+```
+
+!!! note
+    Only the focused element receives key events. See [focus](#focus) for more information about focus.
+
+### Key bindings
+
 TODO
+
+## Observables and Subjects
+
+Denim makes heavy use of [ReactiveX](http://reactivex.io/)-like observables provided by [rx-nim](https://github.com/nortero-code/rx-nim). See [data binding](#data-binding) for more examples of using observables with Denim.
+
+## Focus
+
+One can focus an element to ensure it receivs key events. Focused elements receive keyboard events.
+
+### giveFocus(Element)
+
+```nim
+myElement.giveFocus(
+  proc() =
+    echo "Element lost focus"
+)
+```
+
+Gives focus to `myElement`. The optional handler argument is called once the element loses focus (which might happen when a different element is given focus).
+
+### clearFocus
+
+```nim
+clearFocus()
+```
+
+Unfocuses any focused element.
+
+### releaseFocus(Element)
+
+```nim
+myElement.releaseFocus()
+```
+
+Releases focus if it is currently held by the supplied by `myElement`.
+
+### hasFocus(Element) -> Observable[bool]
+
+Returns an `Observable[bool]` that pushes a new value whenever the focused state of the element changes.
+
+```nim
+myElement.hasFocus().subscribe(
+  proc(val: bool) =
+    echo "Element focus changed to: ", val
+)
+
+```
+
+### isFocused(Element) -> bool
+
+Returns whether the element is currently focused.
+
+### Other focus related functions
+
+- `getCurrentlyFocusedElement() -> Option[Element]`
+- `focusNext()` Assigns focus to the next sibling of the currently focused element (if it has one).
+
+## Capturing
+
+TODO
+
 
 ## Data binding
 
