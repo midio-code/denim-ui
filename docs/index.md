@@ -175,15 +175,52 @@ stack(direction = StackDirection.Horizontal):
 
 ### Grid (TODO)
 
-TODO
+Lays out children in a grid formation.
+
+```nim
+grid(
+  width = 100.0,
+  height = 100.0,
+  rows = @[points(400.0), points(400.0)],
+  cols = @[proportion(2.0), proportion(1.0)],
+):
+  rectangle(color = colRed)
+  rectangle(color = colBlue)
+  rectangle(color = colYellow)
+  rectangle(color = colGreen)
+
+```
+
+The `rows` and `cols` attributes lets one customize the sizes of the rows and columns of the grid. Points lets you explicitly set the size of the row/column, while proportion lets you create row/cols that are proportionally sized relative to each other and the available size.
+
+The children are placed automatically in grid cells, going from top to bottom, left to right.
+
+| 1 | 2 |
+|---|---|
+| 3 | 4 |
 
 ## Visual primitives
 
-TODO
+The folowing element types are used for drawing various shapes and text.
 
 ### Rectangle
 
-TODO
+Draws a rectangle with optionally curved edges. It can be filled and/or stroked.
+
+```nim
+rectangle(
+  color = colBlue,
+  stroke = colRed,
+  strokeWidth = 2.0,
+  radius = (5.0, 10.0, 5.0, 10.0),
+  width = 50.0,
+  height = 20.0
+)
+
+```
+
+!!! note
+    `radius` is used to make the corners of the rectangle curved. It takes a tuple of four `float`, which assigns a radius to the four corners `(topLeft, topRight, bottomRight, bottomLeft)`
 
 ### Circle
 
