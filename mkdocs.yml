@@ -1,7 +1,16 @@
 site_name: Denim UI
+repo_url: https://github.com/nortero-code/denim-ui
+
+nav:
+  - Home: index.md
+  - Tutorial: tutorial.md
 
 theme:
   name: material
+  features:
+     - navigation.tabs
 
 markdown_extensions:
   - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences

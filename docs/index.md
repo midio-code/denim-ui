@@ -48,8 +48,21 @@ startApp(
 </html>
 ```
 
+## Installation
 
-# DSL
+Denim UI is provided through the nimble package manager:
+```
+requires "denim_ui"
+```
+
+### Backends
+
+The only usable backend for denim UI is currently the canvas based javascript backend which can be added from nimble:
+```
+requires "denim_ui_canvas"
+```
+
+## DSL
 
 Denim has a neat custom DSL for writing UIs. It allows one to easily create deep UI trees, as well as group parts of the UI into reusable components.
 
@@ -91,13 +104,13 @@ proc render*(): Element =
   )
 ```
 
-# The Element type
+## The Element type
 
 All the visual nodes in the UI tree inherit from the Element type.
 
 `panel()`, for example, creates an element with the layout semantics of a panel (we'll get to layout soon).
 
-## Attributes available on all element types:
+### Attributes available on all element types:
 
 - width: `Option[float]`
 - height: `Option[float]`
@@ -123,7 +136,7 @@ All the visual nodes in the UI tree inherit from the Element type.
 	We would like to remove this converter and get the DSL to handle the conversion instead in the future.
 
 
-### Alignment
+#### Alignment
 
 ```nim
 Alignment = enum
@@ -133,7 +146,7 @@ Alignment = enum
   HorizontalCenter, VerticalCenter
 ```
 
-### Visibility
+#### Visibility
 ```nim
 Visibility = enum
   Visible, Collapsed, Hidden
@@ -146,6 +159,12 @@ Layout is created using a set of elements that lays out its children in various 
 ### Panel
 
 Panel performs the default layout on the children, where all children get all available space. The children of a panel will by default fill their entire space. If a panel contains several children, it simply layers them on top of each other.
+
+```nim
+panel(width = 100.0, height = 100.0):
+  rectangle(color = colRed)
+  circle(color = colBlue, radius = 25.0, alignment = Aligmment.Center)
+```
 
 ### Dock
 
@@ -173,7 +192,7 @@ stack(direction = StackDirection.Horizontal):
   rectangle(width = 10, height = 10, color = colYellow)
 ```
 
-### Grid (TODO)
+### Grid
 
 Lays out children in a grid formation.
 
@@ -269,20 +288,20 @@ path(
   ...
 ```
 
-### LineCap
+#### LineCap
 
 ```nim
 LineCap =  enum
   Square, Butt, Round
 ```
 
-### LineJoin
+#### LineJoin
 ```nim
 LineJoin = enum
   Miter, Bevel, Round
 ```
 
-### LineDash
+#### LineDash
 
 Line dash lets one specify a line pattern for the path.
 
@@ -373,13 +392,29 @@ rectangle(width = 50.0, height = 50.0, color = colRed):
 !!! note
     Only the focused element receives key events. See [focus](#focus) for more information about focus.
 
-### Key bindings
+## Key bindings
 
 TODO
 
 ## Observables and Subjects
 
 Denim makes heavy use of [ReactiveX](http://reactivex.io/)-like observables provided by [rx-nim](https://github.com/nortero-code/rx-nim). See [data binding](#data-binding) for more examples of using observables with Denim.
+
+## Animation
+
+One can animate any attribute of any element type. It is achieved by binding it to an animated observable. An observable can easily be converted to an animated version by using the `animate(source: Observable[T], interpolator: (T,T,float) -> T, duration: float)` function.
+
+```nim
+let widthState = behaviorSubject(10.0)
+
+rectangle(width <- widthState.source.animate(lerp, 250.0), height = 20.0, color = colRed):
+  onClicked(
+    proc(e: Element, args; PointerArgs, res: var EventResult) =
+      widthState <- widthState.value + 10.0
+  )
+```
+
+The above code increases the width of the rectangle by 10.0, every time it is clicked. The value is then interpolated over 250.0 ms, using a default linear interpolation function called lerp (which is implemented for a few types, like `float` and `Vec2[float]`). The animated value is then [data bound](#data-binding) to the `width` attribute.
 
 ## Focus
 
@@ -461,7 +496,7 @@ let widthValue = behaviorSubject(100.0)
 panel(width <- widthValue)
 ```
 
-We can also have dynamic children using the spread operator ...:
+We can also dynamically create a list of child elements using the spread operator `...`:
 
 ```nim
 let someChildren = observableCollection(@[panel(), text(), rectangle()])
@@ -529,25 +564,23 @@ One can add fields to a component using the field keyword:
 
 ```nim
 component Foo():
-  field myField: float
+  field myField: float = 10.0
   ...
 ```
 
-This field can the be accessed from the instantiating scope:
+This field can the be accessed as a property on an instance of the component:
 
 ```nim
 let f = Foo()
-echo foo.myField
+echo "myField is: ", foo.myField
 ```
 
-This is useful if one wants to expose certain parts of a component to the outside.
+This is useful if one wants to expose certain parts of a component to the outside world.
 
-### NOTE: Databinding doesn't work for component properties
+!!! warning "Databinding doesn't work for component properties"
+    Since the properties are just passed by value as parameters to the component body, if you want property values of component children to be changed dynamically, they need to be passed as Observables:
 
-Since the properties are just passed by value as parameters to the component body,
-if you want property values of component children to be changed dynamically, they need to be passed as Observables:
-
-```nim
-component MyDynamicComp(val1: Observabie[float]):
-  panel(width <- val1)
-```
+    ```
+    component MyDynamicComp(val1: Observabie[float]):
+      panel(width <- val1)
+    ```
