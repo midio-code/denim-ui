@@ -1,17 +1,10 @@
 import denim_ui
 import denim_ui_canvas
-import macros
+import colors
 
 proc render(): Element =
-  var elemen1: Element
-  expandMacros:
-    panel():
-      rectangle(color = "red"):
-        onClicked(
-          proc(e: Element): void =
-            echo "E: ", e.id
-            echo "Element: ", this.id
-        )
+  panel():
+    rectangle(color = colRed)
 
 startApp(
   render,
