@@ -27,7 +27,7 @@ method measureOverride(self: ScrollView, availableSize: Vec2[float]): Vec2[float
   if not isNil(self.scrollViewSize) and (isNil(self.scrollViewSize.value) or self.scrollViewSize.value != availableSize):
     self.scrollViewSize.next(availableSize)
 
-  availableSize
+  largestChild.min(vec2(self.props.maxWidth.get(Inf), self.props.maxHeight.get(Inf)))
 
 method arrangeOverride(self: ScrollView, availableSize: Vec2[float]): Vec2[float] =
   let progress = self.scrollViewProps.scrollProgress.get(vec2(0.0)).clamp(vec2(0.0), vec2(1.0))
