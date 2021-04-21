@@ -488,6 +488,20 @@ Releases the pointer capture, if it is currently held by the supplied element.
 - `hasPointerCapture(Element) -> bool`
 - `pointerCapturedBySomeoneElse(Element) -> bool`
 
+## Cursors
+
+There are a few ways of changing the pointer cursor.
+The simplest is to call the `setCursor(Cursor)` function.
+
+A better alternative is to use the `cursorOnHover(Cursor)` or `cursorWhilePressed(Cursor, PointerIndex)` behaviors.
+
+Three are currently only three cursors implemented, but more will be added.
+
+```nim
+Cursor = enum
+  Default, Clickable, Dragging
+```
+
 ## Data binding
 
 For dynamic data, we use the Observable pattern, which works pretty much as RX observables (http://reactivex.io/intro.html), sans some missing operators.
