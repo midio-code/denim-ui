@@ -599,6 +599,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cursors" class="md-nav__link">
+    Cursors
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#data-binding" class="md-nav__link">
     Data binding
   </a>
@@ -1004,6 +1011,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cursors" class="md-nav__link">
+    Cursors
+  </a>
   
 </li>
       
@@ -1422,6 +1436,14 @@ alternatively
 <li><code>hasPointerCapture(Element) -&gt; bool</code></li>
 <li><code>pointerCapturedBySomeoneElse(Element) -&gt; bool</code></li>
 </ul>
+<h2 id="cursors">Cursors</h2>
+<p>There are a few ways of changing the pointer cursor.
+The simplest is to call the <code>setCursor(Cursor)</code> function.</p>
+<p>A better alternative is to use the <code>cursorOnHover(Cursor)</code> or <code>cursorWhilePressed(Cursor, PointerIndex)</code> behaviors.</p>
+<p>Three are currently only three cursors implemented, but more will be added.</p>
+<div class="highlight"><pre><span></span><code><span class="n">Cursor</span> <span class="o">=</span> <span class="k">enum</span>
+  <span class="n">Default</span><span class="p">,</span> <span class="n">Clickable</span><span class="p">,</span> <span class="n">Dragging</span>
+</code></pre></div>
 <h2 id="data-binding">Data binding</h2>
 <p>For dynamic data, we use the Observable pattern, which works pretty much as RX observables (http://reactivex.io/intro.html), sans some missing operators.</p>
 <p>We can bind observables to attributes using the <code>&lt;-</code> operator:</p>
