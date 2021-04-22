@@ -11,9 +11,3 @@ test: test_dsl
 	nim c -r ./tests/t_guid.nim
 	nim c -r ./tests/t_element_bounds.nim
 .PHONY: test_dsl test
-
-docs:
-	mkdir -p ./docs
-	nim doc --project --index\:on --outdir:./docs/ --nimcache:./docs/ ./src/denim_ui.nim
-	nim buildIndex -o:./docs/index.html docs
-.PHONY: docs
