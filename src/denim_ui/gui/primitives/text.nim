@@ -113,7 +113,8 @@ method render*(self: Text): Option[Primitive] =
       kind: PrimitiveKind.Text,
       textInfo: textInfo,
       colorInfo: ColorInfo(fill: color),
-      children: @[]
+      children: @[],
+      opacity: self.props.opacity
     )
 
     lineY += line.size.y
@@ -123,7 +124,8 @@ method render*(self: Text): Option[Primitive] =
     bounds: self.bounds.get(),
     clipToBounds: self.props.clipToBounds.get(false),
     kind: PrimitiveKind.Container,
-    children: children
+    children: children,
+    opacity: self.props.opacity
   )
   some(container)
 

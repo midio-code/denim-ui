@@ -492,7 +492,8 @@ method render*(self: Element): Option[Primitive] {.base.} =
       transform: self.props.transform,
       bounds: self.bounds.get(),
       clipToBounds: self.props.clipToBounds.get(false),
-      kind: PrimitiveKind.Container
+      kind: PrimitiveKind.Container,
+      opacity: self.props.opacity
     )
   )
   if result.isSome():

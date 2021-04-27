@@ -139,6 +139,7 @@ type
     shadow*: Option[Shadow]
     clipToBounds*: bool
     bounds*: Bounds
+    opacity*: Option[float]
     transform*: seq[Transform]
     children*: seq[Primitive]
     case kind*: PrimitiveKind
@@ -207,6 +208,7 @@ type
     # NOTE: Only for debugging
     debugName*: Option[string]
     shadow*: Option[Shadow]
+    opacity*: Option[float]
 
   Layout* = ref object
     name*: string # TODO: Hide this in release builds?

@@ -40,6 +40,7 @@ proc createContainer*(self: Element, children: seq[Primitive]): Primitive =
     clipToBounds: self.props.clipToBounds.get(false),
     kind: Container,
     children: children,
+    opacity: self.props.opacity,
   )
 
 proc moveTo*(x: float, y: float): PathSegment =
@@ -67,6 +68,7 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     children: @[],
+    opacity: self.props.opacity,
   )
 
 
@@ -84,6 +86,7 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     children: @[],
+    opacity: self.props.opacity,
   )
 
 proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], segments: varargs[PathSegment]): Primitive =
@@ -100,6 +103,7 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     children: @[],
+    opacity: self.props.opacity,
   )
 
 proc circle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], center: Point, radius: float): Primitive =
@@ -113,6 +117,7 @@ proc circle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[Str
     strokeInfo: strokeInfo,
     circleInfo: CircleInfo(radius: radius),
     children: @[],
+    opacity: self.props.opacity,
   )
 
 proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], radius: Vec2[float]): Primitive =
@@ -126,6 +131,7 @@ proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[St
     strokeInfo: strokeInfo,
     ellipseInfo: EllipseInfo(radius: radius, endAngle: TAU),
     children: @[],
+    opacity: self.props.opacity,
   )
 
 proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo]): Primitive =
@@ -139,6 +145,7 @@ proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[
     strokeInfo: strokeInfo,
     rectangleInfo: RectangleInfo(bounds: self.bounds.get()),
     children: @[],
+    opacity: self.props.opacity,
   )
 
 proc rectangle*(bounds: Bounds, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo]): Primitive =
