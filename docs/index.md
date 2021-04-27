@@ -322,6 +322,34 @@ results in a line like like:
 !!! note
     If the number of elements in the sequence is odd, the elements of the sequence get copied and concatenated. For example, [5, 15, 25] will become [5, 15, 25, 5, 15, 25]. If the array is empty, the line dash list is cleared and line strokes return to being solid.
 
+## Native elements
+
+Denim supports layering native elements to get access to for example text inputs and other native controls.
+
+### TextInput
+
+```nim
+let content = behaviorSubject("")
+
+proc textChanged(newVal: string): void {.locks: 0.} =
+content <- newVal
+
+textInput(
+  text <- content.source,
+  color = colBlack,
+  font = "Noto Sans",
+  fontSize = 14.0,
+  margin = thickness(10.0),
+  placeholder = "Write something",
+  onChange = some[TextChanged](textChanged)
+)
+```
+
+!!! note
+    Make sure you cast to Option[TextChanged] when assigning a handler to `onChange`, as the nim compiler
+	is often not smart enough to infer the type correctly, and might give you a slightly misleading error message like
+	`Error: type mismatch: got <Option[proc (newVal`gensym98: string){.locks: 0.}]> but expected 'Option[proc (i0: Error){.closure.}]'`
+
 ## Behaviors
 
 Behaviors are used to respond to user input and other events, and can be attached to any alement.
