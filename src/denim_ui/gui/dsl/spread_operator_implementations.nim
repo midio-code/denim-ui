@@ -1,14 +1,15 @@
 import options, sets, sequtils, sugar
 import ../types
 import ../element
+import ../data_binding
 import rx_nim
 import ../../guid
 import ../../utils
 
 proc bindChildCollection*(self: Element, item: Subject[Element]): void =
   var prevElem: Element
-  ## TODO: handle subscription
-  discard item.subscribe(
+  self.subscribe(
+    item.source,
     proc(e: Element): void =
       if not isNil(prevElem):
         self.removeChild(prevElem)
@@ -19,8 +20,8 @@ proc bindChildCollection*(self: Element, item: Subject[Element]): void =
 
 proc bindChildCollection*(self: Element, item: Observable[Option[Element]]): void =
   var prevElem: Element
-  ## TODO: handle subscription
-  discard item.subscribe(
+  self.subscribe(
+    item,
     proc(e: Option[Element]): void =
       if not isNil(prevElem):
         self.removeChild(prevElem)
@@ -31,8 +32,8 @@ proc bindChildCollection*(self: Element, item: Observable[Option[Element]]): voi
 
 proc bindChildCollection*(self: Element, item: Observable[Element]): void =
   var prevElem: Element
-  ## TODO: handle subscription
-  discard item.subscribe(
+  self.subscribe(
+    item,
     proc(e: Element): void =
       if not isNil(prevElem):
         self.removeChild(prevElem)
@@ -51,8 +52,8 @@ proc bindChildCollection*(self: Element, subj: Subject[seq[Element]]): void =
   ## TODO: Keep the correct ordering of the children even with multiple child lists spread
 
   var elementsManagedByThisBinding = newSeq[Guid]()
-  ## TODO: Dispose of collection subscription !!!!!!!!
-  discard subj.subscribe(
+  self.subscribe(
+    subj.source,
     proc(newVal: seq[Element]): void =
       var toRemoveFromManagementList: seq[Guid] = @[]
       # Delete items which we manage, but which are
@@ -85,8 +86,8 @@ proc bindChildCollection*(self: Element, obs: Observable[seq[Element]]): void =
   self.bindChildCollection(subj)
 
 proc bindChildCollection*(self: Element, obs: ObservableCollection[Element]): void =
-  # TODO: Handle subscriptions for bound child collections
-  discard obs.subscribe(
+  self.subscribe(
+    obs,
     proc(change: Change[Element]): void =
       case change.kind:
         of ChangeKind.Added:
