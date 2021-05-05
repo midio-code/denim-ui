@@ -31,7 +31,7 @@ proc topRight*[T:Number](t, r: T): Thickness[T] =
   thickness(0.0, t, r, 0.0)
 
 template topRight*[T:Number](tr: T): Thickness[T] =
-  thickness(0.0, tr, rr, 0.0)
+  thickness(0.0, tr, tr, 0.0)
 
 proc top*[T:Number](self: T): Thickness[T] =
   thickness(0.0, self, 0.0, 0.0)

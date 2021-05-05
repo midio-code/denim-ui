@@ -31,12 +31,7 @@ iterator tokens(str: string): string =
     else:
       yield token
 
-method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
-  let props = self.textProps
-
-  let font = props.font.get(defaults.font)
-  let fontSize = props.fontSize.get(defaults.fontSize)
-
+proc measureMultilineText*(text: string, font: string, fontSize: float, wordWrap: bool, avSize: Vec2[float]): (seq[TextLine], Vec2[float]) =
   var totalSize = vec2(0.0)
   var lines: seq[TextLine] = @[]
 
@@ -62,14 +57,14 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
     lineSize.x += tokenSize.x
     lineSize.y = max(lineSize.y, tokenSize.y)
 
-  for token in self.textProps.text.tokens():
+  for token in text.tokens():
     let tokenSize = measureText(token, fontSize, font, baseline = "top")
 
     if token == "\n":
       flushLine()
     else:
       let shouldWrap =
-        props.wordWrap and
+        wordWrap and
         lineTokens.len() > 0 and
         lineSize.x + tokenSize.x > avSize.x and
         not token.isEmptyOrWhitespace
@@ -83,8 +78,18 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
   if lineTokens.len() > 0:
     flushLine()
 
-  self.lines = lines
+  (lines, totalSize)
 
+method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
+  let props = self.textProps
+  let (lines, totalSize) = measureMultilineText(
+    self.textProps.text,
+    props.font.get(defaults.font),
+    props.fontSize.get(defaults.fontSize),
+    props.wordWrap,
+    avSize
+  )
+  self.lines = lines
   totalSize
 
 method render*(self: Text): Option[Primitive] =

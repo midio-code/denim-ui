@@ -36,6 +36,16 @@ var pointerPressedLastFrame = false
 var pointerPressedThisFrame = false
 
 
+type
+  KeyEventKind {.pure.} = enum
+    Down, Up
+  KeyEvent = ref object
+    kind: KeyEventKind
+    args: KeyArgs
+
+var keyEventsThisFrame: seq[KeyEvent] = @[]
+
+
 var wheelEventsLastFrame: seq[WheelArgs] = @[]
 
 var windowSize: Vec2[float]
@@ -69,6 +79,15 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
     discard ctx.rootElement.dispatchPointerUp(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos), lastPointerIndex))
     pointerPressedLastFrame = false
 
+  let keyEvents = keyEventsThisFrame
+  keyEventsThisFrame = @[]
+  for event in keyEvents:
+    case event.kind:
+      of KeyEventKind.Down:
+        discard dispatchKeyDown(event.args)
+      of KeyEventKind.Up:
+        discard dispatchKeyUp(event.args)
+
   if wheelEventsLastFrame.len > 0:
     for arg in wheelEventsLastFrame:
       # TODO: Clean up
@@ -83,14 +102,6 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   result = ctx.rootElement.render()
   if result.isSome:
     result.get().children = result.get().children & flushDebugDrawings()
-
-  # samples += 1
-  # if samples >= 60:
-  #   let currentTime = float(getMonoTime().ticks) / 1000000.0
-  #   echo &"MS/frame: {float(currentTime - startTime)/60.0}"
-  #   samples = 0
-  #   startTime = currentTime
-
 
 proc dispatchWindowSizeChanged*(newSize: Vec2[float]): void {.exportc.} =
   windowSize = newSize
@@ -122,20 +133,26 @@ proc dispatchWheel*(x: float, y: float, deltaX: float, deltaY: float, deltaZ: fl
   ))
 
 proc dispatchKeyDown*(keyCode: int, key: string, modifiers: seq[string]): void {.exportc.} =
-  discard dispatchKeyDown(
-    KeyArgs(
-      key: key, # TODO: We seem to be gettin the wrong key
-      keyCode: keyCode,
-      modifiers: modifiers
+  keyEventsThisFrame.add(
+    KeyEvent(
+      kind: KeyEventKind.Down,
+      args: KeyArgs(
+        key: key, # TODO: We seem to be gettin the wrong key
+        keyCode: keyCode,
+        modifiers: modifiers
+      )
     )
   )
 
 proc dispatchKeyUp*(keyCode: int, key: string, modifiers: seq[string]): void {.exportc.} =
-  discard dispatchKeyUp(
-    KeyArgs(
-      key: key, # TODO: We seem to be gettin the wrong key
-      keyCode: keyCode,
-      modifiers: modifiers
+  keyEventsThisFrame.add(
+    KeyEvent(
+      kind: KeyEventKind.Up,
+      args: KeyArgs(
+        key: key, # TODO: We seem to be gettin the wrong key
+        keyCode: keyCode,
+        modifiers: modifiers
+      )
     )
   )
 

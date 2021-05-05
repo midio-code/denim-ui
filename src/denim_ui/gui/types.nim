@@ -52,6 +52,7 @@ type
     placeholderColor*: Option[Color]
     onChange*: Option[TextChanged]
     focusWhenRooted*: Option[bool]
+    wordWrap*: bool
 
   PathSegmentKind* {.pure.} = enum
     MoveTo, LineTo, QuadraticCurveTo, BezierCurveTo, Close
