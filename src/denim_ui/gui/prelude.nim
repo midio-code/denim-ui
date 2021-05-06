@@ -24,8 +24,10 @@ import element_utils
 import world_position
 
 import focus_manager
+import update_manager
 
 import rx_nim
+
 
 export options, vec, rect, number
 export types, element, events, dock, stack, rectangle, path, text, scroll_view, grid
@@ -39,6 +41,7 @@ export thickness
 export element_observables
 export element_utils
 export focus_manager
+export update_manager
 export world_position
 export type_name
 export key_bindings

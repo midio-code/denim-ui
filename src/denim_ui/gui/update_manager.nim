@@ -37,6 +37,21 @@ proc wait*(callback: () -> void, waitFor: float): Dispose =
     if i >= 0:
       waiters.delete(i)
 
+
+var actionsToPerformNextFrame: seq[() -> void] = @[]
+proc performNextFrame*(handler: () -> void): void =
+  actionsToPerformNextFrame.add(handler)
+
+proc dispatchNextFrameActions*(): void =
+  ## Calls the actions that were scheduled last frame. This function should be called right after
+  ## layout  has been calculated and world positions cache has been updated.
+  # NOTE: Copying here in case `actionsToPerformNextFrame` is changed
+  # by any of these actions
+  let actionsToPerformThisFrame = actionsToPerformNextFrame
+  actionsToPerformNextFrame = @[]
+  for action in actionsToPerformThisFrame:
+    action()
+
 proc dispatchUpdate*(dt: float): void =
   time += dt
   updateManagerListeners.emit(dt)

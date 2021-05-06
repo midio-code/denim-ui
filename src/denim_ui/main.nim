@@ -64,6 +64,8 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   # NOTE: This must be called before each frame
   recalculateWorldPositionsCache(ctx.rootElement)
 
+  update_manager.dispatchNextFrameActions()
+
   if pointerPosChangedThisFrame:
     # TODO: Handle the case where multiple events happen per frame (as we do for wheelEvents)
     discard ctx.rootElement.dispatchPointerMove(pointerArgs(ctx.rootElement, ctx.scaleMousePos(lastPointerPos), lastPointerIndex))
