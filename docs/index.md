@@ -499,6 +499,30 @@ Returns whether the element is currently focused.
 - `getCurrentlyFocusedElement() -> Option[Element]`
 - `focusNext()` Assigns focus to the next sibling of the currently focused element (if it has one).
 
+## Update manager
+
+Sometimes, we need to be able to schedule an action to happen each frame, or one on the next frame.
+This can be done using a few functions provided by the update manager (which is available by default).
+
+### wait
+
+```nim
+type Dispose = () -> void
+proc wait(callback: () -> void, waitFor: float): Dispose
+```
+
+Can be used to schedule an event to happen after a given number of milliseconds.
+
+The returned `Dispose` handler can be called to unschedule the handler before it gets called.
+
+### Perform next frame
+
+```nim
+proc performNextFrame(callback: () -> void): void
+```
+
+Lets you schedule an action to be performed in the beginning of the next frame, after layout has been recalculated.
+
 ## Capturing
 
 Capturing provides a means of making sure an element receives pointer events even if the event occurs outside the elements bounds. This is useful when for example dragging, as the pointer might be dragged outside the element between frames.
