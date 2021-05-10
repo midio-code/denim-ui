@@ -53,3 +53,7 @@ proc `*`*(a: Color, val: float): Color =
 
 proc lerp*(a: Color, b: Color, t: float): Color =
   (a * (1.0 - t)) + (b * t)
+
+proc createInterpolator*[T](easing: float -> float, lerper: (T,T,float) -> T): ((T,T,float) -> T) =
+  result = proc(a, b: T, t: float): T =
+    lerper(a, b, easing(t))
