@@ -32,6 +32,14 @@ iterator tokens(str: string): string =
       yield token
 
 proc measureMultilineText*(text: string, font: string, fontSize: float, wordWrap: bool, avSize: Vec2[float]): (seq[TextLine], Vec2[float]) =
+  if text.len == 0:
+    return (
+      @[],
+      vec2(
+        0.0,
+        fontSize
+      )
+    )
   var totalSize = vec2(0.0)
   var lines: seq[TextLine] = @[]
 
@@ -47,8 +55,8 @@ proc measureMultilineText*(text: string, font: string, fontSize: float, wordWrap
     )
     lines.add (content: lineString, size: actualLineSize)
     totalSize.x = max(totalSize.x, lineSize.x)
-    totalSize.y += lineSize.y
-    lastLineSize = lineSize
+    totalSize.y += actualLineSize.y
+    lastLineSize = actualLineSize
     lineSize = vec2(0.0)
     lineTokens = @[]
 
@@ -75,7 +83,7 @@ proc measureMultilineText*(text: string, font: string, fontSize: float, wordWrap
       # TODO: We currently include trailing whitespace past the wrapping point here, which will break layout for center/right alignment
       insertToken(token, tokenSize)
 
-  if lineTokens.len() > 0:
+  if lineTokens.len() > 0 or text[text.len - 1] == '\n':
     flushLine()
 
   (lines, totalSize)
