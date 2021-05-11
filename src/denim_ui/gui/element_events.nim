@@ -86,22 +86,22 @@ var pointerCaptureReleasedEmitter* = emitter[PointerCaptureChangedArgs]()
 
 proc dispatchKeyDown*(args: KeyArgs): EventResult =
   emitKeyDownGlobal(args)
+  dispatchGlobalKeyBindings(args)
 
   let focusedElem = getCurrentlyFocusedElement()
   if focusedElem.isSome:
     result = EventResult(handledBy: @[])
     for handler in focusedElem.get.keyDownHandlers:
       handler(args, result)
+    focusedElem.get.dispatchKeyBindings(args)
 
 proc dispatchKeyUp*(args: KeyArgs): EventResult =
   emitKeyUpGlobal(args)
-  dispatchGlobalKeyBindings(args)
   let focusedElem = getCurrentlyFocusedElement()
   if focusedElem.isSome:
     result = EventResult(handledBy: @[])
     for handler in focusedElem.get.keyUpHandlers:
       handler(args, result)
-    focusedElem.get.dispatchKeyBindings(args)
 
 type
   PointerCapture = tuple[owner: Element, lostCapture: Option[() -> void]]
