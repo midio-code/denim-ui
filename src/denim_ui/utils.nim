@@ -22,7 +22,7 @@ proc deleteWhere*[T](sequence: var seq[T], predicate: (T) -> bool): void =
     sequence.delete(index.get().index)
 
 
-proc isBetween*(a: float, b: float, t: float, offset: float = 0): bool =
+proc isBetween*(t: float, a: float, b: float, offset: float = 0): bool =
   t >= (a + offset) and t <= (b + offset)
 
 template choose*(cond: bool, a, b: untyped): untyped =

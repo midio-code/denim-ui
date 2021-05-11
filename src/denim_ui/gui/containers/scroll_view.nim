@@ -34,4 +34,4 @@ method arrangeOverride(self: ScrollView, availableSize: Vec2[float]): Vec2[float
   for child in self.children:
     let childSizeOverBounds = max(vec2(0.0), child.desiredSize.get() - availableSize)
     child.arrange(rect(-progress.x * childSizeOverBounds.x, -progress.y * childSizeOverBounds.y, availableSize.x, availableSize.y))
-  self.desiredSize.get()
+  availableSize

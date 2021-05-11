@@ -90,6 +90,10 @@ func scaling*(v: Vec2[float]): Mat3 =
 func scale*(self: Mat3): Vec2[float] =
   vec2(self[0,0], self[1,1])
 
+func `scale=`*(self: Mat3, v: Vec2[float]): void =
+  self[0,0] = v.x
+  self[1,1] = v.y
+
 func translation*(v: Vec2[float]): Mat3 =
   result = identity()
   result[2,0] = v.x
