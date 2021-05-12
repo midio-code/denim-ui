@@ -53,6 +53,7 @@ type
     onChange*: Option[TextChanged]
     focusWhenRooted*: Option[bool]
     wordWrap*: bool
+    preventNewLineOnEnter*: bool
 
   PathSegmentKind* {.pure.} = enum
     MoveTo, LineTo, QuadraticCurveTo, BezierCurveTo, Close
