@@ -86,8 +86,8 @@ proc animate*[T](self: Observable[T], interpolator: (T,T,float) -> T, duration: 
       var lastEmittedValue = none[T]()
       let sub1 = animator.value.subscribe(
         proc(progress: float): void =
-          if prevValue.isSome() and currentValue.isSome():
-            let newVal = interpolator(prevValue.get(), currentValue.get(), progress)
+          if prevValue.isSome and currentValue.isSome:
+            let newVal = interpolator(prevValue.get, currentValue.get, progress)
             lastEmittedValue = some(newVal)
             subscriber.onNext(newVal)
       )

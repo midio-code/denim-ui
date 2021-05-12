@@ -1,5 +1,6 @@
 import ../events
 import sugar
+import sequtils
 
 var updateManagerListeners = emitter[float]()
 
@@ -57,7 +58,9 @@ proc dispatchUpdate*(dt: float): void =
   updateManagerListeners.emit(dt)
 
   var toRemove: seq[int] = @[]
-  for i, w in waiters.pairs():
+  let items = toSeq(waiters.pairs())
+  for item in items:
+    let (i, w) = item
     if time >= w.startedAt + w.waitingFor:
       w.callback()
       toRemove.add(i)
