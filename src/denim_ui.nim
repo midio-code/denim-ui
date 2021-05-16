@@ -6,6 +6,7 @@ import ./denim_ui/gui/primitives/text
 import ./denim_ui/guid
 
 export prelude
+export main
 export init
 export render
 export text

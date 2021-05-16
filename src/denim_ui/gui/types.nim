@@ -102,7 +102,10 @@ type
     alignment*: string
 
   PrimitiveKind* {.pure.} = enum
-    Container, Text, Path, Circle, Ellipse, Rectangle
+    Container, Text, Path, Circle, Ellipse, Rectangle, Image
+
+  ImageInfo* = ref object
+    uri*: string
 
   CircleInfo* = ref object
     radius*: float
@@ -157,6 +160,8 @@ type
       ellipseInfo*: EllipseInfo
     of Rectangle:
       rectangleInfo*: RectangleInfo
+    of Image:
+      imageInfo*: ImageInfo
 
 type
   HorizontalAlignment* {.pure.} = enum

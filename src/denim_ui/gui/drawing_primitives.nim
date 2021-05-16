@@ -134,6 +134,20 @@ proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[St
     opacity: self.props.opacity,
   )
 
+proc image*(self: Element, uri: string): Primitive =
+  Primitive(
+    transform: self.props.transform,
+    bounds: self.bounds.get(),
+    clipToBounds: self.props.clipToBounds.get(false),
+    shadow: self.props.shadow,
+    kind: Image,
+    colorInfo: none[ColorInfo](),
+    strokeInfo: none[StrokeInfo](),
+    imageInfo: ImageInfo(uri: uri),
+    children: @[],
+    opacity: self.props.opacity,
+  )
+
 proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo]): Primitive =
   Primitive(
     transform: self.props.transform,
@@ -158,6 +172,7 @@ proc rectangle*(bounds: Bounds, colorInfo: Option[ColorInfo], strokeInfo: Option
     rectangleInfo: RectangleInfo(bounds: bounds),
     children: @[],
   )
+
 
 proc fillColor*(color: Color): ColorInfo =
   ColorInfo(fill: some(color))

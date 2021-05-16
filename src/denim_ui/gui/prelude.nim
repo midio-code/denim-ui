@@ -11,7 +11,7 @@ import cursor
 import key_bindings
 
 import containers/dock, containers/stack, containers/scroll_view, containers/grid
-import primitives/text, primitives/circle, primitives/rectangle, primitives/path
+import primitives/text, primitives/circle, primitives/rectangle, primitives/path, primitives/image
 
 import behaviors, tag
 import data_binding, element_events
@@ -31,7 +31,7 @@ import rx_nim
 
 export options, vec, rect, number
 export types, element, events, dock, stack, rectangle, path, text, scroll_view, grid
-export circle, behaviors, tag, data_binding, element_events
+export circle, image, behaviors, tag, data_binding, element_events
 export onClicked, onHover, onDrag, onPointer, onWheel, onKey, onObservable
 export rx_nim
 export animation

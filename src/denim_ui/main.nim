@@ -166,7 +166,7 @@ proc init*(
   render: () -> Element,
   nativeElements: NativeElements,
   setCursorHandler: (Cursor) -> void
-): Context {.exportc.} =
+): Context =
   setCursor = setCursorHandler
   text.measureText = measureTextFunction
   path.hitTestPath = hitTestPath
@@ -191,6 +191,3 @@ proc init*(
     scale: scale,
     size: size,
   )
-
-proc nim_interop_test() {.exportc.}=
-  echo "Hello, world. From nim."

@@ -12,7 +12,6 @@ import ../vec
 import ../transform
 
 type
-
   PointerCaptureChangedArgs* = object
 
   EventResult* = object

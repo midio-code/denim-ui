@@ -5,6 +5,7 @@ import types
 import element_events
 import behaviors
 import behaviors/onHover
+import ../guid
 
 type
   Cursor* {.pure.} = enum
@@ -53,19 +54,25 @@ proc cursorOnHover*(cursor: Cursor): Behavior =
       popDownToElement(elem)
   )
 
+let cursorWhilePressedBehaviorId = genGuid()
 proc cursorWhilePressed*(cursor: Cursor, pointerIndex: PointerIndex): Behavior =
   Behavior(
     added: some(
       proc(element: Element): void =
+        var didPushCursor = false
         element.onPointerPressed(
           proc(arg: PointerArgs, res: var EventResult): void =
-            if arg.pointerIndex == pointerIndex:
+            echo "Is it handled?: ", res
+            if not res.isHandledBy(cursorWhilePressedBehaviorId) and arg.pointerIndex == pointerIndex:
+              res.addHandledBy(cursorWhilePressedBehaviorId)
+              didPushCursor = true
               pushCursor(cursor, element)
         )
         onPointerReleasedGlobal(
           proc(arg: PointerArgs): void =
-            if arg.pointerIndex == pointerIndex:
+            if didPushCursor and arg.pointerIndex == pointerIndex:
               popDownToElement(element)
+              didPushCursor = false
         )
     )
   )
