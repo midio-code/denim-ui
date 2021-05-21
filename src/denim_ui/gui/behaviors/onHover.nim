@@ -1,5 +1,6 @@
 import sugar
 import options
+import rx_nim
 import ../behaviors
 import ../../events
 import ../element
@@ -38,4 +39,12 @@ template toggleOnHover*(toggler: untyped): untyped =
       toggler,
     proc(e: Element): void =
       toggler
+  )
+
+proc toggleOnHover*(subj: Subject[bool]): Behavior =
+  onHover(
+    proc(e: Element): void =
+      subj <- true,
+    proc(e: Element): void =
+      subj <- false
   )
