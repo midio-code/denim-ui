@@ -17,6 +17,9 @@ type
   EventResult* = object
     handledBy: seq[Guid]
 
+proc `$`(self: EventResult): string =
+  &"EventResult({self.handledBy})"
+
 proc `&`(self: EventResult, other: EventResult): EventResult =
   EventResult(
     handledBy: self.handledBy & other.handledBy
@@ -30,6 +33,9 @@ proc isHandledBy*(self: EventResult, id: Guid): bool =
 
 proc isHandled*(self: EventResult): bool =
   self.handledBy.len > 0
+
+proc isHandledByOtherThan*(self: EventResult, id: Guid): bool =
+  self.isHandled and not self.isHandledBy(id)
 
 proc transformed(args: PointerArgs, elem: Element): PointerArgs =
   PointerArgs(

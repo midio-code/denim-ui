@@ -52,21 +52,22 @@ proc onClicked*(handler: () -> void, force: bool = false): Behavior =
 
 let doublecClickedBehaviorId = genGuid()
 
-proc onDoubleClicked*(handler: ClickedHandler, force: bool = false): Behavior =
+proc onDoubleClicked*(handler: ClickedHandler, waitMs: float = 500.0, force: bool = false): Behavior =
   var clickedOnce = false
   var dispose: Dispose = nil
   onClicked(
     proc(e: Element, args: PointerArgs, res: var EventResult): void =
-      if clickedOnce:
-        res.addHandledBy(doublecClickedBehaviorId)
-        handler(e, args, res)
-        clickedOnce = false
-        if not isNil(dispose):
-          dispose()
-      else:
-        clickedOnce = true
-        dispose = wait(
-          proc() =
-            clickedOnce = false,
-        500)
+      if not res.isHandledByOtherThan(e.id):
+        if clickedOnce:
+          res.addHandledBy(doublecClickedBehaviorId)
+          handler(e, args, res)
+          clickedOnce = false
+          if not isNil(dispose):
+            dispose()
+        else:
+          clickedOnce = true
+          dispose = wait(
+            proc() =
+              clickedOnce = false,
+          waitMs)
   )
