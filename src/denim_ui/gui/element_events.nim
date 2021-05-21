@@ -250,7 +250,13 @@ proc transformArgFromRootElem(self: Element, arg: PointerArgs): PointerArgs =
     a = self.parent.get().transformArgFromRootElem(arg)
   a.transformed(self)
 
+var lastPointerPos: Option[Point]
+
+proc getCurrentPointerPos*(): Option[Point] =
+  lastPointerPos
+
 proc dispatchPointerMove*(self: Element, arg: PointerArgs): EventResult =
+  lastPointerPos = some(arg.actualPos)
   elementsHandledPointerMoveThisUpdate.clear()
   emitPointerMovedGlobal(arg)
 
