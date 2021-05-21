@@ -62,7 +62,6 @@ proc cursorWhilePressed*(cursor: Cursor, pointerIndex: PointerIndex): Behavior =
         var didPushCursor = false
         element.onPointerPressed(
           proc(arg: PointerArgs, res: var EventResult): void =
-            echo "Is it handled?: ", res
             if not res.isHandledBy(cursorWhilePressedBehaviorId) and arg.pointerIndex == pointerIndex:
               res.addHandledBy(cursorWhilePressedBehaviorId)
               didPushCursor = true
