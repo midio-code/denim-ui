@@ -5,6 +5,11 @@ import vec
 type Mat3* = ref object
   data: array[9, float]
 
+proc copy*(self: Mat3): Mat3 =
+  Mat3(
+    data: self.data
+  )
+
 template `[]`*(a: Mat3, i, j: int): float = a.data[i * 3 + j ]
 template `[]=`*(a: Mat3, i, j: int, v: float) = a.data[i * 3 + j] = v
 
@@ -87,6 +92,12 @@ func scaling*(v: Vec2[float]): Mat3 =
   result[1,1] = v.y
   result[2,2] = 1
 
+func withScaling*(self: Mat3, v: Vec2[float]): Mat3 =
+  result = self.copy()
+  result[0,0] = v.x
+  result[1,1] = v.y
+  result[2,2] = 1
+
 func scale*(self: Mat3): Vec2[float] =
   vec2(self[0,0], self[1,1])
 
@@ -101,6 +112,16 @@ func translation*(v: Vec2[float]): Mat3 =
 
 func translation*(self: Mat3): Vec2[float] =
   vec2(self[2,0], self[2,1])
+
+func translationPart*(self: Mat3): Mat3 =
+  result = identity()
+  result[2,0] = self[2,0]
+  result[2,1] = self[2,1]
+
+proc withTranslation*(self: Mat3, v: Vec2[float]): Mat3 =
+  result = self.copy()
+  result[2,0] = v.x
+  result[2,1] = v.y
 
 func rotation*(angle: float): Mat3 =
   let

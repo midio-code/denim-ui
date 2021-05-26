@@ -72,10 +72,16 @@ proc normalized*[T:Number](self: Vec2[T]): Vec2[T] =
 proc divide*[T:Number](self: Vec2[T], val: Number): Vec2[T] =
   vec2(self.x / val, self.y / val)
 
+proc divide*[T:Number](self: T, val: Vec2[T]): Vec2[T] =
+  vec2(self / val.x, self / val.y)
+
 proc divide*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
   vec2(self.x / other.x, self.y / other.y)
 
 template `/`*[T:Number](self: Vec2[T], val: Number): Vec2[T] =
+  self.divide(val)
+
+template `/`*[T:Number](self: Number, val: Vec2[T]): Vec2[T] =
   self.divide(val)
 
 template `/`*[T:Number](self: Vec2[T], other: Vec2[T]): Vec2[T] =
