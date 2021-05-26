@@ -106,6 +106,8 @@ method render*(self: Text): Option[Primitive] =
   let color = props.color.get(colWhite)
   let fontSize = props.fontSize.get(defaults.fontSize)
   let fontFamily = props.fontFamily.get(defaults.fontFamily)
+  let fontWeight = props.fontWeight.get(defaults.fontWeight)
+  let fontStyle = props.fontStyle.get(defaults.fontStyle)
 
   var lineY = 0.0
   var children: seq[Primitive] = @[]
@@ -114,6 +116,8 @@ method render*(self: Text): Option[Primitive] =
       text: line.content,
       fontFamily: fontFamily,
       fontSize: fontSize,
+      fontWeight: fontWeight,
+      fontStyle: fontStyle,
       textBaseline: "top",
       alignment: "left"
     )

@@ -101,6 +101,8 @@ type
     fontSize*: float
     textBaseline*: string
     fontFamily*: string
+    fontWeight*: int
+    fontStyle*: string
     alignment*: string
 
   PrimitiveKind* {.pure.} = enum
