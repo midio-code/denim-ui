@@ -161,7 +161,7 @@ proc dispatchKeyUp*(keyCode: int, key: string, modifiers: seq[string]): void {.e
 proc init*(
   size: Vec2[float],
   scale: Vec2[float],
-  measureTextFunction: (string, float, string, string) -> Vec2[float],
+  measureTextFunction: (string, float, string, int, string) -> Vec2[float],
   hitTestPath: (Element, PathProps, Point) -> bool,
   render: () -> Element,
   nativeElements: NativeElements,

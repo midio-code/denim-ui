@@ -12,7 +12,7 @@ import defaults
 
 
 # TODO: Remove need for this global
-var measureText*: (text: string, fontSize: float, fontFamily: string, baseline: string) -> Vec2[float]
+var measureText*: (text: string, fontSize: float, fontFamily: string, fontWeight: int, baseline: string) -> Vec2[float]
 
 proc getOrInit[K, V](table: TableRef[K, V], key: K, init: proc(): V): V =
   if table.hasKey(key): # TODO: Avoid double loookup
@@ -31,7 +31,7 @@ iterator tokens(str: string): string =
     else:
       yield token
 
-proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, wordWrap: bool, avSize: Vec2[float]): (seq[TextLine], Vec2[float]) =
+proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, fontWeight: int, wordWrap: bool, avSize: Vec2[float]): (seq[TextLine], Vec2[float]) =
   if text.len == 0:
     return (
       @[],
@@ -66,7 +66,7 @@ proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, wo
     lineSize.y = max(lineSize.y, tokenSize.y)
 
   for token in text.tokens():
-    let tokenSize = measureText(token, fontSize, fontFamily, baseline = "top")
+    let tokenSize = measureText(token, fontSize, fontFamily, fontWeight, baseline = "top")
 
     if token == "\n":
       flushLine()
@@ -94,6 +94,7 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
     self.textProps.text,
     props.fontFamily.get(defaults.fontFamily),
     props.fontSize.get(defaults.fontSize),
+    props.fontWeight.get(defaults.fontWeight),
     props.wordWrap,
     avSize
   )
