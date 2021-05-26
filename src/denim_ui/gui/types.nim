@@ -37,7 +37,9 @@ type
   TextProps* = ref object
     text*: string
     fontSize*: Option[float]
-    font*: Option[string]
+    fontFamily*: Option[string]
+    fontWeight*: Option[int]
+    fontStyle*: Option[string]
     color*: Option[Color]
     wordWrap*: bool
 
@@ -45,7 +47,7 @@ type
 
   TextInputProps* = ref object
     text*: string
-    font*: Option[string]
+    fontFamily*: Option[string]
     placeholder*: Option[string]
     fontSize*: Option[float]
     color*: Option[Color]
@@ -98,7 +100,7 @@ type
     text*: string
     fontSize*: float
     textBaseline*: string
-    font*: string
+    fontFamily*: string
     alignment*: string
 
   PrimitiveKind* {.pure.} = enum

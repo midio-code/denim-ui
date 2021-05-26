@@ -11,7 +11,7 @@ proc createTextPrimitive*(
   text: string,
   color: Color = colWhite,
   fontSize: float = defaults.fontSize,
-  font: string = defaults.font,
+  fontFamily: string = defaults.fontFamily,
   textBaseline: string = "top",
   alignment: string = "left"
 ): Primitive =
@@ -19,7 +19,7 @@ proc createTextPrimitive*(
     text: text,
     fontSize: fontSize,
     textBaseline: textBaseline,
-    font: font,
+    fontFamily: fontFamily,
     alignment: alignment
   )
   Primitive(

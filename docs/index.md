@@ -260,7 +260,7 @@ circle(
 
 ```nim
 text(
-  font = "Inter",
+  fontFamily = "Inter",
   fontSize = 24.0,
   color = colBlack,
   wordWrap = true
@@ -337,7 +337,7 @@ content <- newVal
 textInput(
   text <- content.source,
   color = colBlack,
-  font = "Noto Sans",
+  fontFamily = "IBM Plex Sans",
   fontSize = 14.0,
   margin = thickness(10.0),
   placeholder = "Write something",
