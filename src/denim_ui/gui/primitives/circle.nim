@@ -9,9 +9,9 @@ import ../world_position
 
 type
   CircleProps* = ref object
-    color*: Option[Color]
+    color*: Option[ColorStyle]
     radius*: float
-    stroke*: Option[Color]
+    stroke*: Option[ColorStyle]
     strokeWidth*: Option[float]
     lineDash*: Option[LineDash]
     lineCap*: Option[LineCap]

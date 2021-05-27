@@ -61,20 +61,20 @@ converter fromStrColorColor*(color: stdColor.Color): guiColor.Color =
   newColor(byte(r), byte(g), byte(b), 0xff)
 
 converter fromStrColorColorToStyle*(color: stdColor.Color): ColorStyle =
-  createSolidColor(fromStrColorColor(color))
+  newSolidColor(fromStrColorColor(color))
 
 converter fromStrColorColorToStyleOpt*(color: stdColor.Color): Option[ColorStyle] =
-  some(createSolidColor(fromStrColorColor(color)))
+  some(newSolidColor(fromStrColorColor(color)))
 
 converter fromStrColorColorOpt*(color: Option[stdColor.Color]): Option[ColorStyle] =
   if color.isSome:
-    some(createSolidColor(fromStrColorColor(color.get)))
+    some(newSolidColor(fromStrColorColor(color.get)))
   else:
     none[ColorStyle]()
 
 converter toSolidColor*(optColor: Option[guiColor.Color]): Option[ColorStyle] =
   if optColor.isSome:
-    some(createSolidColor(optColor.get))
+    some(newSolidColor(optColor.get))
   else:
     none[ColorStyle]()
 

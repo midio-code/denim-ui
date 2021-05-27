@@ -85,8 +85,8 @@ type
     startPoint*: Point
     endPoint*: Point
   RadialGradient* = ref object
-    startPoint*: Circle
-    endPoint*: Circle
+    startCircle*: Circle
+    endCircle*: Circle
   GradientKind* {.pure.} = enum
     Linear, Radial
   Gradient* = ref object
@@ -356,17 +356,40 @@ proc `$`*(self: ColorStyle): string =
       raise newException(Exception, "$ not implemented for color kind {self.kind}")
 
 
-proc createSolidColor*(color: Color): ColorStyle =
+proc newSolidColor*(color: Color): ColorStyle =
   ColorStyle(
     kind: ColorStyleKind.Solid,
     color: color
   )
 
+proc newLinearGradient*(startPoint, endPoint: Point, stops: varargs[GradientStop]): ColorStyle =
+  ColorStyle(
+    kind: ColorStyleKind.Gradient,
+    gradient: Gradient(
+      kind: GradientKind.Linear,
+      linearInfo: LinearGradient(
+        startPoint: startPoint,
+        endPoint: endPoint,
+      ),
+      stops: @stops
+    )
+  )
+
+proc newRadialGradient*(startCircle, endCircle: Circle, stops: varargs[GradientStop]): ColorStyle =
+  ColorStyle(
+    kind: ColorStyleKind.Gradient,
+    gradient: Gradient(
+      kind: GradientKind.Radial,
+      radialInfo: RadialGradient(
+        startCircle: startCircle,
+        endCircle: endCircle,
+      ),
+      stops: @stops
+    )
+  )
+
 converter toSolidColor*(color: Color): ColorStyle =
-  createSolidColor(color)
+  newSolidColor(color)
 
 converter toSolidColorOpt*(color: Color): Option[ColorStyle] =
-  some(createSolidColor(color))
-
-
-
+  some(newSolidColor(color))
