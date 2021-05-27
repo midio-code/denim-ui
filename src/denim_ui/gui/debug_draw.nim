@@ -4,6 +4,7 @@ import element
 import strformat
 import options
 import ../rect
+import ../utils
 
 var debugDrawings: seq[Primitive] = @[]
 

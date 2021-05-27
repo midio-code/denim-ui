@@ -1,4 +1,9 @@
-import options, sugar, gui/types
+import options
+import sugar
+import gui/types
+import strformat
+import colors as stdColor
+import gui/color as guiColor
 
 # TODO: Find a better way to expose this to the rest of the code
 converter toOption*[T](x: T): Option[T] = some[T](x)
@@ -44,9 +49,36 @@ iterator reverse*[T](a: seq[T]): T {.inline.} =
         yield a[i]
         dec(i)
 
-proc lerp*(a: Color, b: Color, t: float): Color =
+proc lerp*(a: guiColor.Color, b: guiColor.Color, t: float): guiColor.Color =
   (a * (1.0 - t)) + (b * t)
 
 proc createInterpolator*[T](easing: float -> float, lerper: (T,T,float) -> T): ((T,T,float) -> T) =
   result = proc(a, b: T, t: float): T =
     lerper(a, b, easing(t))
+
+converter fromStrColorColor*(color: stdColor.Color): guiColor.Color =
+  let (r,g,b) = stdColor.extractRGB(color)
+  newColor(byte(r), byte(g), byte(b), 0xff)
+
+converter fromStrColorColorToStyle*(color: stdColor.Color): ColorStyle =
+  createSolidColor(fromStrColorColor(color))
+
+converter fromStrColorColorToStyleOpt*(color: stdColor.Color): Option[ColorStyle] =
+  some(createSolidColor(fromStrColorColor(color)))
+
+converter fromStrColorColorOpt*(color: Option[stdColor.Color]): Option[ColorStyle] =
+  if color.isSome:
+    some(createSolidColor(fromStrColorColor(color.get)))
+  else:
+    none[ColorStyle]()
+
+converter toSolidColor*(optColor: Option[guiColor.Color]): Option[ColorStyle] =
+  if optColor.isSome:
+    some(createSolidColor(optColor.get))
+  else:
+    none[ColorStyle]()
+
+proc parseColor*(colString: string): guiColor.Color =
+  if colString.len != 7 or colString[0] != '#':
+    raise newException(Exception, &"Color string is longer than expected ({colString}) (only the form '#rrggbb' is currently supported (not alpha, even though alpha is supported by the color type))")
+  fromStrColorColor(stdColor.parseColor(colString))

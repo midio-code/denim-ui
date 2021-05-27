@@ -5,6 +5,7 @@ import ../drawing_primitives
 import ../world_position
 import ../../vec
 import ../../type_name
+import ../../utils
 
 export drawing_primitives.moveTo
 export drawing_primitives.lineTo
