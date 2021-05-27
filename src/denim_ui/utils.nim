@@ -1,4 +1,4 @@
-import options, colors, sugar, hashes
+import options, sugar, gui/types
 
 # TODO: Find a better way to expose this to the rest of the code
 converter toOption*[T](x: T): Option[T] = some[T](x)
@@ -43,13 +43,6 @@ iterator reverse*[T](a: seq[T]): T {.inline.} =
     while i > -1:
         yield a[i]
         dec(i)
-
-proc `*`*(a: Color, val: float): Color =
-  let (r,g,b) = a.extractRgb()
-  let rNew = int(float(r) * val)
-  let gNew = int(float(g) * val)
-  let bNew = int(float(b) * val)
-  rgb(rNew, gNew, bNew)
 
 proc lerp*(a: Color, b: Color, t: float): Color =
   (a * (1.0 - t)) + (b * t)

@@ -5,6 +5,7 @@ import ../vec
 import ../rect
 import ../utils
 import ./primitives/defaults
+from colors import colWhite
 
 proc createTextPrimitive*(
   self: Element,

@@ -9,6 +9,7 @@ import ../../utils
 import ../../events
 import ../../type_name
 import defaults
+from colors import colWhite
 
 
 # TODO: Remove need for this global

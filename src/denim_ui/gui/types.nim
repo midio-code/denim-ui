@@ -1,5 +1,6 @@
 import sugar
 import strformat
+import strutils
 import tables
 import hashes
 import options
@@ -8,14 +9,13 @@ import rx_nim
 
 import ../guid
 import ../vec
+import ../circle
 import ../transform
 import ../thickness
 import ../rect
 import ../type_name
 
 export transform
-export colors
-
 
 type
   PointerIndex* = enum
@@ -79,10 +79,41 @@ type
     of Close:
       discard
 
+  Color* = ref object
+    r*: byte
+    g*: byte
+    b*: byte
+    a*: byte
+
+  GradientStop* = tuple[color: Color, position: float]
+  LinearGradient* = ref object
+    startPoint*: Point
+    endPoint*: Point
+  RadialGradient* = ref object
+    startPoint*: Circle
+    endPoint*: Circle
+  GradientKind* {.pure.} = enum
+    Linear, Radial
+  Gradient* = ref object
+    stops*: seq[GradientStop]
+    case kind*: GradientKind
+    of GradientKind.Linear:
+      linearInfo*: LinearGradient
+    of GradientKind.Radial:
+      radialInfo*: RadialGradient
+
+  ColorStyleKind* {.pure.} = enum
+    Solid, Gradient
+  ColorStyle* = ref object
+    case kind*: ColorStyleKind
+    of ColorStyleKind.Solid:
+      color*: Color
+    of ColorStyleKind.Gradient:
+      gradient*: Gradient
+
   ColorInfo* = ref object
-    stroke*: Option[Color]
-    fill*: Option[Color]
-    alpha*: Option[byte]
+    stroke*: Option[ColorStyle]
+    fill*: Option[ColorStyle]
 
   LineDash* = seq[int]
 
@@ -140,7 +171,6 @@ type
 
   Shadow* = ref object
     color*: Color
-    alpha*: float
     size*: float
     offset*: Vec2[float]
 
@@ -154,19 +184,19 @@ type
     transform*: seq[Transform]
     children*: seq[Primitive]
     case kind*: PrimitiveKind
-    of Container: # Just a container for other primitives
+    of PrimitiveKind.Container: # Just a container for other primitives
       discard
-    of Text:
+    of PrimitiveKind.Text:
       textInfo*: TextInfo
-    of Path:
+    of PrimitiveKind.Path:
       pathInfo*: PathInfo
-    of Circle:
+    of PrimitiveKind.Circle:
       circleInfo*: CircleInfo
-    of Ellipse:
+    of PrimitiveKind.Ellipse:
       ellipseInfo*: EllipseInfo
-    of Rectangle:
+    of PrimitiveKind.Rectangle:
       rectangleInfo*: RectangleInfo
-    of Image:
+    of PrimitiveKind.Image:
       imageInfo*: ImageInfo
 
 type
@@ -321,3 +351,91 @@ type
     deltaY*: float
     deltaZ*: float
     unit*: WheelDeltaUnit
+
+proc `$`*(self: Color): string =
+  &"#{self.r.toHex}{self.g.toHex}{self.b.toHex}{self.a.toHex}"
+
+proc `$`*(self: ColorStyle): string =
+  case self.kind:
+    of ColorStyleKind.Solid:
+       $self.color
+    else:
+      raise newException(Exception, "$ not implemented for color kind {self.kind}")
+
+proc newColor*(r,g,b,a: byte): Color =
+  Color(
+    r: r,
+    g: g,
+    b: b,
+    a: a
+  )
+
+proc `*`*(c: Color, val: float): Color =
+  let
+    r = c.r
+    g = c.g
+    b = c.b
+    a = c.a
+  let rNew = byte(float(r) * val)
+  let gNew = byte(float(g) * val)
+  let bNew = byte(float(b) * val)
+  let aNew = byte(float(a) * val)
+  newColor(rNew, gNew, bNew, aNew)
+
+proc `+`*(a,b: Color): Color =
+  newColor(
+    a.r + b.r,
+    a.g + b.g,
+    a.b + b.b,
+    a.a + b.a,
+  )
+
+proc withAlpha*(c: Color, a: byte): Color =
+  newColor(c.r, c.g, c.b, a)
+
+proc createSolidColor*(color: Color): ColorStyle =
+  ColorStyle(
+    kind: ColorStyleKind.Solid,
+    color: color
+  )
+
+converter toSolidColor*(color: Color): ColorStyle =
+  createSolidColor(color)
+
+converter toSolidColorOpt*(color: Color): Option[ColorStyle] =
+  some(createSolidColor(color))
+
+converter fromColorsColor*(color: colors.Color): Color =
+  let (r,g,b) = color.extractRGB()
+  Color(
+    r: byte(r),
+    g: byte(g),
+    b: byte(b),
+    a: 0xff
+  )
+
+converter fromColorsColorToStyle*(color: colors.Color): ColorStyle =
+  createSolidColor(fromColorsColor(color))
+
+converter fromColorsColorToStyleOpt*(color: colors.Color): Option[ColorStyle] =
+  some(createSolidColor(fromColorsColor(color)))
+
+converter fromColorsColorOpt*(color: Option[colors.Color]): Option[ColorStyle] =
+  if color.isSome:
+    some(createSolidColor(fromColorsColor(color.get)))
+  else:
+    none[ColorStyle]()
+
+converter toSolidColor*(optColor: Option[Color]): Option[ColorStyle] =
+  if optColor.isSome:
+    some(createSolidColor(optColor.get))
+  else:
+    none[ColorStyle]()
+
+proc parseColor*(colString: string): Color=
+  if colString.len != 7 or colString[0] != '#':
+    raise newException(Exception, &"Color string is longer than expected ({colString}) (only the form '#rrggbb' is currently supported (not alpha, even though alpha is supported by the color type))")
+  fromColorsColor(colors.parseColor(colString))
+
+proc hash*(self: Color): Hash =
+  cast[Hash]((int(self.r) shl 24) or (int(self.g) shl 16) or (int(self.b) shl 8) or int(self.a))
