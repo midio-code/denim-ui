@@ -3,7 +3,6 @@ import gui/prelude
 import gui/primitives/text
 import gui/primitives/path
 import gui/native_element
-import gui/debug_draw
 import gui/update_manager
 import std/monotimes
 import gui/element_bounds_changed_event
@@ -103,7 +102,7 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
 
   result = ctx.rootElement.render()
   if result.isSome:
-    result.get().children = result.get().children & flushDebugDrawings()
+    result.get().children = result.get().children
 
 proc dispatchWindowSizeChanged*(newSize: Vec2[float]): void {.exportc.} =
   windowSize = newSize
