@@ -114,4 +114,49 @@ proc animate*[T](self: Observable[T], interpolator: (T,T,float) -> T, duration: 
       )
   )
 
+proc animateIf*[T](self: Observable[T], interpolator: (T,T,float) -> T, duration: float, whenTrue: Observable[bool]): Observable[T] =
+  let animator = createAnimator(duration)
+  var prevValue: Option[T] = none[T]()
+  var currentValue: Option[T] = none[T]()
+  Observable[T](
+    onSubscribe: proc(subscriber: Subscriber[T]): Subscription =
+      var lastEmittedValue = none[T]()
+      var shouldAnimate = true
+      let sub1 = animator.value.subscribe(
+        proc(progress: float): void =
+          if shouldAnimate and prevValue.isSome and currentValue.isSome:
+            let newVal = interpolator(prevValue.get, currentValue.get, progress)
+            lastEmittedValue = some(newVal)
+            subscriber.onNext(newVal)
+      )
+      let sub2 = self.subscribe(
+        proc(val: T): void =
+          if not shouldAnimate:
+            subscriber.onNext(val)
+            lastEmittedValue = some(val)
+          else:
+            if prevValue.isNone():
+              # NOTE: This makes sure the animated value is initialized correctly
+              prevValue = some(val)
+              subscriber.onNext(interpolator(val, val, 0.0))
 
+            if lastEmittedValue.isSome:
+              prevValue = some(lastEmittedValue.get)
+            currentValue = some(val)
+            animator.reset()
+            animator.start(
+              proc(): void =
+                prevValue = some(val)
+            )
+      )
+      let sub3 = whenTrue.subscribe(
+        proc(sa: bool) =
+          shouldAnimate = sa
+      )
+      Subscription(
+        dispose: proc(): void =
+          sub1.dispose()
+          sub2.dispose()
+          sub3.dispose()
+      )
+  )

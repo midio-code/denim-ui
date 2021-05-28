@@ -13,7 +13,7 @@ let behaviorId = genGuid()
 proc onDrag*(
   moved: (Vec2[float] -> void),
   startedDrag: () -> void,
-  released: () -> void,
+  released: (Element, PointerArgs, var EventResult) -> void,
   pointerIndex: PointerIndex = PointerIndex.Primary,
   canStartDrag: Observable[bool] = behaviorSubject(true).source,
   dragCaptureThreshold: float = 6.0,
@@ -65,7 +65,7 @@ proc onDrag*(
           proc(arg: PointerArgs, res: var EventResult): void =
             if arg.pointerIndex == pointerIndex:
               if not isNil(released):
-                released()
+                released(element, arg, res)
               element.releasePointer()
               pressed = false
         )
