@@ -527,7 +527,7 @@ Lets you schedule an action to be performed in the beginning of the next frame, 
 
 Capturing provides a means of making sure an element receives pointer events even if the event occurs outside the elements bounds. This is useful when for example dragging, as the pointer might be dragged outside the element between frames.
 
-### capturePointer(Element, [Option[() -> void]])
+### capturePointerExclusive(Element, [Option[() -> void]])
 
 Captures the pointer to the supplied element. An optional callback can be supplied, which is called when the element loses capture.
 

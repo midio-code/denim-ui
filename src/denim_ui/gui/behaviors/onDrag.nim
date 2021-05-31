@@ -7,6 +7,7 @@ import ../../vec
 import ../../guid
 import ../element
 import ../element_events
+import ../pointer_capture
 
 let behaviorId = genGuid()
 
@@ -55,7 +56,7 @@ proc onDrag*(
             dragDistanceThisPress += diff.length
             if dragDistanceThisPress >= dragCaptureThreshold and pressed:
               if not element.hasPointerCapture:
-                element.capturePointer(some(onLostCapture))
+                element.capturePointerExclusive(some(onLostCapture))
                 if not isNil(startedDrag):
                   startedDrag()
               moved(diff)
