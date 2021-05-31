@@ -1,4 +1,5 @@
 import sugar
+import strformat
 import options
 import tables
 import ../behaviors
@@ -21,10 +22,6 @@ proc onClicked*(handler: ClickedHandler, force: bool = false): Behavior =
       proc(element: Element): void =
         if not clickedHandlers.hasKey(element):
           var pressed = false
-
-          proc onLostCapture() =
-            pressed = false
-            echo "Clicked lost capture"
 
           element.onPointerPressed(
             proc(arg: PointerArgs, res: var EventResult): void =

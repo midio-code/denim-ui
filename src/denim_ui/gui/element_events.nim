@@ -187,29 +187,28 @@ proc dispatchPointerDown*(self: Element, arg: PointerArgs): EventResult =
 
   result = EventResult(handledBy: @[])
 
+  emitPointerPressedGlobal(arg)
   self.dispatchPointerDownImpl(arg, result)
 
-  # NOTE: If anyone has capture, only they get the event
+  # TODO: Only captured elements should get the event
   if pointerIsCaptured():
     for captor in pointerCaptors():
       if not elementsHandledPointerDownThisUpdate.contains(captor):
         captor.dispatchPointerDownImpl(arg, result)
-  else:
-    emitPointerPressedGlobal(arg)
 
 proc dispatchPointerUp*(self: Element, arg: PointerArgs): EventResult =
   elementsHandledPointerUpThisUpdate.clear()
-  emitPointerReleasedGlobal(arg)
 
   result = EventResult(handledBy: @[])
 
-  # NOTE: If anyone has capture, only they get the event
+  emitPointerReleasedGlobal(arg)
+  self.dispatchPointerupImpl(arg, result)
+
+  # TODO: Only captured elements should get the event
   if pointerIsCaptured():
     for captor in pointerCaptors():
       if not elementsHandledPointerUpThisUpdate.contains(captor):
         captor.dispatchPointerUpImpl(arg, result)
-  else:
-    self.dispatchPointerUpImpl(arg, result)
 
 proc transformArgFromRootElem(self: Element, arg: PointerArgs): PointerArgs =
   var a = arg

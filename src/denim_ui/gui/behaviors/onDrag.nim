@@ -1,6 +1,7 @@
 import sugar
 import options
 import rx_nim
+import strformat
 import ../behaviors
 import ../../events
 import ../../vec
@@ -42,6 +43,7 @@ proc onDrag*(
           proc(arg: PointerArgs, res: var EventResult): void =
             dragDistanceThisPress = 0.0
             if not res.isHandledBy(behaviorId) and canCurrentlyStartDrag and arg.pointerIndex == pointerIndex and not element.pointerCapturedBySomeoneElse():
+              element.capturePointerShared(some(onLostCapture))
               pastPos = arg.actualPos
               pressed = true
               res.addHandledBy(behaviorId)
@@ -55,10 +57,8 @@ proc onDrag*(
             pastPos = arg.actualPos
             dragDistanceThisPress += diff.length
             if dragDistanceThisPress >= dragCaptureThreshold and pressed:
-              if not element.hasPointerCapture:
-                element.capturePointerExclusive(some(onLostCapture))
-                if not isNil(startedDrag):
-                  startedDrag()
+              if not isNil(startedDrag):
+                startedDrag()
               moved(diff)
               res.addHandledBy(behaviorId)
         )
