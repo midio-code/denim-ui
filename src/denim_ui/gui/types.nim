@@ -248,11 +248,6 @@ type
     shadow*: Option[Shadow]
     opacity*: Option[float]
 
-  Layout* = ref object
-    name*: string # TODO: Hide this in release builds?
-    measure*: (Element, Vec2[float]) -> Vec2[float]
-    arrange*: (Element, Vec2[float]) -> Vec2[float]
-
   Drawable* = ref object
     name*: string # TODO: Hide this in release builds?
     render*: (Element) -> Option[Primitive]
