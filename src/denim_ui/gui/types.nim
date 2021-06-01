@@ -269,6 +269,7 @@ type
     previousMeasure*: Option[Vec2[float]]
     isArrangeValid*: bool
     isMeasureValid*: bool
+    isVisualValid*: bool
     measuring*: bool
 
     isRooted*: bool

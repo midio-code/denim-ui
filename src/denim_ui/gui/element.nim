@@ -118,6 +118,11 @@ proc invalidateMeasure(self: Element): void =
 proc invalidateLayout*(self: Element): void =
   self.invalidateMeasure()
 
+proc invalidateVisual*(self: Element): void =
+  if self.parent.isSome:
+    self.parent.get.invalidateVisual()
+  self.isVisualValid = false
+
 # ======== ELEMENT IMPLEMENTATION ======================
 # NOTE: Atm we have the LayoutManager implementation in the same file so that we avoid
 # the need for circular dependencies. Will figure this out later
@@ -477,16 +482,10 @@ proc childrenSortedByZIndex*(self: Element): seq[Element] =
     .sorted((a, b: Element) => b.props.zIndex.get(self.children.find(b)) - a.props.zIndex.get(self.children.find(a)), SortOrder.Descending)
 
 method render*(self: Element): Option[Primitive] {.base.} =
-  if self.props.visibility.get(Visibility.Visible) != Visibility.Visible:
-    return none[Primitive]()
-  if not self.isRooted:
-    echo "Not rooted"
-    return none[Primitive]()
   if not self.isArrangeValid:
     echo "Arrange not valid for: ", self.typeName()
     echo "   parent: ", self.parent.get().typeName()
     return none[Primitive]()
-
   result = some(
     Primitive(
       transform: self.props.transform,
@@ -496,12 +495,23 @@ method render*(self: Element): Option[Primitive] {.base.} =
       opacity: self.props.opacity
     )
   )
-  if result.isSome():
-    result.get().children = self
-      .childrenSortedByZIndex
-      .map((x: Element) => x.render())
+
+proc dispatchRender*(self: Element): Option[Primitive] =
+  if self.props.visibility.get(Visibility.Visible) != Visibility.Visible:
+    return none[Primitive]()
+  if not self.isRooted:
+    echo "Not rooted"
+    return none[Primitive]()
+
+  result = self.render()
+
+  if result.isSome() and result.get.children.len == 0:
+    let children = self
+      .childrenSortedByZIndex()
+      .map((x: Element) => x.dispatchRender())
       .filter((x: Option[Primitive]) => x.isSome())
       .map((x: Option[Primitive]) => x.get())
+    result.get.children = children
 
 proc transformOnlyBy*(point: Vec2[float], elem: Element): Vec2[float] =
   ## Transforms point by the transform of the given element

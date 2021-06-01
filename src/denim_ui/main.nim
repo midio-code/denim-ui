@@ -100,7 +100,7 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
   update_manager.dispatchUpdate(dt)
   performOutstandingLayoutsAndMeasures(availableRect)
 
-  result = ctx.rootElement.render()
+  result = ctx.rootElement.dispatchRender()
   if result.isSome:
     result.get().children = result.get().children
 
