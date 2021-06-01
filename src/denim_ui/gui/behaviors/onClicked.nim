@@ -47,6 +47,15 @@ proc onClicked*(handler: () -> void, force: bool = false): Behavior =
     force
   )
 
+proc onClicked*(handler: () -> bool, force: bool = false): Behavior =
+  onClicked(
+    proc(e: Element, args: PointerArgs, res: var EventResult): void =
+      if handler():
+        res.addHandledBy(behaviorId)
+    ,
+    force
+  )
+
 let doublecClickedBehaviorId = genGuid()
 
 proc onDoubleClicked*(handler: ClickedHandler, waitMs: float = 500.0, force: bool = false): Behavior =
