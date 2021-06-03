@@ -1,5 +1,6 @@
 import options
 import ../vec
+import ../mat
 import ../rect
 import ../circle
 import ../number
@@ -31,7 +32,7 @@ import update_manager
 import rx_nim
 
 
-export options, vec, rect, number, circle
+export options, vec, mat, rect, number, circle
 export types, element, events, dock, stack, rectangle, path, text, scroll_view, grid
 export circlePrim, image, behaviors, tag, data_binding, element_events, pointer_capture
 export color
