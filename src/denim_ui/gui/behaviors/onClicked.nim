@@ -77,3 +77,11 @@ proc onDoubleClicked*(handler: ClickedHandler, waitMs: float = 500.0, force: boo
               clickedOnce = false,
           waitMs)
   )
+
+proc onDoubleClicked*(handler: () -> void, waitMs: float = 500.0, force: bool = false): Behavior =
+  onDoubleClicked(
+    proc(e: Element, args: PointerArgs, res: var EventResult): void =
+      handler(),
+    waitMs,
+    force
+  )
