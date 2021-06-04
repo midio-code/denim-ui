@@ -9,19 +9,19 @@ import ../../events
 
 let hoverBehaviorId = genGuid()
 
-proc onHover*(entered: (Element) -> bool, exited: (Element) -> bool): Behavior =
+proc onHover*(entered: (Element) -> bool, exited: (Element) -> bool, force: bool = false): Behavior =
   Behavior(
     added: some(
       proc(element: Element): void =
         element.onPointerEntered(
           proc(arg: PointerArgs, res: var EventResult): void =
-            if not res.isHandled:
+            if force or not res.isHandled:
               if entered(element):
                 res.addHandledBy(hoverBehaviorId)
         )
         element.onPointerExited(
           proc(arg: PointerArgs, res: var EventResult): void =
-            if not res.isHandled:
+            if force or not res.isHandled:
               if exited(element):
                 res.addHandledBy(hoverBehaviorId)
         )
@@ -38,13 +38,13 @@ proc onHover*(entered: (Element) -> void, exited: (Element) -> void): Behavior =
       false
   )
 
-proc onHover*(entered: (Element) -> bool): Behavior =
+proc onHover*(entered: (Element) -> bool, force: bool = false): Behavior =
   Behavior(
     added: some(
       proc(element: Element):void =
         element.onPointerEntered(
           proc(arg: PointerArgs, res: var EventResult): void =
-            if not res.isHandled:
+            if force or not res.isHandled:
               if entered(element):
                 res.addHandledBy(hoverBehaviorId)
         )
@@ -71,7 +71,7 @@ template toggleOnHover*(toggler: untyped): untyped =
       true
   )
 
-proc toggleOnHover*(subj: Subject[bool]): Behavior =
+proc toggleOnHover*(subj: Subject[bool], force: bool = false): Behavior =
   onHover(
     proc(e: Element): bool =
       subj <- true
@@ -80,4 +80,6 @@ proc toggleOnHover*(subj: Subject[bool]): Behavior =
     proc(e: Element): bool =
       subj <- false
       true
+    ,
+    force
   )
