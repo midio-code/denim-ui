@@ -164,7 +164,13 @@ proc pointerExited(self: Element, arg: PointerArgs, res: var EventResult): void 
 
 
 var elementsHandledPointerMoveThisUpdate = initHashSet[Element]()
-proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs, res: var EventResult): void =
+proc dispatchPointerMoveImpl(
+  self: Element,
+  arg: PointerArgs,
+  res: var EventResult,
+  enterRes: var EventResult,
+  exitRes: var EventResult,
+): void =
   if self.props.visibility == Visibility.Collapsed:
     return
 
@@ -173,14 +179,14 @@ proc dispatchPointerMoveImpl(self: Element, arg: PointerArgs, res: var EventResu
 
   if pointInside or self.hasPointerCapture:
     if self.pointerInsideLastUpdate == false:
-      self.pointerEntered(transformedArg, res)
+      self.pointerEntered(transformedArg, enterRes)
     for child in self.childrenSortedByZIndex.reverse:
-      child.dispatchPointerMoveImpl(transformedArg, res)
+      child.dispatchPointerMoveImpl(transformedArg, res, enterRes, exitRes)
     elementsHandledPointerMoveThisUpdate.incl(self)
     for handler in self.pointerMovedHandlers:
       handler(transformedArg.withElem(self), res)
   elif self.pointerInsideLastUpdate:
-    self.pointerExited(transformedArg, res)
+    self.pointerExited(transformedArg, exitRes)
 
 proc dispatchPointerDown*(self: Element, arg: PointerArgs): EventResult =
   elementsHandledPointerDownThisUpdate.clear()
@@ -227,14 +233,16 @@ proc dispatchPointerMove*(self: Element, arg: PointerArgs): EventResult =
   emitPointerMovedGlobal(arg)
 
   result = EventResult(handledBy: @[])
+  var enterResult = EventResult(handledBy: @[])
+  var exitResult = EventResult(handledBy: @[])
 
   if pointerIsCaptured():
     for captor in pointerCaptors():
       if not elementsHandledPointerMoveThisUpdate.contains(captor):
         var transformedArg = captor.transformArgFromRootElem(arg)
-        captor.dispatchPointerMoveImpl(transformedArg, result)
+        captor.dispatchPointerMoveImpl(transformedArg, result, enterResult, exitResult)
   else:
-    self.dispatchPointerMoveImpl(arg, result)
+    self.dispatchPointerMoveImpl(arg, result, enterResult, exitResult)
 
 proc dispatchWheelImpl*(self: Element, args: WheelArgs, res: var EventResult): void =
   let transformedArg = args.transformed(self)

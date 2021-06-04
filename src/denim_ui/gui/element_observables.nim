@@ -87,6 +87,10 @@ proc observeSideRelativeTo*(self: Element, side: Side, other: Element): Observab
 proc observeHalfWidth*(self: Element): Observable[float] =
   self.observeBounds().map((b: Bounds) => b.size.x / 2.0)
 
+
+proc observeSize*(self: Element): Observable[Vec2[float]] =
+  self.observeBounds().map((b: Bounds) => b.size)
+
 proc observeWidth*(self: Element): Observable[float] =
   self.observeBounds().map((b: Bounds) => b.size.x)
 

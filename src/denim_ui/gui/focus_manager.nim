@@ -26,7 +26,14 @@ proc previousSibling*(self: Element): Option[Element] =
       return some(parent.children[myIndex - 1])
 
 proc giveFocus*(self: Element, lostFocusHandler: Option[() -> void] = none[() -> void]()): void =
+  if focusedElementSubject.value.isSome and focusedElementSubject.value.get()[1].isSome:
+    focusedElementSubject.value.get()[1].get()()
   focusedElementSubject <- some((self, lostFocusHandler))
+
+proc clearFocus*(): void =
+  if focusedElementSubject.value.isSome and focusedElementSubject.value.get()[1].isSome:
+    focusedElementSubject.value.get()[1].get()()
+  focusedElementSubject <- none[(Element, Option[() -> void])]()
 
 proc focusNext*(): void =
   if focusedElementSubject.value.isSome:
@@ -35,14 +42,9 @@ proc focusNext*(): void =
       focusItem[1].get()()
     let next = focusedElementSubject.value.get()[0].nextSibling
     if next.isSome:
-      focusedElementSubject <- some((next.get(), none[() -> void]()))
+      next.get.giveFocus()
     else:
       focusedElementSubject <- none[(Element, Option[() -> void])]()
-
-proc clearFocus*(): void =
-  if focusedElementSubject.value.isSome and focusedElementSubject.value.get[1].isSome:
-    focusedElementSubject.value.get[1].get()()
-  focusedElementSubject <- none[(Element, Option[() -> void])]()
 
 proc releaseFocus*(self: Element): void =
   if focusedElementSubject.value.isSome and focusedElementSubject.value.get[0] == self:
