@@ -49,9 +49,9 @@ proc moveTo*(x: float, y: float): PathSegment =
 proc lineTo*(x: float, y: float): PathSegment =
   PathSegment(kind: LineTo, to: vec2(x,y))
 proc quadraticCurveTo*(cpx: float, cpy: float, x: float, y: float): PathSegment =
-  PathSegment(kind: QuadraticCurveTo, quadraticInfo: (vec2(cpx, cpy), vec2(x, y)))
+  PathSegment(kind: QuadraticCurveTo, quadraticInfo: QuadraticInfo(controlPoint: vec2(cpx, cpy), point: vec2(x, y)))
 proc bezierCurveTo*(cp1x, cp1y, cp2x, cp2y, x, y: float): PathSegment =
-  PathSegment(kind: BezierCurveTo, bezierInfo: (vec2(cp1x, cp1y), vec2(cp2x, cp2y), vec2(x, y)))
+  PathSegment(kind: BezierCurveTo, bezierInfo: BezierInfo(controlPoint1:vec2(cp1x, cp1y), controlPoint2: vec2(cp2x, cp2y), point: vec2(x, y)))
 proc close*(): PathSegment =
   PathSegment(kind: Close)
 

@@ -60,6 +60,15 @@ type
     wordWrap*: bool
     preventNewLineOnEnter*: bool
 
+  BezierInfo* = ref object
+    controlPoint1*: Point
+    controlPoint2*: Point
+    point*: Point
+
+  QuadraticInfo* = ref object
+    controlPoint*: Point
+    point*: Point
+
   PathSegmentKind* {.pure.} = enum
     MoveTo, LineTo, QuadraticCurveTo, BezierCurveTo, Close
   PathSegment* = ref object
@@ -67,16 +76,9 @@ type
     of MoveTo, LineTo:
       to*: Point
     of QuadraticCurveTo:
-      quadraticInfo*: tuple[
-        controlPoint: Point,
-        point: Point
-      ]
+      quadraticInfo*: QuadraticInfo
     of BezierCurveTo:
-      bezierInfo*: tuple[
-        controlPoint1: Point,
-        controlPoint2: Point,
-        point: Point
-      ]
+      bezierInfo*: BezierInfo
     of Close:
       discard
 
@@ -148,7 +150,11 @@ type
     startAngle*: float
     endAngle*: float
 
-  CornerRadius* = tuple[l: float, t: float, r: float, b: float]
+  CornerRadius* = ref object
+    left*: float
+    top*: float
+    right*: float
+    bottom*: float
 
   RectangleInfo* = ref object
     bounds*: Rect[float]
@@ -295,6 +301,19 @@ type
     createTextInput*: ((ElementProps, TextInputProps), seq[Element]) -> TextInput
     createNativeText*: ((ElementProps, TextProps), seq[Element]) -> Text
 
+proc radius*(l,t,r,b: float): CornerRadius =
+  CornerRadius(
+    left: l,
+    top: t,
+    right: r,
+    bottom: b
+  )
+
+converter cornerRadiusFromTuple*(self: (float, float, float, float)): CornerRadius =
+  radius(self[0], self[1], self[2], self[3])
+
+converter cornerRadiusFromOptionTuple*(self: (float, float, float, float)): Option[CornerRadius] =
+  some(cornerRadiusFromTuple(self))
 
 implTypeName(Element)
 implTypeName(Text)
