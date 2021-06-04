@@ -543,7 +543,11 @@ proc transformFromRootElem*(self: Point, elem: Element): Point =
   a.transformInv(elem.props.transform)
 
 
-proc worldBoundsExpensive*(elem: Element): tuple[bounds: Bounds, scale: Vec2[float]] =
+type BoundsAndScale = ref object
+  bounds*: Bounds
+  scale*: Vec2[float]
+
+proc worldBoundsExpensive*(elem: Element): BoundsAndScale =
 
   var transformMatrix = mat.identity()
   var currentElem = some(elem)
@@ -560,12 +564,12 @@ proc worldBoundsExpensive*(elem: Element): tuple[bounds: Bounds, scale: Vec2[flo
   var b = elem.bounds.get(rect(0.0))
   let tl = transformMatrix * vec2(b.left, b.top)
   let br = transformMatrix * vec2(b.right, b.bottom)
-  result = (
-    rectFromPoints(
+  result = BoundsAndScale(
+    bounds: rectFromPoints(
       tl,
       br,
     ),
-    transformMatrix.scale
+    scale: transformMatrix.scale
   )
 
 proc dumpTree*(root: Element): string =
