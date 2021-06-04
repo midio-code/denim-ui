@@ -5,6 +5,9 @@ import unittest
 import testutils
 import denim_ui
 
+let colRed = "#ff0000".parseColor
+let colBlue = "#0000ff".parseColor
+
 template notCompiles*(e: untyped): untyped =
   not compiles(e)
 

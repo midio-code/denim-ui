@@ -11,7 +11,7 @@ suite "Element events":
     e.dispatchOnRooted()
     var c = false
     p.onPointerMoved(
-      proc(pos: PointerArgs): EventResult =
+      proc(pos: PointerArgs, res: var EventResult): void =
         c = true
     )
     p.invalidateLayout()
