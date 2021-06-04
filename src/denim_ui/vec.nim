@@ -167,3 +167,14 @@ proc distanceTo*[T:Number](self:Vec2[T], other: Vec2[T]): T =
 
 proc neg*[T:Number](self: Vec2[T]): Vec2[T] =
   vec2(-self.x, -self.y)
+
+proc dot*[T:Number](self, other: Vec2[T]): T =
+  self.x*other.x + self.y*other.y
+
+proc det*[T:Number](self, other: Vec2[T]): T =
+  self.x*other.y - self.y*other.x
+
+proc angleBetween*[T:Number](self, other: Vec2[T]): T =
+  result = arctan2(other.y, other.x) - arctan2(self.y, self.x)
+  if result < 0:
+    result += 2.0*PI
