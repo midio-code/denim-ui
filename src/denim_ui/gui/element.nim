@@ -476,10 +476,24 @@ proc relativeTo*(self: Vec2[float], elem: Element): Vec2[float] =
 proc relativeTo*(self: Rect[float], elem: Element): Rect[float] =
   self.withPos(self.pos.relativeTo(elem))
 
-proc childrenSortedByZIndex*(self: Element): seq[Element] =
-  self
-    .children
-    .sorted((a, b: Element) => b.props.zIndex.get(self.children.find(b)) - a.props.zIndex.get(self.children.find(a)), SortOrder.Descending)
+proc compareElementZIndices(a, b: Element): int =
+  b.props.zIndex.get - a.props.zIndex.get
+
+iterator childrenSortedByZIndex*(self: Element): Element =
+  var childrenWithZIndex = newSeqOfCap[Element](self.children.len)
+  for child in self.children:
+    if child.props.zIndex.isSome:
+      childrenWithZIndex.add(child)
+    else:
+      yield child
+  let sortedChildren = childrenWithZIndex.sorted(compareElementZIndices, SortOrder.Descending)
+  for child in sortedChildren:
+    yield child
+
+
+iterator childrenSortedByZIndexReverse*(self: Element): Element =
+  for child in toSeq(self.childrenSortedByZIndex).reverse:
+    yield child
 
 method render*(self: Element): Option[Primitive] {.base.} =
   if not self.isArrangeValid:
@@ -506,11 +520,11 @@ proc dispatchRender*(self: Element): Option[Primitive] =
   result = self.render()
 
   if result.isSome() and result.get.children.len == 0:
-    let children = self
-      .childrenSortedByZIndex()
-      .map((x: Element) => x.dispatchRender())
-      .filter((x: Option[Primitive]) => x.isSome())
-      .map((x: Option[Primitive]) => x.get())
+    var children = newSeqOfCap[Primitive](self.children.len)
+    for element in self.children:
+      let primitives = element.dispatchRender()
+      if primitives.isSome:
+        children.add(primitives.get)
     result.get.children = children
 
 proc transformOnlyBy*(point: Vec2[float], elem: Element): Vec2[float] =
