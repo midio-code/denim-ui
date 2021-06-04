@@ -20,5 +20,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup Nim environment
         uses: jiro4989/setup-nim-action@v1.1.4
-      - run: nimble build -Y
+      - run: nimble install -y
       - run: make
