@@ -6,17 +6,18 @@ var worldPositions = initTable[Element, Vec2[float]]()
 
 var worldPositionObservers = initTable[Element, Subject[Option[Point]]]()
 
+proc calcWorldPosInner(elem: Element, parentPos: Point): void =
+  if elem.bounds.isSome:
+    let elemPos = elem.bounds.get().pos + parentPos
+    worldPositions[elem] = elemPos
+    if elem in worldPositionObservers:
+      worldPositionObservers[elem] <- some(elemPos)
+    for c in elem.children:
+      c.calcWorldPosInner(elemPos)
+
 proc recalculateWorldPositionsCache*(root: Element): void =
   worldPositions.clear()
-  proc calcWorldPos(elem: Element, parentPos: Point): void =
-    if elem.bounds.isSome:
-      let elemPos = elem.bounds.get().pos + parentPos
-      worldPositions[elem] = elemPos
-      if elem in worldPositionObservers:
-        worldPositionObservers[elem] <- some(elemPos)
-      for c in elem.children:
-        c.calcWorldPos(elemPos)
-  root.calcWorldPos(zero())
+  root.calcWorldPosInner(zero())
 
 proc actualWorldPosition*(self: Element): Vec2[float] =
   if self in worldPositions:
