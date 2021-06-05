@@ -479,21 +479,18 @@ proc relativeTo*(self: Rect[float], elem: Element): Rect[float] =
 proc compareElementZIndices(a, b: Element): int =
   b.props.zIndex.get - a.props.zIndex.get
 
-iterator childrenSortedByZIndex*(self: Element): Element =
-  var childrenWithZIndex = newSeqOfCap[Element](self.children.len)
-  for child in self.children:
-    if child.props.zIndex.isSome:
-      childrenWithZIndex.add(child)
-    else:
-      yield child
-  let sortedChildren = childrenWithZIndex.sorted(compareElementZIndices, SortOrder.Descending)
-  for child in sortedChildren:
-    yield child
+proc childrenSortedByZIndex*(self: Element): seq[Element] =
+  self
+    .children
+    .sorted(
+       proc(a, b: Element): int =
+         b.props.zIndex.get(self.children.find(b)) - a.props.zIndex.get(self.children.find(a))
+      ,
+      SortOrder.Descending
+    )
 
-
-iterator childrenSortedByZIndexReverse*(self: Element): Element =
-  for child in toSeq(self.childrenSortedByZIndex).reverse:
-    yield child
+proc childrenSortedByZIndexReverse*(self: Element): seq[Element] =
+  self.childrenSortedByZIndex.reversed
 
 method render*(self: Element): Option[Primitive] {.base.} =
   if not self.isArrangeValid:
@@ -521,7 +518,7 @@ proc dispatchRender*(self: Element): Option[Primitive] =
 
   if result.isSome() and result.get.children.len == 0:
     var children = newSeqOfCap[Primitive](self.children.len)
-    for element in self.children:
+    for element in self.childrenSortedByZIndex:
       let primitives = element.dispatchRender()
       if primitives.isSome:
         children.add(primitives.get)
