@@ -10,6 +10,7 @@ import gui/element_bounds_changed_event
 type
   Context* = ref object
     render*: (Context, float) -> Option[Primitive]
+    requestRerender*: () -> void
     dispatchPointerMove*: (x: float, y: float) -> void
     dispatchPointerDown*: (x: float, y: float, pointerIndex: PointerIndex) -> void
     dispatchPointerUp*: (x: float, y: float, pointerIndex: PointerIndex) -> void
@@ -54,8 +55,8 @@ proc scaleMousePos(ctx: Context, pos: Vec2[float]): Vec2[float] =
 
 var samples = 0
 var startTime = float(getMonoTime().ticks) / 1000000.0
-proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
 
+proc update*(ctx: Context, dt: float): void {.exportc.} =
   let availableRect = rect(zero(), windowSize.divide(ctx.scale))
   performOutstandingLayoutsAndMeasures(availableRect)
   emitBoundsChangedEventsFromPreviousFrame()
@@ -99,7 +100,10 @@ proc render*(ctx: Context, dt: float): Option[Primitive] {.exportc.} =
 
   update_manager.dispatchUpdate(dt)
   performOutstandingLayoutsAndMeasures(availableRect)
+  if not ctx.rootElement.isVisualValid:
+    ctx.requestRerender()
 
+proc render*(ctx: Context): Option[Primitive] {.exportc.} =
   result = ctx.rootElement.dispatchRender()
   if result.isSome:
     result.get().children = result.get().children
@@ -162,6 +166,7 @@ proc init*(
   scale: Vec2[float],
   measureTextFunction: (string, float, string, int, string) -> Vec2[float],
   hitTestPath: (Element, PathProps, Point) -> bool,
+  requestRerender: () -> void,
   render: () -> Element,
   nativeElements: NativeElements,
   setCursorHandler: (Cursor) -> void
@@ -180,6 +185,7 @@ proc init*(
   rootElement.invalidateLayout()
   result = Context(
     rootElement: rootElement,
+    requestRerender: requestRerender,
     dispatchPointerMove: dispatchPointerMove,
     dispatchPointerDown: dispatchPointerPress,
     dispatchPointerUp: dispatchPointerRelease,

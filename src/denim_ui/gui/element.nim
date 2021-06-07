@@ -100,6 +100,11 @@ proc performOutstandingLayoutsAndMeasures*(rect: Bounds): void =
   instance.performOutstandingArrange(rect)
   emitLayoutPerformed(rect)
 
+proc invalidateVisual*(self: Element): void =
+  self.isVisualValid = false
+  if self.parent.isSome:
+    self.parent.get.invalidateVisual()
+
 proc invalidateArrange(self: Element): void =
   self.isArrangeValid = false
   if self.isRooted:
@@ -112,16 +117,9 @@ proc invalidateMeasure(self: Element): void =
   self.invalidateArrange()
 
 
-# TODO: We are currently performing layout on the entire tree when any element invalidates.
-# this hould be optimized in the future, so that we only perform layout on the elements for which it
-# is strictly necessary
 proc invalidateLayout*(self: Element): void =
   self.invalidateMeasure()
-
-proc invalidateVisual*(self: Element): void =
-  if self.parent.isSome:
-    self.parent.get.invalidateVisual()
-  self.isVisualValid = false
+  self.invalidateVisual()
 
 # ======== ELEMENT IMPLEMENTATION ======================
 # NOTE: Atm we have the LayoutManager implementation in the same file so that we avoid
@@ -515,6 +513,7 @@ proc dispatchRender*(self: Element): Option[Primitive] =
     return none[Primitive]()
 
   result = self.render()
+  self.isVisualValid = true
 
   if result.isSome() and result.get.children.len == 0:
     var children = newSeqOfCap[Primitive](self.children.len)

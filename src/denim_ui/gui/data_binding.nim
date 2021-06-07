@@ -31,6 +31,7 @@ template bindLayoutProp*[T](element: Element, prop: untyped, observable: Observa
   element.subscribe(
     observable,
     proc(newVal: T): void =
-      element.props.prop = newVal
-      element.invalidateLayout()
+      if element.props.prop != newVal:
+        element.props.prop = newVal
+        element.invalidateLayout()
   )
