@@ -408,3 +408,6 @@ converter toSolidColor*(color: Color): ColorStyle =
 
 converter toSolidColorOpt*(color: Color): Option[ColorStyle] =
   some(newSolidColor(color))
+
+type
+  Dispose* = () -> void

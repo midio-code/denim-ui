@@ -100,6 +100,7 @@ proc update*(ctx: Context, dt: float): void {.exportc.} =
 
   update_manager.dispatchUpdate(dt)
   performOutstandingLayoutsAndMeasures(availableRect)
+  dispatchBeforeRenderEvent()
   if not ctx.rootElement.isVisualValid:
     ctx.requestRerender()
 

@@ -1,9 +1,11 @@
-import ../events
+import types
 import sugar
 import sequtils
+import ../events
 
 var updateManagerListeners = emitter[float]()
 
+# TODO: Have this proc return a dispose function instead of having `removeUpdateListener`
 proc addUpdateListenerIfNotPresent*(listener: EventHandler[float]): void =
   if not updateManagerListeners.contains(listener):
     updateManagerListeners.add(listener)
@@ -19,8 +21,6 @@ type
     callback: () -> void
     startedAt: float
     waitingFor: float
-
-  Dispose* = () -> void
 
 var waiters: seq[Waiter] = @[]
 

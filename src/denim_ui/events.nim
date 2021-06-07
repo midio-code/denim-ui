@@ -20,7 +20,8 @@ proc contains*[T](self: EventEmitter[T], listener: EventHandler[T]): bool =
 proc numListeners*[T](self: EventEmitter[T]): int =
   self.listeners.len() - self.toRemove.len() + self.toAdd.len()
 
-proc emit*[T](self: var EventEmitter[T], data: T): void =
+
+proc cleanupEmitter[T](self: var EventEmitter[T]): void =
   for toRemove in self.toRemove:
     let index = self.listeners.find(toRemove)
     if index != -1:
@@ -31,8 +32,16 @@ proc emit*[T](self: var EventEmitter[T], data: T): void =
     self.listeners.add(toAdd)
   self.toAdd = @[]
 
+proc emit*[T](self: var EventEmitter[T], data: T): void =
+  self.cleanupEmitter()
+  when T isnot void:
+    for listener in self.listeners:
+      listener(data)
+
+proc emit*(self: var EventEmitter[void]): void =
+  self.cleanupEmitter()
   for listener in self.listeners:
-    listener(data)
+    listener()
 
 proc add*[T](self: var EventEmitter[T], listener: EventHandler[T]): void =
   self.toAdd.add(listener)

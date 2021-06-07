@@ -16,6 +16,9 @@ import tag
 
 export types
 
+# TODO: Move this stuff to own module
+var renderCache* = initTable[Element, Primitive]()
+
 proc isChildOf*(child, parent: Element): bool =
   parent.children.find(child) != -1 and  child.parent.isSome and child.parent.get() == parent
 
@@ -102,6 +105,8 @@ proc performOutstandingLayoutsAndMeasures*(rect: Bounds): void =
 
 proc invalidateVisual*(self: Element): void =
   self.isVisualValid = false
+  if self in renderCache:
+    renderCache.del(self)
   if self.parent.isSome:
     self.parent.get.invalidateVisual()
 
@@ -363,7 +368,7 @@ proc arrangeCore(self: Element, finalRect: Bounds): void =
   #   )
   #   return
 
-  self.bounds = rect(
+  let newBounds = rect(
     vec2(
       self.props.x.get(originX) + self.props.xOffset.get(0),
       self.props.y.get(originY) + self.props.yOffset.get(0)
@@ -373,6 +378,10 @@ proc arrangeCore(self: Element, finalRect: Bounds): void =
       self.props.height.get(size.y)
     )
   )
+  if self.bounds != newBounds:
+    if self in renderCache:
+      renderCache.del(self)
+    self.bounds = newBounds
   self.scheduleBoundsChangeEventForNextFrame()
 
 proc arrange*(self: Element, rect: Rect): void =
@@ -505,7 +514,23 @@ method render*(self: Element): Option[Primitive] {.base.} =
     )
   )
 
+var beforeRender = emitter[void]()
+proc addBeforeRenderListener*(listener: EventHandler[void]): Dispose =
+  if not beforeRender.contains(listener):
+    beforeRender.add(listener)
+    return proc() =
+             if beforeRender.contains(listener):
+              beforeRender.remove(listener)
+  return proc(): void =
+    discard
+
+proc dispatchBeforeRenderEvent*() =
+  beforeRender.emit()
+
 proc dispatchRender*(self: Element): Option[Primitive] =
+  if self in renderCache:
+    return some(renderCache[self])
+
   if self.props.visibility.get(Visibility.Visible) != Visibility.Visible:
     return none[Primitive]()
   if not self.isRooted:
@@ -513,7 +538,10 @@ proc dispatchRender*(self: Element): Option[Primitive] =
     return none[Primitive]()
 
   result = self.render()
-  self.isVisualValid = true
+
+  if result.isSome:
+    self.isVisualValid = true
+    renderCache[self] = result.get
 
   if result.isSome() and result.get.children.len == 0:
     var children = newSeqOfCap[Primitive](self.children.len)
