@@ -56,19 +56,22 @@ proc createInterpolator*[T](easing: float -> float, lerper: (T,T,float) -> T): (
   result = proc(a, b: T, t: float): T =
     lerper(a, b, easing(t))
 
-converter fromStrColorColor*(color: stdColor.Color): guiColor.Color =
+converter fromStdColorColor*(color: stdColor.Color): guiColor.Color =
   let (r,g,b) = stdColor.extractRGB(color)
   newColor(byte(r), byte(g), byte(b), 0xff)
 
+converter fromStdColorOptColor*(color: stdColor.Color): Option[guiColor.Color] =
+  some(fromStdColorColor(color))
+
 converter fromStrColorColorToStyle*(color: stdColor.Color): ColorStyle =
-  newSolidColor(fromStrColorColor(color))
+  newSolidColor(fromStdColorColor(color))
 
 converter fromStrColorColorToStyleOpt*(color: stdColor.Color): Option[ColorStyle] =
-  some(newSolidColor(fromStrColorColor(color)))
+  some(newSolidColor(fromStdColorColor(color)))
 
 converter fromStrColorColorOpt*(color: Option[stdColor.Color]): Option[ColorStyle] =
   if color.isSome:
-    some(newSolidColor(fromStrColorColor(color.get)))
+    some(newSolidColor(fromStdColorColor(color.get)))
   else:
     none[ColorStyle]()
 
@@ -81,4 +84,4 @@ converter toSolidColor*(optColor: Option[guiColor.Color]): Option[ColorStyle] =
 proc parseColor*(colString: string): guiColor.Color =
   if colString.len != 7 or colString[0] != '#':
     raise newException(Exception, &"Color string is longer than expected ({colString}) (only the form '#rrggbb' is currently supported (not alpha, even though alpha is supported by the color type))")
-  fromStrColorColor(stdColor.parseColor(colString))
+  fromStdColorColor(stdColor.parseColor(colString))
