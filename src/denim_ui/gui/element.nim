@@ -469,9 +469,6 @@ method measureOverride*(self: Element, availableSize: Vec2[float]): Vec2[float] 
 
   return vec2(width, height)
 
-proc boundsInWorldSpace*(self: Element): Option[Bounds] =
-  self.bounds.map(x => x.withPos(self.actualWorldPosition))
-
 method isPointInside*(self: Element, point: Vec2[float]): bool {.base.} =
   let pos = self.actualWorldPosition
   let size = self.bounds.map(x => x.size).get(zero())
