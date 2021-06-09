@@ -339,7 +339,6 @@ proc `elementProps`*(self: Element): ElementProps =
 type
   KeyArgs* = ref object
     key*: string
-    keyCode*: int
     modifiers*: seq[string]
 
   PointerArgs* = ref object

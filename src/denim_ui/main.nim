@@ -15,8 +15,8 @@ type
     dispatchPointerDown*: (x: float, y: float, pointerIndex: PointerIndex) -> void
     dispatchPointerUp*: (x: float, y: float, pointerIndex: PointerIndex) -> void
     dispatchWheel*: (x: float, y: float, deltaX: float, deltaY: float, deltaZ: float, unit: WheelDeltaUnit) -> void
-    dispatchKeyDown*: (code: int, key: string, modifiers: seq[string]) -> void
-    dispatchKeyUp*: (code: int, key: string, modifiers: seq[string]) -> void
+    dispatchKeyDown*: (key: string, modifiers: seq[string]) -> void
+    dispatchKeyUp*: (key: string, modifiers: seq[string]) -> void
     dispatchWindowSizeChanged*: (newSize: Vec2[float]) -> void
     dispatchUpdate*: (float) -> void
     rootElement*: prelude.Element
@@ -138,25 +138,23 @@ proc dispatchWheel*(x: float, y: float, deltaX: float, deltaY: float, deltaZ: fl
     unit: unit
   ))
 
-proc dispatchKeyDown*(keyCode: int, key: string, modifiers: seq[string]): void {.exportc.} =
+proc dispatchKeyDown*(key: string, modifiers: seq[string]): void {.exportc.} =
   keyEventsThisFrame.add(
     KeyEvent(
       kind: KeyEventKind.Down,
       args: KeyArgs(
         key: key, # TODO: We seem to be gettin the wrong key
-        keyCode: keyCode,
         modifiers: modifiers
       )
     )
   )
 
-proc dispatchKeyUp*(keyCode: int, key: string, modifiers: seq[string]): void {.exportc.} =
+proc dispatchKeyUp*(key: string, modifiers: seq[string]): void {.exportc.} =
   keyEventsThisFrame.add(
     KeyEvent(
       kind: KeyEventKind.Up,
       args: KeyArgs(
         key: key, # TODO: We seem to be gettin the wrong key
-        keyCode: keyCode,
         modifiers: modifiers
       )
     )
