@@ -9,9 +9,8 @@ type
     b*: byte
     a*: byte
 
-
 proc `$`*(self: Color): string =
-  &"#{self.r.toHex}{self.g.toHex}{self.b.toHex}{self.a.toHex}"
+  "#" & self.r.toHex & self.g.toHex & self.b.toHex & self.a.toHex
 
 proc newColor*(r,g,b,a: byte): Color =
   Color(

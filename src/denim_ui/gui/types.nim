@@ -127,13 +127,13 @@ type
     lineJoin*: Option[LineJoin]
 
   TextInfo* = ref object
-    text*: string
+    text*: cstring
     fontSize*: float
-    textBaseline*: string
-    fontFamily*: string
+    textBaseline*: cstring
+    fontFamily*: cstring
     fontWeight*: int
-    fontStyle*: string
-    alignment*: string
+    fontStyle*: cstring
+    alignment*: cstring
 
   PrimitiveKind* {.pure.} = enum
     Container, Text, Path, Circle, Ellipse, Rectangle, Image
