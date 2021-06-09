@@ -1,6 +1,7 @@
 import strformat
 import strutils
 import hashes
+import tables
 
 type
   Color* = ref object
@@ -9,8 +10,15 @@ type
     b*: byte
     a*: byte
 
+proc hash*(self: Color): Hash =
+  cast[Hash]((int(self.r) shl 24) or (int(self.g) shl 16) or (int(self.b) shl 8) or int(self.a))
+
 proc `$`*(self: Color): string =
   "#" & self.r.toHex & self.g.toHex & self.b.toHex & self.a.toHex
+
+var cStrHexCache = initTable[Color, cstring]()
+proc toHexCStr*(self: Color): cstring =
+  cStrHexCache.mgetorput(self, cstring($self))
 
 proc newColor*(r,g,b,a: byte): Color =
   Color(
@@ -43,5 +51,3 @@ proc `+`*(a,b: Color): Color =
 proc withAlpha*(c: Color, a: byte): Color =
   newColor(c.r, c.g, c.b, a)
 
-proc hash*(self: Color): Hash =
-  cast[Hash]((int(self.r) shl 24) or (int(self.g) shl 16) or (int(self.b) shl 8) or int(self.a))

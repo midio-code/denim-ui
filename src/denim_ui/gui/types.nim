@@ -369,6 +369,13 @@ proc `$`*(self: ColorStyle): string =
     else:
       raise newException(Exception, "$ not implemented for color kind {self.kind}")
 
+proc toHexCStr*(self: ColorStyle): cstring =
+  case self.kind:
+    of ColorStyleKind.Solid:
+       self.color.toHexCStr()
+    else:
+      raise newException(Exception, "$ not implemented for color kind {self.kind}")
+
 
 proc newSolidColor*(color: Color): ColorStyle =
   ColorStyle(
