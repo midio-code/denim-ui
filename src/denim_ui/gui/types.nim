@@ -167,7 +167,7 @@ type
     of PathInfoKind.Segments:
       segments*: seq[PathSegment]
     of PathInfoKind.String:
-      data*: string
+      data*: cstring
 
 
   Shadow* = ref object
