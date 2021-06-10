@@ -7,6 +7,7 @@ import ../update_manager
 import ../element
 import ../element_events
 import ../../guid
+import ../../vec
 import ../../events
 
 type
@@ -60,11 +61,12 @@ let doublecClickedBehaviorId = genGuid()
 
 proc onDoubleClicked*(handler: ClickedHandler, waitMs: float = 500.0, force: bool = false): Behavior =
   var clickedOnce = false
+  var lastClick: Vec2[float]
   var dispose: Dispose = nil
   onClicked(
     proc(e: Element, args: PointerArgs, res: var EventResult): void =
       if not res.isHandledByOtherThan(e.id):
-        if clickedOnce:
+        if clickedOnce and lastClick.distanceTo(args.actualPos) < 5.0:
           res.addHandledBy(doublecClickedBehaviorId)
           handler(e, args, res)
           clickedOnce = false
@@ -72,9 +74,11 @@ proc onDoubleClicked*(handler: ClickedHandler, waitMs: float = 500.0, force: boo
             dispose()
         else:
           clickedOnce = true
+          lastClick = args.actualPos
           dispose = wait(
             proc() =
-              clickedOnce = false,
+              clickedOnce = false
+              lastClick = nil,
           waitMs)
   )
 
