@@ -30,7 +30,7 @@ proc setCursorToTopOfCursorStack(): void =
   else:
     setCursor(cursorStack[cursorStack.len - 1].cursor)
 
-proc pushCursor(cursor: Cursor, owner: Element): void =
+proc pushCursor*(cursor: Cursor, owner: Element): void =
   cursorStack.add(
     CursorItem(
       cursor: cursor,
@@ -39,20 +39,17 @@ proc pushCursor(cursor: Cursor, owner: Element): void =
   )
   setCursorToTopOfCursorStack()
 
-proc popDownToElement(owner: Element): void =
-  for i in countdown(cursorStack.len - 1, 0):
-    let item = cursorStack[i]
-    cursorStack.delete(i)
-    if item.owner == owner:
-      setCursorToTopOfCursorStack()
-      return
+proc popDownToElement*(owner: Element): void =
+  while cursorStack.len > 0 and cursorStack[cursorStack.len - 1].owner != owner:
+    discard cursorStack.pop()
+  setCursorToTopOfCursorStack()
 
 proc cursorOnHover*(cursor: Cursor): Behavior =
   onHover(
     proc(elem: Element): void =
       pushCursor(cursor, elem),
     proc(elem: Element): void =
-      popDownToElement(elem)
+      popDownToElement(elem.parent.get)
   )
 
 let cursorWhilePressedBehaviorId = genGuid()
