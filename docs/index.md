@@ -554,6 +554,12 @@ Cursor = enum
   Default, Clickable, Dragging
 ```
 
+### Additional cursor behaviors
+
+#### cursorWhileKeyGlobal(cursor: Cursor, string: Key) -> Behavior
+
+Sets the cursor while a key is pressed, independently of which element is currently focused.
+
 ## Data binding
 
 For dynamic data, we use the Observable pattern, which works pretty much as RX observables (http://reactivex.io/intro.html), sans some missing operators.

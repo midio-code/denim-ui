@@ -5,6 +5,7 @@ import types
 import element_events
 import behaviors
 import behaviors/onHover
+import behaviors/onKey
 import ../guid
 
 type
@@ -74,4 +75,17 @@ proc cursorWhilePressed*(cursor: Cursor, pointerIndex: PointerIndex): Behavior =
               didPushCursor = false
         )
     )
+  )
+
+proc cursorWhileKeyGlobal*(cursor: Cursor, key: string): Behavior =
+  var didPushCursor = true
+  onKeyGlobal(
+    key,
+    proc(element: Element, args: KeyArgs): void =
+      pushCursor(cursor, element)
+      didPushCursor = true
+    ,
+    proc(element: Element, args: KeyArgs): void =
+      didPushCursor = false
+      popDownToElement(element)
   )
