@@ -4,7 +4,7 @@ import gui/primitives/text
 import gui/primitives/path
 import gui/native_element
 import gui/update_manager
-import std/monotimes
+import monotimes_fork
 import gui/element_bounds_changed_event
 
 type
