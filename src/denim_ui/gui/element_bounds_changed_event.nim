@@ -10,8 +10,10 @@ type
 var boundsChangedHandlers = initTable[Element, BoundsChangedEmitter]()
 var scheduledEvents: seq[tuple[elem: Element, bounds: Bounds]] = @[]
 
-proc onBoundsChanged*(self: Element, handler: BoundsChangedHandler): void =
-  boundsChangedHandlers.mgetOrPut(self, emitter[Rect[float]]()).add(handler)
+proc onBoundsChanged*(self: Element, handler: BoundsChangedHandler): Dispose =
+  boundsChangedHandlers.mgetorput(self, emitter[Rect[float]]()).add(handler)
+  return proc() =
+    boundsChangedHandlers.mgetorput(self, emitter[Rect[float]]()).remove(handler)
 
 proc scheduleBoundsChangeEventForNextFrame*(self: Element): void =
   if boundsChangedHandlers.contains(self):

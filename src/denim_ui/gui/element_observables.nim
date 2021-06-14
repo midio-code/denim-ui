@@ -5,16 +5,18 @@ import ../rect
 import world_position
 import rx_nim
 
-proc observeBounds*(e: Element): Observable[Rect[float]] =
-  let state = behaviorSubject(e.bounds.get(rect(0.0)))
-  var prevBounds: Bounds
-  e.onBoundsChanged(
-    proc(newBounds: Rect[float]): void =
-      if isNil(prevBounds) or prevBounds != newBounds:
-        prevBounds = newBounds
-        state.next(newBounds)
+proc observeBounds*(e: Element): Observable[Option[Bounds]] =
+  createObservable[Option[Bounds]](
+    proc(subscriber: Subscriber[Option[Bounds]]): Subscription =
+      let disposeBoundsChangedSubscription = e.onBoundsChanged(
+        proc(newBounds: Bounds): void =
+          subscriber.onNext(some(newBounds))
+      )
+      subscriber.onNext(e.bounds)
+      Subscription(
+        dispose: disposeBoundsChangedSubscription
+      )
   )
-  state.source
 
 proc observeCenterRelativeTo*(self: Element, other: Element): Observable[Point] =
   self.observeWorldPosition().map(
@@ -79,20 +81,20 @@ proc observeSideRelativeTo*(self: Element, side: Side, other: Element): Observab
     raise newException(Exception, "Tried to observe side of an Element that was nil")
   self.observeWorldPosition()
     .combineLatest(
-      self.observeBounds(),
+      self.observeBounds().unwrap,
       proc(p: Point, bounds: Bounds): Point =
         p.relativeTo(other).mapPointToSide(bounds, side)
     )
 
 proc observeHalfWidth*(self: Element): Observable[float] =
-  self.observeBounds().map((b: Bounds) => b.size.x / 2.0)
+  self.observeBounds().unwrap.map((b: Bounds) => b.size.x / 2.0)
 
 
 proc observeSize*(self: Element): Observable[Vec2[float]] =
-  self.observeBounds().map((b: Bounds) => b.size)
+  self.observeBounds().unwrap.map((b: Bounds) => b.size)
 
 proc observeWidth*(self: Element): Observable[float] =
-  self.observeBounds().map((b: Bounds) => b.size.x)
+  self.observeBounds().unwrap.map((b: Bounds) => b.size.x)
 
 proc observeHeight*(self: Element): Observable[float] =
-  self.observeBounds().map((b: Bounds) => b.size.y)
+  self.observeBounds().unwrap.map((b: Bounds) => b.size.y)
