@@ -16,12 +16,12 @@ proc onHover*(entered: (Element) -> bool, exited: (Element) -> bool): Behavior =
         element.onPointerEntered(
           proc(arg: PointerArgs, res: var EventResult): void =
             if entered(element):
-              res.addHandledBy(hoverBehaviorId)
+              res.addHandledBy(hoverBehaviorId, "onHover enter")
         )
         element.onPointerExited(
           proc(arg: PointerArgs, res: var EventResult): void =
             if exited(element):
-              res.addHandledBy(hoverBehaviorId)
+              res.addHandledBy(hoverBehaviorId, "onHover exit")
         )
     )
   )
@@ -43,7 +43,7 @@ proc onHover*(entered: (Element) -> bool): Behavior =
         element.onPointerEntered(
           proc(arg: PointerArgs, res: var EventResult): void =
             if entered(element):
-              res.addHandledBy(hoverBehaviorId)
+              res.addHandledBy(hoverBehaviorId, "onHover enter")
         )
     )
   )

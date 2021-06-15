@@ -61,7 +61,7 @@ proc cursorWhilePressed*(cursor: Cursor, pointerIndex: PointerIndex): Behavior =
         element.onPointerPressed(
           proc(arg: PointerArgs, res: var EventResult): void =
             if not res.isHandledBy(cursorWhilePressedBehaviorId) and arg.pointerIndex == pointerIndex:
-              res.addHandledBy(cursorWhilePressedBehaviorId)
+              res.addHandledBy(cursorWhilePressedBehaviorId, "cursorWhilePress")
               didPushCursor = true
               pushCursor(cursor, element)
         )

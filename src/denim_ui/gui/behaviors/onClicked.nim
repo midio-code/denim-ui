@@ -52,7 +52,7 @@ proc onClicked*(handler: () -> bool, force: bool = false): Behavior =
   onClicked(
     proc(e: Element, args: PointerArgs, res: var EventResult): void =
       if handler():
-        res.addHandledBy(behaviorId)
+        res.addHandledBy(behaviorId, "onClicked")
     ,
     force
   )
@@ -67,7 +67,7 @@ proc onDoubleClicked*(handler: ClickedHandler, waitMs: float = 500.0, force: boo
     proc(e: Element, args: PointerArgs, res: var EventResult): void =
       if not res.isHandledByOtherThan(e.id):
         if clickedOnce and lastClick.distanceTo(args.actualPos) < 5.0:
-          res.addHandledBy(doublecClickedBehaviorId)
+          res.addHandledBy(doublecClickedBehaviorId, "onDoubleClicked")
           handler(e, args, res)
           clickedOnce = false
           if not isNil(dispose):

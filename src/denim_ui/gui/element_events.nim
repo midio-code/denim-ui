@@ -27,6 +27,11 @@ proc `&`(self: EventResult, other: EventResult): EventResult =
 proc addHandledBy*(self: var EventResult, id: Guid): void =
   self.handledBy.add(id)
 
+template addHandledBy*(self: var EventResult, id: Guid, label: string): void =
+  when defined(debug_pointer_events):
+    echo "Adding handled by: ", id, " - ", label
+  self.addHandledBy(id)
+
 proc isHandledBy*(self: EventResult, id: Guid): bool =
   id in self.handledBy
 

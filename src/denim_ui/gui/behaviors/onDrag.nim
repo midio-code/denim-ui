@@ -42,11 +42,11 @@ proc onDrag*(
         element.onPointerPressed(
           proc(arg: PointerArgs, res: var EventResult): void =
             dragDistanceThisPress = 0.0
-            if not res.isHandledBy(behaviorId) and canCurrentlyStartDrag and arg.pointerIndex == pointerIndex and not element.pointerCapturedBySomeoneElse():
+            if not res.isHandled and canCurrentlyStartDrag and arg.pointerIndex == pointerIndex and not element.pointerCapturedBySomeoneElse():
               element.capturePointerShared(some(onLostCapture))
               pastPos = arg.actualPos
               pressed = true
-              res.addHandledBy(behaviorId)
+              res.addHandledBy(behaviorId, "onDrag: press")
         )
         element.onPointerMoved(
           proc(arg: PointerArgs, res: var EventResult): void =
@@ -60,7 +60,7 @@ proc onDrag*(
               if not isNil(startedDrag):
                 startedDrag()
               moved(diff)
-              res.addHandledBy(behaviorId)
+              res.addHandledBy(behaviorId, "onDrag: move")
         )
         element.onPointerReleased(
           proc(arg: PointerArgs, res: var EventResult): void =

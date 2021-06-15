@@ -15,7 +15,7 @@ proc onWheel*(handler: (elem: Element, args: WheelArgs, res: var EventResult) ->
           proc(arg: WheelArgs, res: var EventResult): void =
             if not res.isHandled:
               handler(elem, arg, res)
-              res.addHandledBy(elem.id)
+              res.addHandledBy(elem.id, "onWheel")
         )
     )
   )
