@@ -44,7 +44,11 @@ type
     color*: Option[Color]
     wordWrap*: bool
 
-  TextChanged* = string -> void
+
+  TextChangedInfo* = ref object
+    selectionStart*: int
+    selectionEnd*: int
+  TextChanged* = (string, TextChangedInfo) -> void
 
   TextInputProps* = ref object
     text*: string
