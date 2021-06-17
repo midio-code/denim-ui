@@ -128,3 +128,6 @@ proc intersects*[T:Number](a: Rect[T], b: Rect[T]): bool =
 
 proc `==`*[T:Number](self: Rect[T], other: Rect[T]): bool =
   other.size == self.size and other.pos == self.pos
+
+proc isInside*[T:Number](self: Rect[T], other: Rect[T]): bool =
+  self.left >= other.left and self.right <= other.right and self.top >= other.top and self.bottom <= other.bottom
