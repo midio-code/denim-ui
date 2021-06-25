@@ -176,6 +176,14 @@ method onRooted*(self: Element): void {.base.} =
 method onUnrooted*(self: Element): void {.base.} =
   discard
 
+let beforeUnrootTasks = newTable[Element, seq[(Element, () -> void) -> void]]()
+proc beforeUnroot*(self: Element, task: (Element, () -> void) -> void): void =
+  beforeUnrootTasks.mgetorput(self, @[]).add(task)
+
+proc clearUnrootTasks(self: Element): void =
+  if self in beforeUnrootTasks:
+    beforeUnrootTasks.del(self)
+
 proc dispatchOnRooted*(self: Element): void =
   self.isRooted = true
   if self in isRootedObservables:
@@ -186,13 +194,18 @@ proc dispatchOnRooted*(self: Element): void =
 
 proc dispatchOnUnrooted*(self: Element): void =
   self.isRooted = false
+  # NOTE: In case we get unrooted by a parent, we need to
+  # remove any before unroot tasks so that they don't pile up if the
+  # item gets rooted again
+  # TODO: We might want to make sure the tasks get run in this case as well,
+  # but since the before unroot tasks are built to be able to delay
+  # actual unrooting, this is a bit more involved than just
+  # calling all the before unroot tasks.
+  # see issue: https://github.com/nortero-code/midio/issues/86
+  self.clearUnrootTasks()
   for child in self.children:
     child.dispatchOnUnrooted()
   self.onUnrooted()
-
-let beforeUnrootTasks = newTable[Element, seq[(Element, () -> void) -> void]]()
-proc beforeUnroot*(self: Element, task: (Element, () -> void) -> void): void =
-  beforeUnrootTasks.mgetorput(self, @[]).add(task)
 
 proc detachFromParent(self: Element): void =
   if self.parent.isSome:
