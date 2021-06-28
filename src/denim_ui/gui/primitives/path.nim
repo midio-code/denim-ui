@@ -64,7 +64,6 @@ method render(self: Path): Option[Primitive] =
       )
     )
   else:
-    echo "WARN: Path should have either stringData or data set"
     none[Primitive]()
 
 # NOTE: This is set by main during initialization
