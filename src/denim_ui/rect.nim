@@ -47,18 +47,14 @@ proc width*[T:Number](self: Rect[T]): T =
 proc height*[T:Number](self: Rect[T]): T =
   result = self.size.y
 
-
 proc left*[T:Number](self: Rect[T]): T =
   result = self.x
-
 
 proc top*[T:Number](self: Rect[T]): T =
   result = self.y
 
-
 proc right*[T:Number](self: Rect[T]): T =
   result = self.x + self.width
-
 
 proc bottom*[T:Number](self: Rect[T]): T =
   result = self.y + self.height

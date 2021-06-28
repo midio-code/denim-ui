@@ -70,21 +70,25 @@ func `*`*(a: Mat3, b: Vec2[float]): Vec2[float] =
 
 func inverse*(a: Mat3): Mat3 =
   result = newMat3()
-  let determinant = (
-    a[0, 0] * (a[1, 1] * a[2, 2] - a[2, 1] * a[1, 2]) -
-    a[0, 1] * (a[1, 0] * a[2, 2] - a[1, 2] * a[2, 0]) +
-    a[0, 2] * (a[1, 0] * a[2, 1] - a[1, 1] * a[2, 0])
-  )
-  let invDet = 1 / determinant
-  result[0, 0] =  (a[1, 1] * a[2, 2] - a[2, 1] * a[1, 2]) * invDet
-  result[1, 0] = -(a[0, 1] * a[2, 2] - a[0, 2] * a[2, 1]) * invDet
-  result[2, 0] =  (a[0, 1] * a[1, 2] - a[0, 2] * a[1, 1]) * invDet
-  result[0, 1] = -(a[1, 0] * a[2, 2] - a[1, 2] * a[2, 0]) * invDet
-  result[1, 1] =  (a[0, 0] * a[2, 2] - a[0, 2] * a[2, 0]) * invDet
-  result[2, 1] = -(a[0, 0] * a[1, 2] - a[1, 0] * a[0, 2]) * invDet
-  result[0, 2] =  (a[1, 0] * a[2, 1] - a[2, 0] * a[1, 1]) * invDet
-  result[1, 2] = -(a[0, 0] * a[2, 1] - a[2, 0] * a[0, 1]) * invDet
-  result[2, 2] =  (a[0, 0] * a[1, 1] - a[1, 0] * a[0, 1]) * invDet
+  let
+    determinant = (
+      a[0, 0] * (a[1, 1] * a[2, 2] - a[2, 1] * a[1, 2]) -
+      a[0, 1] * (a[1, 0] * a[2, 2] - a[1, 2] * a[2, 0]) +
+      a[0, 2] * (a[1, 0] * a[2, 1] - a[1, 1] * a[2, 0])
+    )
+    invDet = 1 / determinant
+
+  result[0, 0] = +(a[1, 1] * a[2, 2] - a[2, 1] * a[1, 2]) * invDet
+  result[0, 1] = -(a[0, 1] * a[2, 2] - a[0, 2] * a[2, 1]) * invDet
+  result[0, 2] = +(a[0, 1] * a[1, 2] - a[0, 2] * a[1, 1]) * invDet
+
+  result[1, 0] = -(a[1, 0] * a[2, 2] - a[1, 2] * a[2, 0]) * invDet
+  result[1, 1] = +(a[0, 0] * a[2, 2] - a[0, 2] * a[2, 0]) * invDet
+  result[1, 2] = -(a[0, 0] * a[1, 2] - a[1, 0] * a[0, 2]) * invDet
+
+  result[2, 0] = +(a[1, 0] * a[2, 1] - a[2, 0] * a[1, 1]) * invDet
+  result[2, 1] = -(a[0, 0] * a[2, 1] - a[2, 0] * a[0, 1]) * invDet
+  result[2, 2] = +(a[0, 0] * a[1, 1] - a[1, 0] * a[0, 1]) * invDet
 
 func scaling*(v: Vec2[float]): Mat3 =
   result = newMat3()
