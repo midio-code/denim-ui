@@ -127,3 +127,9 @@ proc `==`*[T:Number](self: Rect[T], other: Rect[T]): bool =
 
 proc isInside*[T:Number](self: Rect[T], other: Rect[T]): bool =
   self.left >= other.left and self.right <= other.right and self.top >= other.top and self.bottom <= other.bottom
+
+proc lerp*[T:Number](a: Rect[T], b: Rect[T], t: float): Rect[T] =
+  rect(
+    a.pos.lerp(b.pos, t),
+    a.size.lerp(b.size, t)
+  )
