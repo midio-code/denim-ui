@@ -13,13 +13,13 @@ proc createTextPrimitive*(
   color: Color = colWhite,
   fontSize: float = defaults.fontSize,
   fontFamily: string = defaults.fontFamily,
-  textBaseline: string = "top",
+  baseline: Baseline = Baseline.Top,
   alignment: string = "left"
 ): Primitive =
   let textInfo = TextInfo(
     text: text,
     fontSize: fontSize,
-    textBaseline: textBaseline,
+    textBaseline: baseline,
     fontFamily: fontFamily,
     alignment: alignment
   )

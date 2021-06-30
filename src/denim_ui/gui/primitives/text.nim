@@ -13,7 +13,7 @@ from colors import colWhite
 
 
 # TODO: Remove need for this global
-var measureText*: (text: string, fontSize: float, fontFamily: string, fontWeight: int, baseline: string) -> Vec2[float]
+var measureText*: (text: string, fontSize: float, fontFamily: string, fontWeight: int, baseline: Baseline) -> Vec2[float]
 
 proc getOrInit[K, V](table: TableRef[K, V], key: K, init: proc(): V): V =
   if table.hasKey(key): # TODO: Avoid double loookup
@@ -52,7 +52,7 @@ proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, fo
     var lineString = lineTokens.join()
     let actualLineSize = vec2(
       lineSize.x,
-      max(lineSize.y, fontSize)
+      lineSize.y
     )
     lines.add (content: lineString, size: actualLineSize)
     totalSize.x = max(totalSize.x, lineSize.x)
@@ -67,7 +67,7 @@ proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, fo
     lineSize.y = max(lineSize.y, tokenSize.y)
 
   for token in text.tokens():
-    let tokenSize = measureText(token, fontSize, fontFamily, fontWeight, baseline = "top")
+    let tokenSize = measureText(token, fontSize, fontFamily, fontWeight, Baseline.Top)
 
     if token == "\n":
       flushLine()
@@ -91,16 +91,26 @@ proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, fo
 
 method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
   let props = self.textProps
-  let (lines, totalSize) = measureMultilineText(
-    self.textProps.text,
-    props.fontFamily.get(defaults.fontFamily),
-    props.fontSize.get(defaults.fontSize),
-    props.fontWeight.get(defaults.fontWeight),
-    props.wordWrap,
-    avSize
-  )
-  self.lines = lines
-  totalSize
+  if props.wordWrap:
+    let (lines, totalSize) = measureMultilineText(
+      self.textProps.text,
+      props.fontFamily.get(defaults.fontFamily),
+      props.fontSize.get(defaults.fontSize),
+      props.fontWeight.get(defaults.fontWeight),
+      props.wordWrap,
+      avSize
+    )
+    self.lines = lines
+    result = totalSize
+  else:
+    result = measureText(
+      self.textProps.text,
+      props.fontSize.get(defaults.fontSize),
+      props.fontFamily.get(defaults.fontFamily),
+      props.fontWeight.get(defaults.fontWeight),
+      props.baseline.get(Baseline.Top)
+    )
+    self.lines = @[(content: props.text, size: result)]
 
 method render*(self: Text): Option[Primitive] =
   let props = self.textProps
@@ -120,7 +130,6 @@ method render*(self: Text): Option[Primitive] =
       fontSize: fontSize,
       fontWeight: fontWeight,
       fontStyle: fontStyle,
-      textBaseline: "top",
       alignment: "left"
     )
 

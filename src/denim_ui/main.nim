@@ -163,7 +163,7 @@ proc dispatchKeyUp*(key: string, modifiers: seq[string]): void {.exportc.} =
 proc init*(
   size: Vec2[float],
   scale: Vec2[float],
-  measureTextFunction: (string, float, string, int, string) -> Vec2[float],
+  measureTextFunction: (string, float, string, int, Baseline) -> Vec2[float],
   hitTestPath: (Element, PathProps, Point) -> bool,
   requestRerender: () -> void,
   render: () -> Element,

@@ -35,12 +35,16 @@ type
   Points* = seq[Point]
   Bounds* = Rect[float]
 
+  Baseline* {.pure.} = enum
+    Alphabetic, Top, Middle, Bottom, Font
+
   TextProps* = ref object
     text*: string
     fontSize*: Option[float]
     fontFamily*: Option[string]
     fontWeight*: Option[int]
     fontStyle*: Option[string]
+    baseline*: Option[Baseline]
     color*: Option[Color]
     wordWrap*: bool
 
@@ -133,7 +137,7 @@ type
   TextInfo* = ref object
     text*: cstring
     fontSize*: float
-    textBaseline*: cstring
+    textBaseline*: Baseline
     fontFamily*: cstring
     fontWeight*: int
     fontStyle*: cstring
