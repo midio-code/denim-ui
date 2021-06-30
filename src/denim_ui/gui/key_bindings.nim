@@ -1,18 +1,29 @@
 import tables
+import sets
 import sugar
 import types
 import behaviors
 import options
+import strformat
 import strutils
+import algorithm
 
 type
   Command* = () -> void
   KeyCombo = ref object
     key*: string
-    modifier*: Option[string]
+    modifiers*: seq[string]
   KeyBinding* = ref object
     keyCombo*: KeyCombo
     command*: Command
+
+proc `$`(self: KeyCombo): string =
+  &"KeyCombo(key: {self.key}, modifiers: {self.modifiers})"
+
+proc `$`(self: KeyBinding): string =
+  &"KeyBinding(key: {self.keyCombo})"
+
+const recognizedModifiers = toHashSet(["Shift", "Meta", "Ctrl", "Alt"])
 
 var globalBindings: seq[KeyBinding] = @[]
 var bindings: Table[Element, seq[KeyBinding]] = initTable[Element, seq[KeyBinding]]()
@@ -20,16 +31,25 @@ var bindings: Table[Element, seq[KeyBinding]] = initTable[Element, seq[KeyBindin
 proc parseKeyCombo(self: string): KeyCombo =
   if self.contains("-"):
     let parts = self.split("-")
-    if parts.len != 2:
-      raise newException(Exception, "Key combo can at most contain one dash (-)")
+    var modifiers: seq[string] = @[]
+    var key = none[string]()
+    for part in parts:
+      if part in recognizedModifiers:
+        modifiers.add(part)
+      elif key.isNone:
+        key = some(part)
+
+    if key.isNone:
+      raise newException(Exception, &"Key binding requies a key as part of its pattern, but none was found: {self}")
+
     result = KeyCombo(
-      key: parts[1],
-      modifier: some(parts[0])
+      key: key.get,
+      modifiers: modifiers
     )
   else:
     result = KeyCombo(
       key: self,
-      modifier: none[string]()
+      modifiers: @[]
     )
 
 proc bindKey*(self: Element, keyComboStr: string, command: Command): void =
@@ -48,24 +68,27 @@ proc bindGlobalKey*(self: Element, keyComboStr: string, command: Command): void 
     )
   )
 
-iterator matchingBindings(self: seq[KeyBinding], args: KeyArgs): KeyBinding =
-  for binding in self:
-    if binding.keyCombo.key == args.key:
-      if binding.keyCombo.modifier.isSome and binding.keyCombo.modifier.get in args.modifiers:
-        yield binding
-      elif binding.keyCombo.modifier.isNone:
-        yield binding
+proc compareLength(self, other: KeyBinding): int =
+  other.keyCombo.modifiers.len - self.keyCombo.modifiers.len
 
+proc bestMatchingBinding(self: seq[KeyBinding], args: KeyArgs): Option[KeyBinding] =
+  let bindingsSortedOnModifiersLength = self.sorted(compareLength)
+  for binding in bindingsSortedOnModifiersLength:
+    if binding.keyCombo.key == args.key:
+      if toHashSet(binding.keyCombo.modifiers) <= toHashSet(args.modifiers):
+        return some(binding)
 
 proc dispatchKeyBindings*(self: Element, args: KeyArgs): void =
   if self in bindings:
     let elemBindings = bindings[self]
-    for b in elemBindings.matchingBindings(args):
-      b.command()
+    let matchingBinding = elemBindings.bestMatchingBinding(args)
+    if matchingBinding.isSome:
+      matchingBinding.get.command()
 
 proc dispatchGlobalKeyBindings*(args: KeyArgs): void =
-  for b in globalBindings.matchingBindings(args):
-    b.command()
+  let matchingBinding = globalBindings.bestMatchingBinding(args)
+  if matchingBinding.isSome:
+    matchingBinding.get.command()
 
 type
   KeyMapping = ref object
