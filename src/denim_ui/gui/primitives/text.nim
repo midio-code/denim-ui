@@ -13,7 +13,7 @@ from colors import colWhite
 
 
 # TODO: Remove need for this global
-var measureText*: (text: string, fontSize: float, fontFamily: string, fontWeight: int, baseline: Baseline) -> Vec2[float]
+var measureText*: (text: string, fontSize: float, fontFamily: string, fontWeight: int, baseline: Baseline, lineHeight: LineHeight) -> Vec2[float]
 
 proc getOrInit[K, V](table: TableRef[K, V], key: K, init: proc(): V): V =
   if table.hasKey(key): # TODO: Avoid double loookup
@@ -32,7 +32,16 @@ iterator tokens(str: string): string =
     else:
       yield token
 
-proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, fontWeight: int, wordWrap: bool, avSize: Vec2[float]): (seq[TextLine], Vec2[float]) =
+proc measureMultilineText*(
+  text: string,
+  fontFamily: string,
+  fontSize: float,
+  fontWeight: int,
+  baseline: Baseline,
+  lineHeight: LineHeight,
+  wordWrap: bool,
+  avSize: Vec2[float]
+): (seq[TextLine], Vec2[float]) =
   if text.len == 0:
     return (
       @[],
@@ -67,7 +76,7 @@ proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, fo
     lineSize.y = max(lineSize.y, tokenSize.y)
 
   for token in text.tokens():
-    let tokenSize = measureText(token, fontSize, fontFamily, fontWeight, Baseline.Top)
+    let tokenSize = measureText(token, fontSize, fontFamily, fontWeight, baseline, lineHeight)
 
     if token == "\n":
       flushLine()
@@ -97,6 +106,8 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
       props.fontFamily.get(defaults.fontFamily),
       props.fontSize.get(defaults.fontSize),
       props.fontWeight.get(defaults.fontWeight),
+      props.baseline.get(Baseline.Top),
+      props.lineHeight.get(normal()),
       props.wordWrap,
       avSize
     )
@@ -108,7 +119,8 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
       props.fontSize.get(defaults.fontSize),
       props.fontFamily.get(defaults.fontFamily),
       props.fontWeight.get(defaults.fontWeight),
-      props.baseline.get(Baseline.Top)
+      props.baseline.get(Baseline.Top),
+      props.lineHeight.get(normal())
     )
     self.lines = @[(content: props.text, size: result)]
 

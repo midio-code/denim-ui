@@ -14,14 +14,16 @@ proc createTextPrimitive*(
   fontSize: float = defaults.fontSize,
   fontFamily: string = defaults.fontFamily,
   baseline: Baseline = Baseline.Top,
-  alignment: string = "left"
+  lineHeight: LineHeight = normal(),
+  alignment: string = "left",
 ): Primitive =
   let textInfo = TextInfo(
     text: text,
     fontSize: fontSize,
     textBaseline: baseline,
     fontFamily: fontFamily,
-    alignment: alignment
+    alignment: alignment,
+    lineHeight: lineHeight
   )
   Primitive(
     transform: self.props.transform,

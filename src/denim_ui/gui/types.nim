@@ -38,6 +38,19 @@ type
   Baseline* {.pure.} = enum
     Alphabetic, Top, Middle, Bottom, Font
 
+  LineHeightKind* {.pure.} = enum
+    Normal, Unitless, Percentage, Pixels
+  LineHeight* = ref object
+    case kind*: LineHeightKind
+    of LineHeightKind.Normal:
+       discard
+    of LineHeightKind.Unitless:
+      number*: float
+    of LineHeightKind.Percentage:
+      percentage*: float
+    of LineHeightKind.Pixels:
+      pixels*: float
+
   TextProps* = ref object
     text*: string
     fontSize*: Option[float]
@@ -45,9 +58,9 @@ type
     fontWeight*: Option[int]
     fontStyle*: Option[string]
     baseline*: Option[Baseline]
+    lineHeight*: Option[LineHeight]
     color*: Option[Color]
     wordWrap*: bool
-
 
   TextChangedInfo* = ref object
     selectionStart*: int
@@ -59,9 +72,12 @@ type
     fontFamily*: Option[string]
     fontWeight*: Option[int]
     fontStyle*: Option[string]
-    placeholder*: Option[string]
+    baseline*: Option[Baseline]
+    lineHeight*: Option[LineHeight]
     fontSize*: Option[float]
+
     color*: Option[Color]
+    placeholder*: Option[string]
     placeholderColor*: Option[Color]
     onChange*: Option[TextChanged]
     focusWhenRooted*: Option[bool]
@@ -142,6 +158,7 @@ type
     fontWeight*: int
     fontStyle*: cstring
     alignment*: cstring
+    lineHeight*: LineHeight
 
   PrimitiveKind* {.pure.} = enum
     Container, Text, Path, Circle, Ellipse, Rectangle, Image
@@ -425,3 +442,25 @@ converter toSolidColorOpt*(color: Color): Option[ColorStyle] =
 
 type
   Dispose* = () -> void
+
+
+proc unitless*(value: float): LineHeight =
+  LineHeight(
+    kind: LineHeightKind.Unitless,
+    number: value
+  )
+
+proc percentage*(value: float): LineHeight =
+  LineHeight(
+    kind: LineHeightKind.Percentage,
+    percentage: value
+  )
+
+proc pixels*(value: float): LineHeight =
+  LineHeight(
+    kind: LineHeightKind.Pixels,
+    pixels: value
+  )
+
+proc normal*(): LineHeight =
+  LineHeight(kind: LineHeightKind.Normal)
