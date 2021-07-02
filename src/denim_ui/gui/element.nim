@@ -50,7 +50,6 @@ let instance = initLayoutManager()
 
 proc measure*(self: LayoutManager, elem: Element, availableSize: Vec2[float]): void =
   if not elem.isRooted:
-    echo "WARN: Tried to measure an unrooted element: ", elem.id, " of type ", elem.typeName
     return
 
   let parent = elem.parent
@@ -65,7 +64,6 @@ proc measure*(self: LayoutManager, elem: Element, availableSize: Vec2[float]): v
 
 proc arrange*(self: LayoutManager, elem: Element, rect: Bounds): void =
   if not elem.isRooted:
-    echo "WARN: Tried to arrange an unrooted element: ", elem.id, " of type ", elem.typeName
     return
 
   let parent = elem.parent
@@ -78,7 +76,7 @@ proc arrange*(self: LayoutManager, elem: Element, rect: Bounds): void =
     elif elem.previousArrange.isSome():
       elem.arrange(elem.previousArrange.get())
     else:
-      echo "Tried to arrange element without a desired size."
+      echo "WARN: Tried to arrange element without a desired size."
 
 proc performOutstandingMeasure(self: LayoutManager, availableSize: Vec2[float]): void =
   while self.toMeasure.len() > 0:
