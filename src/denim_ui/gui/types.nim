@@ -131,6 +131,7 @@ type
     lineJoin*: Option[LineJoin]
 
   TextInfo* = ref object
+    hash: Hash
     text*: cstring
     fontSize*: float
     textBaseline*: cstring
@@ -326,6 +327,37 @@ implTypeName(TextInput)
 
 proc hash*(element: Element): Hash =
   element.cachedHashOfId
+
+proc hash*(self: TextInfo): Hash =
+  self.hash
+
+proc newTextInfo*(
+    text: cstring,
+    fontSize: cfloat,
+    textBaseline: cstring,
+    fontFamily: cstring,
+    fontWeight: int,
+    fontStyle: cstring = "top",
+    alignment: cstring = "left"
+): TextInfo =
+  var h: Hash = 0
+  h = h !& text.hash()
+  # NOTE: A bug in the JS target causes hashes of floats to fail
+  # TODO: Remove stringifying when https://github.com/nim-lang/Nim/issues/16542 fix is released
+  h = h !& ($fontSize).hash()
+  h = h !& fontFamily.hash()
+  h = h !& fontWeight.hash()
+  h = h !& fontStyle.hash()
+  TextInfo(
+    hash: !$h,
+    text: text,
+    fontSize: fontSize,
+    textBaseline: textBaseline,
+    fontFamily: fontFamily,
+    fontWeight: fontWeight,
+    fontStyle: fontStyle,
+    alignment: alignment
+  )
 
 proc `==`*(self: Element, other: Element): bool =
   if isNil(self) and isNil(other):
