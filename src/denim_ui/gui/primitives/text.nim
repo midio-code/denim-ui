@@ -114,14 +114,14 @@ method render*(self: Text): Option[Primitive] =
   var lineY = 0.0
   var children: seq[Primitive] = @[]
   for line in self.lines:
-    let textInfo = TextInfo(
-      text: line.content,
-      fontFamily: fontFamily,
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      fontStyle: fontStyle,
-      textBaseline: "top",
-      alignment: "left"
+    let textInfo = newTextInfo(
+      text = line.content,
+      fontFamily = fontFamily,
+      fontSize = fontSize,
+      fontWeight = fontWeight,
+      fontStyle = fontStyle,
+      textBaseline = "top",
+      alignment = "left"
     )
 
     children.add Primitive(

@@ -7,33 +7,6 @@ import ../utils
 import ./primitives/defaults
 from colors import colWhite
 
-proc createTextPrimitive*(
-  self: Element,
-  text: string,
-  color: Color = colWhite,
-  fontSize: float = defaults.fontSize,
-  fontFamily: string = defaults.fontFamily,
-  textBaseline: string = "top",
-  alignment: string = "left"
-): Primitive =
-  let textInfo = TextInfo(
-    text: text,
-    fontSize: fontSize,
-    textBaseline: textBaseline,
-    fontFamily: fontFamily,
-    alignment: alignment
-  )
-  Primitive(
-    transform: self.props.transform,
-    bounds: self.bounds.get(),
-    clipToBounds: self.props.clipToBounds.get(false),
-    shadow: self.props.shadow,
-    kind: PrimitiveKind.Text,
-    textInfo: textInfo,
-    colorInfo: ColorInfo(fill: color),
-    children: @[],
-  )
-
 proc createContainer*(self: Element, children: seq[Primitive]): Primitive =
   Primitive(
     transform: self.props.transform,
