@@ -149,7 +149,7 @@ proc image*(self: Element, uri: string): Primitive =
     opacity: self.props.opacity,
   )
 
-proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo]): Primitive =
+proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], radius: CornerRadius): Primitive =
   Primitive(
     transform: self.props.transform,
     bounds: self.bounds.get(),
@@ -158,19 +158,25 @@ proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[
     kind: Rectangle,
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
-    rectangleInfo: RectangleInfo(bounds: self.bounds.get()),
+    rectangleInfo: RectangleInfo(
+      bounds: self.bounds.get(),
+      radius: radius,
+    ),
     children: @[],
     opacity: self.props.opacity,
   )
 
-proc rectangle*(bounds: Bounds, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo]): Primitive =
+proc rectangle*(bounds: Bounds, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], radius: CornerRadius): Primitive =
   echo "Debug rect: ", bounds.size
   Primitive(
     bounds: bounds,
     kind: Rectangle,
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
-    rectangleInfo: RectangleInfo(bounds: bounds),
+    rectangleInfo: RectangleInfo(
+      bounds: bounds,
+      radius: radius,
+    ),
     children: @[],
   )
 

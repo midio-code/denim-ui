@@ -155,13 +155,14 @@ type
     endAngle*: float
 
   CornerRadius* = ref object
-    left*: float
-    top*: float
-    right*: float
-    bottom*: float
+    topLeft*: float
+    topRight*: float
+    bottomRight*: float
+    bottomLeft*: float
 
   RectangleInfo* = ref object
     bounds*: Rect[float]
+    radius*: CornerRadius
 
   PathInfoKind* {.pure.} = enum
     Segments, String
@@ -305,12 +306,12 @@ type
     createTextInput*: ((ElementProps, TextInputProps), seq[Element]) -> TextInput
     createNativeText*: ((ElementProps, TextProps), seq[Element]) -> Text
 
-proc radius*(l,t,r,b: float): CornerRadius =
+proc radius*(tl,tr,br,bl: float): CornerRadius =
   CornerRadius(
-    left: l,
-    top: t,
-    right: r,
-    bottom: b
+    topLeft: tl,
+    topRight: tr,
+    bottomRight: br,
+    bottomLeft: bl
   )
 
 converter cornerRadiusFromTuple*(self: (float, float, float, float)): CornerRadius =

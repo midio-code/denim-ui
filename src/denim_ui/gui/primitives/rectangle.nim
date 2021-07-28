@@ -30,7 +30,7 @@ method render(self: RectangleElem): Option[Primitive] =
     radius = props.radius.get((0.0, 0.0, 0.0, 0.0))
 
   some(
-    self.createPath(
+    self.rectangle(
       some(ColorInfo(
         fill: props.color,
         stroke: props.stroke,
@@ -41,16 +41,7 @@ method render(self: RectangleElem): Option[Primitive] =
         lineCap: props.lineCap,
         lineJoin: props.lineJoin
       )),
-      moveTo(radius.left, 0),
-      lineTo(width - radius.top, 0),
-      quadraticCurveTo(width, 0, width, radius.top),
-      lineTo(width, height - radius.right),
-      quadraticCurveTo(width, height, width - radius.right, height),
-      lineTo(radius.bottom, height),
-      quadraticCurveTo(0, height, 0, height - radius.bottom),
-      lineTo(0, radius.left),
-      quadraticCurveTo(0, 0, radius.left, 0),
-      close()
+      radius
     )
   )
 
