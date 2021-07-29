@@ -132,7 +132,6 @@ proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     rectangleInfo: RectangleInfo(
-      bounds: self.bounds.get(),
       radius: radius,
     ),
     children: @[],
@@ -140,14 +139,12 @@ proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[
   )
 
 proc rectangle*(bounds: Bounds, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], radius: CornerRadius): Primitive =
-  echo "Debug rect: ", bounds.size
   Primitive(
     bounds: bounds,
     kind: Rectangle,
     colorInfo: colorInfo,
     strokeInfo: strokeInfo,
     rectangleInfo: RectangleInfo(
-      bounds: bounds,
       radius: radius,
     ),
     children: @[],

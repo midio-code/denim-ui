@@ -162,7 +162,6 @@ type
     bottomLeft*: float
 
   RectangleInfo* = ref object
-    bounds*: Rect[float]
     radius*: CornerRadius
 
   PathInfoKind* {.pure.} = enum
