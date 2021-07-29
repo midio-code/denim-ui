@@ -24,9 +24,6 @@ implTypeName(RectangleElem)
 method render(self: RectangleElem): Option[Primitive] =
   let
     props = self.rectangleProps
-    bounds = self.bounds.get()
-    width = bounds.width()
-    height = bounds.height()
     radius = props.radius.get((0.0, 0.0, 0.0, 0.0))
 
   some(
