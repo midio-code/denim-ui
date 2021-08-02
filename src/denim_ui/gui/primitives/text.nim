@@ -4,6 +4,7 @@ import ../types
 import ../drawing_primitives
 import ../../thickness
 import ../../vec
+import ../../guid
 import ../../rect
 import ../../utils
 import ../../events
@@ -133,6 +134,7 @@ method render*(self: Text): Option[Primitive] =
     )
 
     children.add Primitive(
+      id: genGuid().hash,
       transform: self.props.transform,
       bounds: rect(vec2(0.0, lineY), vec2(line.textSize.x, lineHeight)),
       clipToBounds: false,
@@ -147,6 +149,7 @@ method render*(self: Text): Option[Primitive] =
     lineY += lineHeight
 
   let container = Primitive(
+    id: genGuid().hash(),
     transform: self.props.transform,
     bounds: self.bounds.get(),
     clipToBounds: self.props.clipToBounds.get(false),

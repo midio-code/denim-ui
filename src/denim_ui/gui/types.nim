@@ -185,6 +185,8 @@ type
     offset*: Vec2[float]
 
   Primitive* = ref object
+    id*: Hash
+    cache*: bool
     colorInfo*: Option[ColorInfo]
     strokeInfo*: Option[StrokeInfo]
     shadow*: Option[Shadow]
@@ -241,6 +243,7 @@ type
     Visible, Collapsed, Hidden
 
   ElementProps* = ref object
+    cacheVisual*: Option[bool]
     width*: Option[float]
     height*: Option[float]
     maxWidth*: Option[float]
@@ -331,6 +334,9 @@ implTypeName(TextInput)
 
 proc hash*(element: Element): Hash =
   element.cachedHashOfId
+
+proc hash*(primitive: Primitive): Hash =
+  primitive.id
 
 proc hash*(self: TextInfo): Hash =
   self.hash

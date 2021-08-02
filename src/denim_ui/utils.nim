@@ -63,13 +63,13 @@ converter fromStdColorColor*(color: stdColor.Color): guiColor.Color =
 converter fromStdColorOptColor*(color: stdColor.Color): Option[guiColor.Color] =
   some(fromStdColorColor(color))
 
-converter fromStrColorColorToStyle*(color: stdColor.Color): ColorStyle =
+converter fromStdColorColorToStyle*(color: stdColor.Color): ColorStyle =
   newSolidColor(fromStdColorColor(color))
 
-converter fromStrColorColorToStyleOpt*(color: stdColor.Color): Option[ColorStyle] =
+converter fromStdColorColorToStyleOpt*(color: stdColor.Color): Option[ColorStyle] =
   some(newSolidColor(fromStdColorColor(color)))
 
-converter fromStrColorColorOpt*(color: Option[stdColor.Color]): Option[ColorStyle] =
+converter fromStdColorColorOpt*(color: Option[stdColor.Color]): Option[ColorStyle] =
   if color.isSome:
     some(newSolidColor(fromStdColorColor(color.get)))
   else:

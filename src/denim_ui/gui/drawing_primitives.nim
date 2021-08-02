@@ -1,14 +1,22 @@
+import hashes
 import math
 import options
 import types
+import strformat
+import ../guid
 import ../vec
 import ../rect
 import ../utils
 import ./primitives/defaults
 from colors import colWhite
 
+proc `$`*(self: Primitive): string =
+  &"Primitive {$self.kind} - {$self.id} - {$self.bounds}"
+
 proc createContainer*(self: Element, children: seq[Primitive]): Primitive =
   Primitive(
+    id: genGuid().hash(),
+    cache: self.props.cacheVisual.get(false),
     transform: self.props.transform,
     bounds: self.bounds.get(),
     clipToBounds: self.props.clipToBounds.get(false),
@@ -30,6 +38,8 @@ proc close*(): PathSegment =
 
 proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], segments: seq[PathSegment]): Primitive =
   Primitive(
+    id: genGuid().hash(),
+    cache: self.props.cacheVisual.get(false),
     transform: self.props.transform,
     bounds: self.bounds.get(),
     clipToBounds: self.props.clipToBounds.get(false),
@@ -48,6 +58,8 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
 
 proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], stringData: string): Primitive =
   Primitive(
+    id: genGuid().hash(),
+    cache: self.props.cacheVisual.get(false),
     transform: self.props.transform,
     bounds: self.bounds.get(),
     clipToBounds: self.props.clipToBounds.get(false),
@@ -65,6 +77,8 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
 
 proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], segments: varargs[PathSegment]): Primitive =
   Primitive(
+    id: genGuid().hash(),
+    cache: self.props.cacheVisual.get(false),
     transform: self.props.transform,
     bounds: self.bounds.get(),
     shadow: self.props.shadow,
@@ -82,6 +96,8 @@ proc createPath*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option
 
 proc circle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], center: Point, radius: float): Primitive =
   Primitive(
+    id: genGuid().hash(),
+    cache: self.props.cacheVisual.get(false),
     transform: self.props.transform,
     bounds: self.bounds.get(),
     shadow: self.props.shadow,
@@ -96,6 +112,8 @@ proc circle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[Str
 
 proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], radius: Vec2[float]): Primitive =
   Primitive(
+    id: genGuid().hash(),
+    cache: self.props.cacheVisual.get(false),
     transform: self.props.transform,
     bounds: self.bounds.get(),
     clipToBounds: self.props.clipToBounds.get(false),
@@ -110,6 +128,8 @@ proc ellipse*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[St
 
 proc image*(self: Element, uri: string): Primitive =
   Primitive(
+    id: genGuid().hash(),
+    cache: self.props.cacheVisual.get(false),
     transform: self.props.transform,
     bounds: self.bounds.get(),
     clipToBounds: self.props.clipToBounds.get(false),
@@ -124,6 +144,8 @@ proc image*(self: Element, uri: string): Primitive =
 
 proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], radius: CornerRadius): Primitive =
   Primitive(
+    id: genGuid().hash(),
+    cache: self.props.cacheVisual.get(false),
     transform: self.props.transform,
     bounds: self.bounds.get(),
     clipToBounds: self.props.clipToBounds.get(false),
@@ -140,6 +162,7 @@ proc rectangle*(self: Element, colorInfo: Option[ColorInfo], strokeInfo: Option[
 
 proc rectangle*(bounds: Bounds, colorInfo: Option[ColorInfo], strokeInfo: Option[StrokeInfo], radius: CornerRadius): Primitive =
   Primitive(
+    id: genGuid().hash(),
     bounds: bounds,
     kind: Rectangle,
     colorInfo: colorInfo,
