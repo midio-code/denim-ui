@@ -1,4 +1,4 @@
-import sugar, tables, strformat, options, macros, strutils, sets, sequtils, algorithm
+import sugar, tables, strformat, options, macros, strutils, sets, sequtils, algorithm, math
 import rx_nim
 import ../vec
 import ../rect
@@ -372,17 +372,11 @@ proc arrangeCore(self: Element, finalRect: Bounds): void =
     originY += availableSizeMinusMargins.y - size.y;
   else: discard
 
-  # if self.props.visibility == Visibility.Collapsed:
-  #   self.bounds = rect(
-  #     vec2(self.props.x.get(originX) + self.props.xOffset.get(0), self.props.y.get(originY) + self.props.yOffset.get(0)),
-  #     vec2(0.0, 0.0)
-  #   )
-  #   return
-
   let newBounds = rect(
     vec2(
-      self.props.x.get(originX) + self.props.xOffset.get(0),
-      self.props.y.get(originY) + self.props.yOffset.get(0)
+      # NOTE: Flooring here as a way of snapping to pixel
+      (self.props.x.get(originX) + self.props.xOffset.get(0)).floor(),
+      (self.props.y.get(originY) + self.props.yOffset.get(0)).floor()
     ),
     vec2(
       self.props.width.get(size.x),
