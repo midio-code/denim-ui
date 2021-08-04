@@ -32,7 +32,7 @@ iterator tokens(str: string): string =
     else:
       yield token
 
-proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, fontWeight: int, wordWrap: bool, avSize: Vec2[float]): (seq[TextLine], Vec2[float]) =
+proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, fontWeight: int, wordWrap: bool, lineHeight: float, avSize: Vec2[float]): (seq[TextLine], Vec2[float]) =
   if text.len == 0:
     return (
       @[],
@@ -48,15 +48,17 @@ proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, fo
   var lastLineSize = lineSize
   var lineTokens: seq[string] = @[]
 
+  var textSize: Size
+
   proc flushLine() =
     var lineString = lineTokens.join()
     let actualLineSize = vec2(
       lineSize.x,
       max(lineSize.y, fontSize)
     )
-    lines.add (content: lineString, size: actualLineSize)
+    lines.add(TextLine(content: lineString, textSize: actualLineSize))
     totalSize.x = max(totalSize.x, lineSize.x)
-    totalSize.y += actualLineSize.y
+    totalSize.y += actualLineSize.y * lineHeight
     lastLineSize = actualLineSize
     lineSize = vec2(0.0)
     lineTokens = @[]
@@ -68,6 +70,8 @@ proc measureMultilineText*(text: string, fontFamily: string, fontSize: float, fo
 
   for token in text.tokens():
     let tokenSize = measureText(token, fontSize, fontFamily, fontWeight, baseline = "top")
+    let actualLineHeight = tokenSize.y * lineHeight
+    textSize = tokenSize
 
     if token == "\n":
       flushLine()
@@ -97,6 +101,7 @@ method measureOverride(self: Text, avSize: Vec2[float]): Vec2[float] =
     props.fontSize.get(defaults.fontSize),
     props.fontWeight.get(defaults.fontWeight),
     props.wordWrap,
+    props.lineHeight.get(1.0),
     avSize
   )
   self.lines = lines
@@ -110,6 +115,7 @@ method render*(self: Text): Option[Primitive] =
   let fontFamily = props.fontFamily.get(defaults.fontFamily)
   let fontWeight = props.fontWeight.get(defaults.fontWeight)
   let fontStyle = props.fontStyle.get(defaults.fontStyle)
+  let lineHeight = props.lineHeight.get(1.0)
 
   var lineY = 0.0
   var children: seq[Primitive] = @[]
@@ -121,12 +127,13 @@ method render*(self: Text): Option[Primitive] =
       fontWeight = fontWeight,
       fontStyle = fontStyle,
       textBaseline = "top",
-      alignment = "left"
+      alignment = "left",
+      textSize = line.textSize,
     )
 
     children.add Primitive(
       transform: self.props.transform,
-      bounds: rect(vec2(0.0, lineY), line.size), # TODO: Horizontal alignment
+      bounds: rect(vec2(0.0, lineY), line.textSize * vec2(1.0, lineHeight)), # TODO: Horizontal alignment
       clipToBounds: false,
       shadow: none(Shadow),
       kind: PrimitiveKind.Text,
@@ -136,7 +143,7 @@ method render*(self: Text): Option[Primitive] =
       opacity: self.props.opacity
     )
 
-    lineY += line.size.y
+    lineY += line.textSize.y * lineHeight
 
   let container = Primitive(
     transform: self.props.transform,

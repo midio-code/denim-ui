@@ -43,6 +43,7 @@ type
     fontStyle*: Option[string]
     color*: Option[Color]
     wordWrap*: bool
+    lineHeight*: Option[float]
 
 
   TextChangedInfo* = ref object
@@ -61,8 +62,10 @@ type
     placeholderColor*: Option[Color]
     onChange*: Option[TextChanged]
     focusWhenRooted*: Option[bool]
-    wordWrap*: bool
     preventNewLineOnEnter*: bool
+    wordWrap*: bool
+    ## The resulting line height is `lineHeight` multiplied by `fontSize`
+    lineHeight*: Option[float]
 
   BezierInfo* = ref object
     controlPoint1*: Point
@@ -139,6 +142,7 @@ type
     fontWeight*: int
     fontStyle*: cstring
     alignment*: cstring
+    textSize*: Size
 
   PrimitiveKind* {.pure.} = enum
     Container, Text, Path, Circle, Ellipse, Rectangle, Image
@@ -292,9 +296,10 @@ type
     lines*: seq[TextLine]
     onInvalidate*: (InvalidateTextArgs) -> void
 
-  TextLine* = tuple
-    content: string
-    size: Vec2[float]
+  TextLine* = ref object
+    content*: string
+    textSize*: Size
+
 
   InvalidateTextArgs* = object
 
@@ -337,7 +342,8 @@ proc newTextInfo*(
     fontFamily: cstring,
     fontWeight: int,
     fontStyle: cstring = "top",
-    alignment: cstring = "left"
+    alignment: cstring = "left",
+    textSize: Size,
 ): TextInfo =
   var h: Hash = 0
   h = h !& text.hash()
@@ -355,7 +361,8 @@ proc newTextInfo*(
     fontFamily: fontFamily,
     fontWeight: fontWeight,
     fontStyle: fontStyle,
-    alignment: alignment
+    alignment: alignment,
+    textSize: textSize,
   )
 
 proc `==`*(self: Element, other: Element): bool =
