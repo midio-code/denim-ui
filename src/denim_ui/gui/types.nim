@@ -64,7 +64,7 @@ type
     focusWhenRooted*: Option[bool]
     preventNewLineOnEnter*: bool
     wordWrap*: bool
-    ## The resulting line height is `lineHeight` multiplied by `fontSize`
+    ## The height of each line in pixels
     lineHeight*: Option[float]
 
   BezierInfo* = ref object
