@@ -508,6 +508,8 @@ method render*(self: Element): Option[Primitive] {.base.} =
     return none[Primitive]()
   result = some(
     Primitive(
+      id: genGuid().hash(),
+      cache: self.props.cacheVisual.get(false),
       transform: self.props.transform,
       bounds: self.bounds.get(),
       clipToBounds: self.props.clipToBounds.get(false),
