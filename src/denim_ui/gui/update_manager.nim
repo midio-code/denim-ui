@@ -1,6 +1,8 @@
 import types
 import sugar
 import sequtils
+import behaviors
+import options
 import ../events
 
 var updateManagerListeners = emitter[float]()
@@ -66,3 +68,9 @@ proc dispatchUpdate*(dt: float): void =
       toRemove.add(i)
   for i in toRemove:
     waiters.delete(i)
+
+proc onUpdate*(handler: (float) -> void): Behavior =
+  Behavior(
+    added: some(proc(elem: Element) = addUpdateListenerIfNotPresent(handler)),
+    removed: some(proc(elem: Element) = removeUpdateListener(handler))
+  )
