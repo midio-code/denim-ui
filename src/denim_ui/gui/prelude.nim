@@ -18,7 +18,7 @@ import primitives/text, primitives/circle as circlePrim, primitives/rectangle, p
 
 import behaviors, tag
 import data_binding, element_events, pointer_capture
-import ./behaviors/[onClicked,onHover,onDrag,onPointer,onWheel,onKey,onObservable]
+import ./behaviors/[onClicked,onHover,onDrag,onPointer,onWheel,onKey,onObservable,onRooted]
 import animation/animation
 import animation/element_animation
 import ../utils
@@ -36,7 +36,7 @@ export options, vec, mat, rect, number, circle
 export types, element, events, dock, stack, rectangle, path, text, scroll_view, grid
 export circlePrim, image, behaviors, tag, data_binding, element_events, pointer_capture
 export color
-export onClicked, onHover, onDrag, onPointer, onWheel, onKey, onObservable
+export onClicked, onHover, onDrag, onPointer, onWheel, onKey, onObservable, onRooted
 export rx_nim
 export animation
 export element_animation
