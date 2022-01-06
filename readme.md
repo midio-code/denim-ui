@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/nortero-code/denim-ui/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/nortero-code/denim-ui/actions/workflows/main.yml)
 
-A custom cross platform UI framework focused on fast and easy prototyping by the use of a custom DSL.
+A cross platform UI framework focused on fast and easy prototyping by the use of a custom DSL.
 
 The various platforms are supported through separate backend implementations. An js backend that uses the canvas api for drawing and html for native components the only somewhat usable backend, but a native one is planned.
 
