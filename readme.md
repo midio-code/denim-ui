@@ -6,7 +6,7 @@ A cross platform UI framework focused on fast and easy prototyping by the use of
 
 The various platforms are supported through separate backend implementations. An js backend that uses the canvas api for drawing and html for native components the only somewhat usable backend, but a native one is planned.
 
-[Documentation can be found here](https://nortero-code.github.io/denim-ui/)
+[Documentation can be found here](https://midio-code.github.io/denim-ui/)
 
 ## Use at your own risk
 
